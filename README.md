@@ -1,7 +1,7 @@
 # Ô'🍅
 This program is an Finite-state automaton (FSA) editor.
 
-## Cahier des charges
+## Load specificaton
 *All the information come from the Instruction/Projet file*
 The program need to contains the following features :
 - [ ] FSA Editing, which means :
