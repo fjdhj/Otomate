@@ -24,3 +24,9 @@ The program need to contains the following features :
 - [ ] Check if two AEF are equivalen (they recognized same language)
 - [ ] Transform an AEF into an "émondé" one
 - [ ] Transform an AEF into a minimal one. The new AEF will recognized the same language, with the minmal number of state. Which means that no state can be removed from the AEF and without change the know language
+- [ ] The interface need to be in the shell
+
+## Optional feature
+- [ ] A GUI for editing the FSA
+- [ ] Export the FSA in an image (.png, .jpg or other)
+
