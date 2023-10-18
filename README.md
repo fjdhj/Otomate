@@ -2,7 +2,8 @@
 This program is an Finite-state automaton (FSA) editor.
 
 ## Load specificaton
-*All the information come from the Instruction/Projet file*
+*All the information come from [Instruction/Projet](Instruction/Projet).*
+
 The program need to contains the following features :
 - [ ] FSA Editing, which means :
   - [ ] Adding
@@ -30,3 +31,23 @@ The program need to contains the following features :
 - [ ] A GUI for editing the FSA
 - [ ] Export the FSA in an image (.png, .jpg or other)
 
+## FSA save file (.oto)
+The program use the .oto extension to save your Finite-State automaton. The strucuture is the same as a CSV file with the follow header :
+```
+Header : Names of the state, first event, second event, thrid event, [...], IS, FS
+IS: Initial State (0 : false, 1: true)
+FS: Final State (0 : false, 1: true)
+Note: The "Names of the state" column don't have a name in the header
+```
+
+**Example :**\
+This example represent an AEF reading an binary number with an even number of 1
+```
+;0;1;IS;FS
+even;even;odd;1;1
+odd;odd;even;0;0
+```
+We can represent this AEF with the folowing graph :\
+![Even AEF graph](Sample/Example/even.png)
+
+You will find more example in [Sample/Example](Sample/Example)
