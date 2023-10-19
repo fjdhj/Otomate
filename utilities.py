@@ -11,11 +11,13 @@ def init_graph(file)->list:
 
     Returns:
         list: _description_
-    """
+    # """
     automate = pd.read_csv(file, sep=';')
-    dimension=automate.shape
-    graph = automate.iloc[0:dimension[0],1:dimension[1]-2]
-    graph_to_list=[graph.loc[i, :].values.flatten().tolist() for i in range(dimension[0])]
+    dimension: tuple=automate.shape
+    print(dimension)
+    print(automate[automate[:] == 'q1,q3'])
+    graph = automate.iloc[0 :dimension[0],0 : dimension[1]-2]
+    graph_to_list=[graph.loc[i,:].values.tolist() for i in range(dimension[0])]
     return graph_to_list
 
 init_graph('Sample/default.csv')
