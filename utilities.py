@@ -7,21 +7,19 @@ def init_graph(file)->list:
     the CSV File.
 
     Args:
-        file (_type_): _description_
+        file (csv file): _description_
 
     Returns:
-        list: _description_
+        list: 2D arrays which contains automaton graph
     # """
     automate = pd.read_csv(file, sep=';')
     dimension: tuple=automate.shape
-    print(dimension)
-    print(automate[automate[:] == 'q1,q3'])
     graph = automate.iloc[0 :dimension[0],0 : dimension[1]-2]
-    graph_to_list=[graph.loc[i,:].values.tolist() for i in range(dimension[0])]
+    graph_to_list=[graph.loc[i,:].values.tolist() for i in range(dimension[0])]        
     return graph_to_list
 
 def init_statestypes(file)->list:
-    """This function gets the types of 
+    """This function gets the types of the
     states (initial or final).
 
     Args:
@@ -37,6 +35,4 @@ def init_statestypes(file)->list:
     print(states_to_list)
     return states_to_list
 
-#init_graph('Sample/default.csv')
-init_statestypes('Sample/default.csv')
         
