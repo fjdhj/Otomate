@@ -35,4 +35,7 @@ def init_statestypes(file)->list:
     print(states_to_list)
     return states_to_list
 
+def transitions(file)->list:
+    automate=pd.read_csv(file,sep=';')
+    return list(automate.columns)[1:automate.shape[1]-2]
         
