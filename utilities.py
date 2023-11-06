@@ -21,7 +21,7 @@ def init_graph(file)->list:
     return graph_to_list
 
 def init_statestypes(file)->list:
-    """This function gets the types of the
+    """This function gets the types of 
     states (initial or final).
 
     Args:
