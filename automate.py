@@ -25,10 +25,12 @@ class automate:
     def create_state(self,name)->None:
         self.matrix.append([])
         self.matrix[-1].append([name])
+        self.initial_states.append(0)
+        self.final_states.append(0)
         self.all_states.append(name)
         for i in range(1,len(self.matrix[0])):
             self.matrix[-1].append(['nan'])
-    
+
     # display the necessary information about the states 
     def display_states(self) -> None:
         output=f"""
@@ -77,6 +79,7 @@ Final_states: {self.final_states}
             del self.matrix[index_state][index_transition][0]
         self.matrix[index_state][index_transition].append(final_state)
         
+        
     def display_matrix(self):
         pprint(self.matrix)
 
@@ -116,13 +119,12 @@ Final_states: {self.final_states}
             csv_file.update({self.transitions[i]:[state for state in csv_file_temp[i+1]]})
         
         
-        csv_file.update({"EI":[0 for i in range(5)]})
-        csv_file.update({"EF":[0 for i in range(5)]})
+        csv_file.update({"EI":self.initial_states})
+        csv_file.update({"EF":self.final_states})
         
-        # pprint(csv_file)
+        pprint(csv_file)
         df = pd.DataFrame(csv_file)
-        print(df)
-        df.to_csv(f"Sample/{file}.csv")
+        df.to_csv(f"Sample/{file}.csv", index=False)
         
 automate1=automate(sample_event, sample_state)
 automate1.split_states()
