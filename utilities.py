@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+#modifier init_graph et init_statestypes
 def init_graph(file)->list:
     """This function enable us to generate 
     matrix that contains the events and links from
@@ -35,4 +35,6 @@ def init_statestypes(file)->list:
     print(states_to_list)
     return states_to_list
 
-        
+def transitions(file)->list:
+    automate=pd.read_csv(file,sep=';')
+    return list(automate.columns)[1:automate.shape[1]-2]
