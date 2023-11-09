@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-#modifier init_graph et init_statestypes
+
+#modifier init_graph et init_statestypes par rapport au fichier test.csv
 def init_graph(file)->list:
     """This function enable us to generate 
     matrix that contains the events and links from
