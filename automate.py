@@ -111,11 +111,7 @@ Final_states: {self.final_states}
     def edit_csv(self,file):
         csv_file={}
         rows, cols= len(self.matrix), len(self.matrix[0])
-        print(rows,cols)
         csv_file_temp=[["" for _ in range(rows)] for i in range(cols)]
-        print(csv_file)
-        pprint(self.matrix)
-        print(self.display_states())
         for i in range(rows):
             for j in range(cols): 
                 csv_file_temp[j][i]=",".join(self.matrix[i][j]) if i<len(self.matrix) and j < len(self.matrix[i]) else None
