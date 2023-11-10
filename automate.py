@@ -1,4 +1,5 @@
 import stat
+from tkinter import NO
 import utilities
 from pprint import pp, pprint
 import pandas as pd
@@ -77,7 +78,8 @@ Final_states: {self.final_states}
         index_transition=self.transitions.index(transition)
         if(self.matrix[index_state][index_transition][0] == "nan"):
             del self.matrix[index_state][index_transition][0]
-        self.matrix[index_state][index_transition].append(final_state)
+        else:
+            self.matrix[index_state][index_transition].append(final_state)
         
         
     def display_matrix(self):
@@ -108,23 +110,22 @@ Final_states: {self.final_states}
     
     def edit_csv(self,file):
         csv_file={}
-        csv_file_temp=[[] for i in range(len(self.matrix))]
-        
-        for i in range(len(self.matrix)):
-            for j in range(len(self.matrix[i])):
-                csv_file_temp[i].append(",".join(self.matrix[j][i]))
-        pprint(csv_file_temp)
+        rows, cols= len(self.matrix), len(self.matrix[0])
+        print(rows,cols)
+        csv_file_temp=[["" for _ in range(rows)] for i in range(cols)]
+        print(csv_file)
+        pprint(self.matrix)
+        print(self.display_states())
+        for i in range(rows):
+            for j in range(cols): 
+                csv_file_temp[j][i]=",".join(self.matrix[i][j]) if i<len(self.matrix) and j < len(self.matrix[i]) else None
         csv_file.update({"etat":csv_file_temp[0]})
         for i in range(len(transition)):
             csv_file.update({self.transitions[i]:[state for state in csv_file_temp[i+1]]})
-        
-        
         csv_file.update({"EI":self.initial_states})
         csv_file.update({"EF":self.final_states})
-        
-        pprint(csv_file)
         df = pd.DataFrame(csv_file)
-        df.to_csv(f"Sample/{file}.csv", index=False)
+        df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
         
 automate1=automate(sample_event, sample_state)
 automate1.split_states()
@@ -149,13 +150,3 @@ automate1.delete_state("q0")
 
 
 automate1.edit_csv("test")
-# df['']=self.all_states
-        
-        #df.to_csv(f"Sample/{file}.csv", sep=";")
-        # Chargez le fichier CSV dans un DataFrame
-        # df = pd.read_csv(f"Sample/{file}.csv", delimiter=';')
-        # df = pd.DataFrame(csv_file)
-        # # Mettez à jour les valeurs du DataFrame en utilisant le dictionnaire
-        # for colonne, val in csv_file.items():
-        #     df[colonne] = val
-        # print(df)
