@@ -4,13 +4,15 @@ import utilities
 from pprint import pp, pprint
 import pandas as pd
 import os
+
 #Initialize variables
 sample_event: list[list[str]]=utilities.init_graph("Sample/default.csv")
 #Final_state and initial_state
 sample_state: list[list[str]]=utilities.init_statestypes("Sample/default.csv")
 
-transition: list=utilities.transitions("Sample/default2.csv")
+transition: list=utilities.transitions("Sample/default.csv")
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
+
 class automate:
     # initialize the basic automate
     def __init__(self, sample_event:list[list[str]], sample_state:list[list[str]], transition:list=transition) -> None:
@@ -30,7 +32,7 @@ class automate:
         self.final_states.append(0)
         self.all_states.append(name)
         for i in range(1,len(self.matrix[0])):
-            self.matrix[-1].append(['nan'])
+            self.matrix[-1].append(['-'])
 
     # display the necessary information about the states 
     def display_states(self) -> None:
@@ -56,7 +58,7 @@ Final_states: {self.final_states}
         i=0
         len_matrix=len(self.matrix)
         while complete and i<len_matrix:
-            if ['nan'] in self.matrix[i]:
+            if ['-'] in self.matrix[i]:
                 complete=False
             i+=1
         return complete
@@ -76,7 +78,7 @@ Final_states: {self.final_states}
              raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
         index_state=self.all_states.index(initial_state)
         index_transition=self.transitions.index(transition)
-        if(self.matrix[index_state][index_transition][0] == "nan"):
+        if(self.matrix[index_state][index_transition][0] == '-'):
             del self.matrix[index_state][index_transition][0]
         else:
             self.matrix[index_state][index_transition].append(final_state)
@@ -98,7 +100,7 @@ Final_states: {self.final_states}
                         if(test_state == state):
                             transition_states.remove(state)
                             if(transition_states == []):
-                                transition_states.append("nan")
+                                transition_states.append('-')
         else:
             print("L'état à supprimer n'existe pas")
     
@@ -108,25 +110,33 @@ Final_states: {self.final_states}
         else:
             print("La transition à supprimer n'existe pas")
     
-    def edit_csv(self,file):
-        csv_file={}
-        rows, cols= len(self.matrix), len(self.matrix[0])
-        csv_file_temp=[["" for _ in range(rows)] for i in range(cols)]
+    def edit_csv(self, file):
+        csv_file = {}
+        rows, cols = len(self.matrix), len(self.matrix[0])
+        csv_file_temp = [["" for _ in range(rows)] for _ in range(cols)]
+
         for i in range(rows):
             for j in range(cols): 
-                csv_file_temp[j][i]=",".join(self.matrix[i][j]) if i<len(self.matrix) and j < len(self.matrix[i]) else None
-        csv_file.update({"etat":csv_file_temp[0]})
-        for i in range(len(transition)):
-            csv_file.update({self.transitions[i]:[state for state in csv_file_temp[i+1]]})
-        csv_file.update({"EI":self.initial_states})
-        csv_file.update({"EF":self.final_states})
+                # Replace None or missing values with '-'
+                cell_value = ",".join(filter(None, self.matrix[i][j])) if self.matrix[i][j] else '-'
+                csv_file_temp[j][i] = cell_value
+
+        csv_file.update({"etat": csv_file_temp[0]})
+        for i in range(len(self.transitions)):
+            csv_file.update({self.transitions[i]: [state for state in csv_file_temp[i + 1]]})
+        csv_file.update({"EI": self.initial_states})
+        csv_file.update({"EF": self.final_states})
+
         df = pd.DataFrame(csv_file)
         df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
-        
+
 automate1=automate(sample_event, sample_state)
 automate1.split_states()
 automate1.create_state("bidule")
 automate1.display_states()
+automate1.edit_csv("testv")
+
+"""        
 
 print(automate1.is_complete())
 automate1.display_matrix()
@@ -146,3 +156,4 @@ automate1.delete_state("q0")
 
 
 automate1.edit_csv("test")
+"""
