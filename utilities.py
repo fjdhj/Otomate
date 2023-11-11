@@ -2,21 +2,12 @@ import pandas as pd
 import numpy as np
 
 #modifier init_graph et init_statestypes par rapport au fichier test.csv
-def init_graph(file)->list:
-    """This function enable us to generate 
-    matrix that contains the events and links from
-    the CSV File.
-
-    Args:
-        file (csv file): _description_
-
-    Returns:
-        list: 2D arrays which contains automaton graph
-    # """
+def init_graph(file) -> list:
     automate = pd.read_csv(file, sep=';')
-    dimension: tuple=automate.shape
-    graph = automate.iloc[0 :dimension[0],0 : dimension[1]-2]
-    graph_to_list=[graph.loc[i,:].values.tolist() for i in range(dimension[0])]        
+    dimension = automate.shape
+    graph = automate.iloc[0:dimension[0], 0:dimension[1] - 2]
+    # Replace '-' with None or a similar representation
+    graph_to_list = [[item for item in graph.loc[i, :].values.tolist()] for i in range(dimension[0])]
     return graph_to_list
 
 def init_statestypes(file)->list:
@@ -33,7 +24,6 @@ def init_statestypes(file)->list:
     dimension: tuple=automate.shape
     states = automate.iloc[0 :dimension[0],dimension[1]-2 : dimension[1]]
     states_to_list=[states.loc[:,i].values.tolist() for i in ['EI', 'EF']]
-    print(states_to_list)
     return states_to_list
 
 def transitions(file)->list:
