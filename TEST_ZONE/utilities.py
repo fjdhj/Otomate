@@ -7,7 +7,7 @@ def init_graph(file) -> list:
     dimension = automate.shape
     graph = automate.iloc[0:dimension[0], 0:dimension[1] - 2]
     # Replace '-' with None or a similar representation
-    graph_to_list = [[item for item in graph.loc[i, :].values.tolist()] for i in range(dimension[0])]
+    graph_to_list = [[None if item == '-' else item for item in graph.loc[i, :].values.tolist()] for i in range(dimension[0])]
     return graph_to_list
 
 def init_statestypes(file)->list:
