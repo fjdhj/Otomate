@@ -14,158 +14,169 @@ transition: list=utilities.transitions("Sample/default.csv")
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 
 class automate:
-    # initialize the basic automate
-    def __init__(self, sample_event:list[list[str]], sample_state:list[list[str]], transition:list=transition) -> None:
-        
-        self.matrix: list=sample_event
-        self.initial_states: list=sample_state[0]
-        self.all_states: list=[state[0] for state in sample_event]
-        self.final_states: list=sample_state[1]
-        self.transitions: list=[transit for transit in transition]
-        # self.label=[f"q{i}" for i in range(len(self.matrix)) if self.matrix != []]
-    
-    
-    def create_state(self,name)->None:
-        self.matrix.append([])
-        self.matrix[-1].append([name])
-        self.initial_states.append(0)
-        self.final_states.append(0)
-        self.all_states.append(name)
-        for i in range(1,len(self.matrix[0])):
-            self.matrix[-1].append(['-'])
+    def __init__(self, transitions, state_names, initial_final_states, alphabet):
+        self.all_states = state_names
+        self.transitions = alphabet
+        self.initial_states = initial_final_states[0]
+        self.final_states = initial_final_states[1]
 
-    # display the necessary information about the states 
-    def display_states(self) -> None:
-        output=f"""
-Initial_states: {self.initial_states}
-Current_States: {self.all_states}
-Final_states: {self.final_states} 
-        """
-        print(output)
+        # Adjusting the matrix to handle list-based transitions
+        self.matrix = []
+        for i, state in enumerate(state_names):
+            state_transitions = []
+            for trans in transitions[i]:
+                state_transitions.append(trans if trans != '-' else ['-'])
+            self.matrix.append([state] + state_transitions + [initial_final_states[0][i], initial_final_states[1][i]])
+
+    def create_state(self, name, is_initial=False, is_final=False):
+        self.matrix.append([name] + [['-'] for _ in self.transitions] + [int(is_initial), int(is_final)])
+        self.all_states.append(name)
+        self.initial_states.append(int(is_initial))
+        self.final_states.append(int(is_final))
+
+    def add_transition(self, initial_state, symbol, final_state):
+        if symbol not in self.transitions:
+            raise ValueError("The symbol is not in the automaton's alphabet.")
         
-    def split_states(self) -> None:
-        """example:
-        This function allow us to manipulate more easily the transitions
-        'q1,q2' -> [q1,q2]
-        """
-        for i in range(len(self.matrix)):
-            for j in range(len(self.matrix[i])):
-                self.matrix[i][j]=str(self.matrix[i][j]).split(',')
-    
-    
-    def is_complete(self) -> bool:
-        complete=True
-        i=0
-        len_matrix=len(self.matrix)
-        while complete and i<len_matrix:
-            if ['-'] in self.matrix[i]:
-                complete=False
-            i+=1
-        return complete
-    
-    def is_deterministic(self)->bool:
-        for line in self.matrix:
-            for row in line:
-                if len(row) > 1:
+        state_index = self.all_states.index(initial_state)
+        symbol_index = self.transitions.index(symbol) + 1
+
+        # Adjusting for list-based transitions
+        if final_state not in self.matrix[state_index][symbol_index]:
+            self.matrix[state_index][symbol_index].append(final_state)
+            if '-' in self.matrix[state_index][symbol_index]:
+                self.matrix[state_index][symbol_index].remove('-')
+
+    def delete_state(self, state):
+        if state in self.all_states:
+            index_state = self.all_states.index(state)
+            del self.matrix[index_state]
+            del self.all_states[index_state]
+            del self.initial_states[index_state]
+            del self.final_states[index_state]
+        else:
+            print("The state to be deleted does not exist.")
+
+    def edit_csv(self, file):
+        # Prepare the header for the CSV file
+        header = ['etat'] + self.transitions + ['EI', 'EF']
+
+        # Convert the matrix to a format suitable for CSV writing
+        csv_data = []
+        for row in self.matrix:
+            csv_row = []
+            for element in row:
+                # If the element is a list, join it into a string; otherwise, keep it as it is
+                if isinstance(element, list):
+                    joined_element = ','.join(element)
+                    csv_row.append(joined_element)
+                else:
+                    csv_row.append(element)
+            csv_data.append(csv_row)
+
+        # Write to CSV
+        df = pd.DataFrame(csv_data, columns=header)
+        df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
+
+
+    def is_automaton_complete(self):
+        for row in self.matrix:
+            state = row[0]
+            transitions = row[1:-2]
+            for symbol, transition in zip(self.transitions, transitions):
+                if transition == ['-']:
+                    print(f"No transition found for state {state} and symbol {symbol}. Automaton is not complete.")
+                    return False
+
+        print("All states have transitions for each symbol. Automaton is complete.")
+        return True
+
+    def is_deterministic(self):
+        for row in self.matrix:
+            transitions = row[1:-2]
+            for transition in transitions:
+                if len(transition) > 1:
                     return False
         return True
 
-    def display_transition(self):
-        print(self.transitions)
-        
-    def add_transition(self,initial_state,transition="c",final_state="sale boulot"):
-        if not (transition in self.transitions):
-             raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
-        index_state=self.all_states.index(initial_state)
-        index_transition=self.transitions.index(transition)
-        if(self.matrix[index_state][index_transition][0] == '-'):
-            del self.matrix[index_state][index_transition][0]
-        else:
-            self.matrix[index_state][index_transition].append(final_state)
-        
-        
     def display_matrix(self):
-        pprint(self.matrix)
+        for row in self.matrix:
+            print(row)
 
-    def delete_state(self, state=""): # Verifier que l'automate est coupé en 2
-        if(state in self.all_states):
-            index_state = self.all_states.index(state)
-            self.all_states.remove(state) 
-            del self.matrix[index_state]
-            del self.initial_states[index_state]
-            del self.final_states[index_state]
-            for i in range(len(self.matrix)-1):
-                for transition_states in self.matrix[i]:
-                    for test_state in transition_states:
-                        if(test_state == state):
-                            transition_states.remove(state)
-                            if(transition_states == []):
-                                transition_states.append('-')
-        else:
-            print("L'état à supprimer n'existe pas")
-    
-    def delete_transition(self, transition):
-        if(transition in self.transitions):
-            self.transitions.remove(transition)
-        else:
-            print("La transition à supprimer n'existe pas")
-    
-    def edit_csv(self, file):
-        csv_file = {}
-        rows, cols = len(self.matrix), len(self.matrix[0])
-        csv_file_temp = [["" for _ in range(rows)] for _ in range(cols)]
-
-        for i in range(rows):
-            for j in range(cols): 
-                # Replace None or missing values with '-'
-                cell_value = ",".join(filter(None, self.matrix[i][j])) if self.matrix[i][j] else '-'
-                csv_file_temp[j][i] = cell_value
-
-        csv_file.update({"etat": csv_file_temp[0]})
-        for i in range(len(self.transitions)):
-            csv_file.update({self.transitions[i]: [state for state in csv_file_temp[i + 1]]})
-        csv_file.update({"EI": self.initial_states})
-        csv_file.update({"EF": self.final_states})
-
-        df = pd.DataFrame(csv_file)
-        df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
-
-    def recognize_word(self, word: str) -> bool:
-    # Identify actual initial states by name
+    def recognize_word(self, word):
         actual_initial_states = [self.all_states[i] for i, is_initial in enumerate(self.initial_states) if is_initial == 1]
-
         current_states = set(actual_initial_states)
+
         for char in word:
             next_states = set()
             for state in current_states:
                 state_index = self.all_states.index(state)
                 if char in self.transitions:
-                    transition_index = self.transitions.index(char)
+                    transition_index = self.transitions.index(char) + 1
                     transition_states = self.matrix[state_index][transition_index]
                     for next_state in transition_states:
                         if next_state != '-':
                             next_states.add(next_state)
             current_states = next_states
 
-        # Check if any of the current states is a final state
         return any(self.final_states[self.all_states.index(state)] == 1 for state in current_states)
 
 
 
+sample_event, state_names = utilities.init_graph("Sample/default.csv")
+sample_state = utilities.init_statestypes("Sample/default.csv")
+transition = utilities.transitions("Sample/default.csv")
 
-word="aaaaaaaaaaaaaaaab"
+
+
+
+automate1 = automate(sample_event, state_names, sample_state, transition)
+automate1.display_matrix()
+print("All States: ", automate1.all_states)
+complete = automate1.is_automaton_complete()
+print(complete)
+
+automate1.delete_state("q1")
+
+automate1.display_matrix()
+print("All States: ", automate1.all_states)
+automate1.create_state("q3", is_initial=False, is_final=False)
+automate1.edit_csv("testv")
+
+
+
+
+
+
+"""
+
+complete = automate1.is_automaton_complete()
+print(complete)
+automate1.delete_state("q0")
+automate1.display_matrix()
+print("All States: ", automate1.all_states)
+automate1.edit_csv("testv")
+automate1.add_transition("q1","a","q1")
+automate1.display_matrix()
+print("All States: ", automate1.all_states)
+automate1.add_state(q4, is_initial=False, is_final=True)
+
+
+
+automate1.edit_csv("testv")
+
+
 
 automate1=automate(sample_event, sample_state)
-automate1.split_states()
 automate1.display_states()
+complete=automate1.is_automaton_complete()
+print (complete)
+
+
+word="aaaaaaaaaaaaaaaab"
 is_accepted = automate1.recognize_word(word)
 print(f"The word '{word}' is {'accepted' if is_accepted else 'not accepted'} by the automaton.")
-
-
-
-print("Initial States: ", automate1.initial_states)
-print("All States: ", automate1.all_states)
-
+"""
 
 
 """        

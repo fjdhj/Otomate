@@ -2,13 +2,20 @@ import pandas as pd
 import numpy as np
 
 #modifier init_graph et init_statestypes par rapport au fichier test.csv
-def init_graph(file) -> list:
+def init_graph(file) -> tuple:
     automate = pd.read_csv(file, sep=';')
-    dimension = automate.shape
-    graph = automate.iloc[0:dimension[0], 0:dimension[1] - 2]
-    # Replace '-' with None or a similar representation
-    graph_to_list = [[item for item in graph.loc[i, :].values.tolist()] for i in range(dimension[0])]
-    return graph_to_list
+    state_names = automate['etat'].tolist()
+    transitions = automate.iloc[:, 1:-2]
+
+    graph_to_list = []
+    for i in range(len(transitions)):
+        row = []
+        for item in transitions.iloc[i].values:
+            row.append(item if item != '-' else '-')
+        graph_to_list.append(row)
+
+    return graph_to_list, state_names
+
 
 def init_statestypes(file)->list:
     """This function gets the types of the
