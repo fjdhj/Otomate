@@ -130,11 +130,43 @@ Final_states: {self.final_states}
         df = pd.DataFrame(csv_file)
         df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
 
+    def recognize_word(self, word: str) -> bool:
+    # Identify actual initial states by name
+        actual_initial_states = [self.all_states[i] for i, is_initial in enumerate(self.initial_states) if is_initial == 1]
+
+        current_states = set(actual_initial_states)
+        for char in word:
+            next_states = set()
+            for state in current_states:
+                state_index = self.all_states.index(state)
+                if char in self.transitions:
+                    transition_index = self.transitions.index(char)
+                    transition_states = self.matrix[state_index][transition_index]
+                    for next_state in transition_states:
+                        if next_state != '-':
+                            next_states.add(next_state)
+            current_states = next_states
+
+        # Check if any of the current states is a final state
+        return any(self.final_states[self.all_states.index(state)] == 1 for state in current_states)
+
+
+
+
+word="aaaaaaaaaaaaaaaab"
+
 automate1=automate(sample_event, sample_state)
 automate1.split_states()
-automate1.create_state("bidule")
 automate1.display_states()
-automate1.edit_csv("testv")
+is_accepted = automate1.recognize_word(word)
+print(f"The word '{word}' is {'accepted' if is_accepted else 'not accepted'} by the automaton.")
+
+
+
+print("Initial States: ", automate1.initial_states)
+print("All States: ", automate1.all_states)
+
+
 
 """        
 
