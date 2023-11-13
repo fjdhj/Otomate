@@ -3,6 +3,7 @@ from tkinter import NO
 import utilities
 from pprint import pp, pprint
 import pandas as pd
+import math
 import os
 # Initialize variables
 sample_event: list[list[str]] = utilities.init_graph("Sample/default.csv")
@@ -114,6 +115,8 @@ Final_states: {self.final_states}
         self.final_states = [1 if state ==
                              0 else 0 for state in self.final_states]
 
+    import pandas as pd
+
     def edit_csv(self, filename):
         # Create a DataFrame to hold the CSV data
         csv_data = {
@@ -122,11 +125,20 @@ Final_states: {self.final_states}
             'EF': self.final_states
         }
 
-        # Assuming self.transitions holds the input symbols like ['a', 'b', ...]
+        # Process transitions for each symbol
         for symbol_index, symbol in enumerate(self.transitions):
-            # Extract the transition for each state under this symbol
-            csv_data[symbol] = [''.join(self.matrix[state_index][symbol_index])
-                                for state_index in range(len(self.all_states))]
+            csv_data[symbol] = []
+            for state_index in range(len(self.all_states)):
+                # Extract the transition state for this symbol
+                transition_state = self.matrix[state_index][symbol_index + 1]
+
+                # If the transition state is NaN, convert it to the string 'nan'
+                if pd.isna(transition_state):
+                    transition_str = 'nan'
+                else:
+                    transition_str = transition_state
+
+                csv_data[symbol].append(transition_str)
 
         # Convert the dictionary to a pandas DataFrame
         df = pd.DataFrame(csv_data)
@@ -135,14 +147,15 @@ Final_states: {self.final_states}
         column_order = ['etat'] + self.transitions + ['EI', 'EF']
         df = df[column_order]
 
-        # Write to CSV using pandas, without the header if you prefer
+        # Write to CSV using pandas, with the header
         df.to_csv(f"Sample/{filename}.csv", index=False, header=True, sep=';')
 
 
 automate1 = automate(sample_event, sample_state)
-automate1.display_states()
-automate1.complement()
-automate1.display_states()
+automate1.display_matrix()
+
+automate1.display_matrix()
+print(sample_event)
 automate1.edit_csv("test")
 
 
