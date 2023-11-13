@@ -48,7 +48,7 @@ Final_states: {self.final_states}
         """
         for i in range(len(self.matrix)):
             for j in range(len(self.matrix[i])):
-                self.matrix[i][j]=str(self.matrix[i][j]).split(',')
+                   self.matrix[i][j]=str(self.matrix[i][j]).split(',')
     
     
     def is_complete(self) -> bool:
