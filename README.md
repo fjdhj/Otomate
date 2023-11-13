@@ -34,20 +34,24 @@ The program need to contains the following features :
 ## FSA save file (.oto)
 The program use the .oto extension to save your Finite-State automaton. The strucuture is the same as a CSV file with the follow header :
 ```
-Header : Names of the state, first event, second event, thrid event, [...], IS, FS
-IS: Initial State (0 : false, 1: true)
-FS: Final State (0 : false, 1: true)
+Header : Names of the state, first event, second event, thrid event, [...], EI, EF
+EI: Etat Initial (0 : false, 1: true)
+EF: Etat Final (0 : false, 1: true)
 Note: The "Names of the state" column don't have a name in the header
 ```
 
 **Example :**\
 This example represent an AEF reading an binary number with an even number of 1
 ```
-;0;1;IS;FS
-even;even;odd;1;1
-odd;odd;even;0;0
+etat;a;b;c;d;e;f;g;h;i;k;EI;EF
+q0;q0;nan;nan;nan;nan;q1;nan;nan;nan;nan;1;1
+q1;nan;q1;nan;nan;nan;nan;q2;nan;nan;nan;0;0
+q2;nan;nan;q2;nan;nan;nan;nan;q3;nan;nan;0;1
+q3;nan;nan;nan;q3;nan;nan;nan;nan;q4;q0,q1;0;0
+q4;nan;nan;nan;nan;q4;nan;nan;nan;nan;nan;0;1
+
 ```
 We can represent this AEF with the folowing graph :\
-![Even AEF graph](Sample/Example/even.png)
+![Even AEF graph](Sample/Example/otomate.png)
 
 You will find more example in [Sample/Example](Sample/Example)
