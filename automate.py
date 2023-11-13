@@ -5,13 +5,15 @@ from pprint import pp, pprint
 import pandas as pd
 import os
 
-#Initialize variables
-sample_event: list[list[str]]=utilities.init_graph("Sample/default.csv")
-#Final_state and initial_state
-sample_state: list[list[str]]=utilities.init_statestypes("Sample/default.csv")
+# Initialize variables
+sample_event: list[list[str]] = utilities.init_graph("Sample/default.csv")
+# Final_state and initial_state
+sample_state: list[list[str]] = utilities.init_statestypes(
+    "Sample/default.csv")
 
-transition: list=utilities.transitions("Sample/default.csv")
-#fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
+transition: list = utilities.transitions("Sample/default.csv")
+# fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
+
 
 class automate:
     def __init__(self, transitions, state_names, initial_final_states, alphabet):
@@ -26,14 +28,16 @@ class automate:
             state_transitions = []
             for trans in transitions[i]:
                 state_transitions.append(trans if trans != '-' else ['-'])
-            self.matrix.append([state] + state_transitions + [initial_final_states[0][i], initial_final_states[1][i]])
-    
+            self.matrix.append([state] + state_transitions +
+                               [initial_final_states[0][i], initial_final_states[1][i]])
+
     def display_matrix(self):
         for row in self.matrix:
             print(row)
 
     def create_state(self, name, is_initial=False, is_final=False):
-        self.matrix.append([name] + [['-'] for _ in self.transitions] + [int(is_initial), int(is_final)])
+        self.matrix.append(
+            [name] + [['-'] for _ in self.transitions] + [int(is_initial), int(is_final)])
         self.all_states.append(name)
         self.initial_states.append(int(is_initial))
         self.final_states.append(int(is_final))
@@ -41,7 +45,7 @@ class automate:
     def add_transition(self, initial_state, symbol, final_state):
         if symbol not in self.transitions:
             raise ValueError("The symbol is not in the automaton's alphabet.")
-        
+
         state_index = self.all_states.index(initial_state)
         symbol_index = self.transitions.index(symbol) + 1
 
@@ -61,9 +65,9 @@ class automate:
         else:
             print("The state to be deleted does not exist.")
 
-
     def recognize_word(self, word):
-        actual_initial_states = [self.all_states[i] for i, is_initial in enumerate(self.initial_states) if is_initial == 1]
+        actual_initial_states = [self.all_states[i] for i, is_initial in enumerate(
+            self.initial_states) if is_initial == 1]
         current_states = set(actual_initial_states)
 
         for char in word:
@@ -86,12 +90,13 @@ class automate:
             transitions = row[1:-2]
             for symbol, transition in zip(self.transitions, transitions):
                 if transition == ['-']:
-                    print(f"No transition found for state {state} and symbol {symbol}. Automaton is not complete.")
+                    print(
+                        f"No transition found for state {state} and symbol {symbol}. Automaton is not complete.")
                     return False
 
         print("All states have transitions for each symbol. Automaton is complete.")
         return True
-    
+
     def make_automaton_complete(self):
         # Adding the 'phi' state if it does not exist
         phi_state = 'phi'
@@ -101,14 +106,14 @@ class automate:
         # Ensuring that 'phi' state has looping transitions for each symbol
         phi_index = self.all_states.index(phi_state)
         for i, symbol in enumerate(self.transitions, start=1):
-            self.matrix[phi_index][i] = [phi_state] if self.matrix[phi_index][i] == ['-'] else self.matrix[phi_index][i]
+            self.matrix[phi_index][i] = [phi_state] if self.matrix[phi_index][i] == [
+                '-'] else self.matrix[phi_index][i]
 
         # Checking and updating each state's transitions
         for i, row in enumerate(self.matrix):
             for j, trans in enumerate(row[1:-2], start=1):
                 if trans == ['-']:
                     self.matrix[i][j] = [phi_state]
-
 
     def is_deterministic(self):
         for row in self.matrix:
@@ -118,6 +123,65 @@ class automate:
                 if isinstance(trans, list) and len(trans) > 1:
                     return False
         return True
+
+    def convert_to_deterministic(self):
+        new_states = {}
+        visited = set()
+        queue = []
+
+        # Initial state of the NFA
+        initial_state_indices = [i for i, val in enumerate(
+            self.initial_states) if val == 1]
+        initial_state_set = frozenset(initial_state_indices)
+        queue.append(initial_state_set)
+
+        while queue:
+            current_set = queue.pop(0)
+            if current_set not in visited:
+                visited.add(current_set)
+                new_state_name = f'q{len(new_states)}'
+                new_states[current_set] = new_state_name
+
+                for symbol in self.transitions:
+                    next_state_indices = set()
+                    for state_index in current_set:
+                        transitions = self.matrix[state_index][self.transitions.index(
+                            symbol) + 1]
+                        for trans_state in transitions:
+                            if trans_state != '-':
+                                next_state_indices.add(
+                                    self.all_states.index(trans_state))
+
+                    next_state_set = frozenset(next_state_indices)
+                    if next_state_set and next_state_set not in new_states:
+                        queue.append(next_state_set)
+
+        # Creating the DFA transition matrix
+        dfa_matrix = []
+        for state_set, state_name in new_states.items():
+            state_transitions = []
+            for symbol in self.transitions:
+                next_state_set = frozenset(
+                    state_index
+                    for state_index in state_set
+                    for trans_state in self.matrix[state_index][self.transitions.index(symbol) + 1]
+                    if trans_state != '-'
+                )
+            next_state_name = new_states.get(next_state_set, '-')
+            state_transitions.append(next_state_name)
+            dfa_matrix.append([state_name] + state_transitions)
+
+        # Update the automaton with DFA states and transitions
+        self.all_states = list(new_states.values())
+        self.matrix = dfa_matrix
+
+        # Setting initial and final states for DFA
+        self.initial_states = [1 if initial_state_set ==
+                               state_set else 0 for state_set in new_states]
+        self.final_states = [
+            1 if any(self.final_states[nfa_index] for nfa_index in range(len(self.all_states)) if frozenset([nfa_index]) in state_set)
+            else 0 for state_set in new_states
+        ]
 
     def edit_csv(self, file):
         # Define the header for the CSV file
@@ -144,12 +208,9 @@ class automate:
         df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
 
 
-
 sample_event, state_names = utilities.init_graph("Sample/default.csv")
 sample_state = utilities.init_statestypes("Sample/default.csv")
 transition = utilities.transitions("Sample/default.csv")
-
-
 
 
 automate1 = automate(sample_event, state_names, sample_state, transition)
@@ -158,7 +219,7 @@ print("All States: ", automate1.all_states)
 
 print(automate1.is_deterministic())
 
-automate1.transform_to_dfa()
+automate1.convert_to_deterministic()
 automate1.edit_csv("testv")
 print(automate1.is_deterministic())
 
