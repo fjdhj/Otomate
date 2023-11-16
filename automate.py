@@ -5,9 +5,9 @@ from pprint import pp, pprint
 import pandas as pd
 import os
 #Initialize variables
-sample_event: list[list[str]]=utilities.init_graph("Sample/default.csv")
+sample_event: list[list[str]]=utilities.init_graph("Sample/default2.csv")
 #Final_state and initial_state
-sample_state: list[list[str]]=utilities.init_statestypes("Sample/default.csv")
+sample_state: list[list[str]]=utilities.init_statestypes("Sample/default2.csv")
 
 transition: list=utilities.transitions("Sample/default2.csv")
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
@@ -76,10 +76,9 @@ Final_states: {self.final_states}
              raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
         index_state=self.all_states.index(initial_state)
         index_transition=self.transitions.index(transition)
-        if(self.matrix[index_state][index_transition][0] == "nan"):
-            del self.matrix[index_state][index_transition][0]
-        else:
-            self.matrix[index_state][index_transition].append(final_state)
+        if(self.matrix[index_state][index_transition+1][0] == "nan"):
+            del self.matrix[index_state][index_transition+1][0]
+        self.matrix[index_state][index_transition+1].append(final_state)
         
         
     def display_matrix(self):
@@ -104,7 +103,10 @@ Final_states: {self.final_states}
     
     def delete_transition(self, transition):
         if(transition in self.transitions):
+            index_transition = self.transitions.index(transition)
             self.transitions.remove(transition)
+            for line in self.matrix: #Delete column in the matrix
+                del line[index_transition+1] 
         else:
             print("La transition à supprimer n'existe pas")
     
@@ -113,15 +115,35 @@ Final_states: {self.final_states}
         rows, cols= len(self.matrix), len(self.matrix[0])
         csv_file_temp=[["" for _ in range(rows)] for i in range(cols)]
         for i in range(rows):
-            for j in range(cols): 
+            for j in range(cols):
                 csv_file_temp[j][i]=",".join(self.matrix[i][j]) if i<len(self.matrix) and j < len(self.matrix[i]) else None
         csv_file.update({"etat":csv_file_temp[0]})
-        for i in range(len(transition)):
+        for i in range(len(self.transitions)): #J'ai changé transition pour self.transitions
             csv_file.update({self.transitions[i]:[state for state in csv_file_temp[i+1]]})
         csv_file.update({"EI":self.initial_states})
         csv_file.update({"EF":self.final_states})
         df = pd.DataFrame(csv_file)
         df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
+    
+    def make_complete(self):
+        modified = False
+        for state in self.all_states:
+            index_state = self.all_states.index(state)
+            for transition in self.transitions:
+                index_transition = self.transitions.index(transition)
+                if(self.matrix[index_state][index_transition+1] == ["nan"]):
+                    if (modified == False):
+                        modified = True
+                        if ("poubelle" not in self.all_states):
+                            self.create_state("poubelle")
+                            for bin_transition in self.transitions:
+                                self.add_transition("poubelle", bin_transition, "poubelle")
+                    self.add_transition(state, transition, "poubelle")
+        return modified
+        
+
+
+
         
 automate1=automate(sample_event, sample_state)
 automate1.split_states()
@@ -141,8 +163,18 @@ automate1.display_matrix()
 
 #Test suppr
 automate1.delete_state("q0")
-# automate1.display_states()
-# automate1.display_matrix()
+automate1.display_states()
+automate1.display_matrix()
+
+#Test suppr TRANSITION
+automate1.delete_transition("a")
+automate1.display_states()
+automate1.display_matrix()
 
 
-automate1.edit_csv("test")
+automate1.make_complete()
+print("Make Complete :")
+automate1.display_states()
+automate1.display_matrix()
+
+#automate1.edit_csv("test")
