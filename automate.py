@@ -1,13 +1,13 @@
 import stat
 from tkinter import NO
 import utilities
-from pprint import pp, pprint
+from pprint import pprint
 import pandas as pd
 import os
 #Initialize variables
-sample_event: list[list[str]]=utilities.init_graph("Sample/default.csv")
+sample_event: list[list[str]]=utilities.init_graph("default.csv")
 #Final_state and initial_state
-sample_state: list[list[str]]=utilities.init_statestypes("Sample/default.csv")
+sample_state: list[list[str]]=utilities.init_statestypes("default.csv")
 
 transition: list=utilities.transitions("Sample/default2.csv")
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
@@ -52,14 +52,7 @@ Final_states: {self.final_states}
     
     
     def is_complete(self) -> bool:
-        complete=True
-        i=0
-        len_matrix=len(self.matrix)
-        while complete and i<len_matrix:
-            if ['nan'] in self.matrix[i]:
-                complete=False
-            i+=1
-        return complete
+        return ["nan"] in self.matrix[:][:]
     
     def is_deterministic(self)->bool:
         for line in self.matrix:
@@ -76,10 +69,9 @@ Final_states: {self.final_states}
              raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
         index_state=self.all_states.index(initial_state)
         index_transition=self.transitions.index(transition)
-        if(self.matrix[index_state][index_transition][0] == "nan"):
-            del self.matrix[index_state][index_transition][0]
-        else:
-            self.matrix[index_state][index_transition].append(final_state)
+        if(self.matrix[index_state][index_transition+1][0] == "nan"):
+            del self.matrix[index_state][index_transition+1][0]
+        self.matrix[index_state][index_transition+1].append(final_state)
         
         
     def display_matrix(self):
@@ -118,31 +110,86 @@ Final_states: {self.final_states}
         csv_file.update({"etat":csv_file_temp[0]})
         for i in range(len(transition)):
             csv_file.update({self.transitions[i]:[state for state in csv_file_temp[i+1]]})
+            
         csv_file.update({"EI":self.initial_states})
         csv_file.update({"EF":self.final_states})
         df = pd.DataFrame(csv_file)
         df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
+    
+
+    def possible_transition(self,current_state: str, matrix: list, symbol: str)->list:
+        """Enable to find all the transitions that have the current state
+
+        Args:
+            current_state (str): current state in the path
+            matrix (list): it's about the matrix that we want to explore
+            symbol (str): it's the character that we want to analyze
+
+        Returns:
+            list: return all the transitions of a state
+        """
+        i_current_state: int=self.all_states.index(current_state)
+        transition_dict: dict= {}
+        
+        for i_transition, transition in enumerate(self.transitions):
+            transition_dict.update({transition:i_transition})
+        
+        possible_transition: list=matrix[i_current_state][transition_dict[symbol]]
+        transition_list: list=[]
+        print(possible_transition)
+        for _ in range(len(possible_transition)):
+            for k,v in transition_dict.items():
+                if v == transition_dict[symbol] and possible_transition[0] != self.all_states[i_current_state]:
+                    transition_list.append(k)
+        
+        return transition_list
+            
+
+    # TODO: finish AFD and begin AND
+    def recognize_wordAFD(self,word: str) -> bool:
+        if not (word in self.transitions):
+            raise ValueError(f"{word} is not in the enable transition")  
+        matrix = [elem[1:] for elem in self.matrix]
+        
+        i_current_state = self.initial_states.index(1)
+        current_state = self.all_states[i_current_state]
+        
+        final_state=self.final_states.index(1)
+        Possible_Transition=self.possible_transition(current_state, matrix, word[0])
+        print(self.all_states[i_current_state])
+        print(Possible_Transition)
+        # TODO: Complete the algorithme in order to recognize the word bu completing the loop
+        pprint(matrix)
+        for c in word:
+            if not (c in Possible_Transition):
+                return False
+                
+             
+        return True    
+    # TODO: begin transform AND in AEF
+
+         
         
 automate1=automate(sample_event, sample_state)
 automate1.split_states()
 automate1.create_state("bidule")
 automate1.display_states()
 
-print(automate1.is_complete())
-automate1.display_matrix()
-print(automate1.is_deterministic())
+# print(automate1.is_complete())
+# automate1.display_matrix()
+# print(automate1.is_deterministic())
 
-automate1.create_state("sale boulot")
-automate1.display_states()
-#automate1.display_matrix()
+# automate1.create_state("sale boulot")
+# automate1.display_states()
+# #automate1.display_matrix()
 automate1.add_transition("bidule")
-automate1.display_matrix()
+# automate1.display_matrix()
 
 
 #Test suppr
-automate1.delete_state("q0")
+# automate1.delete_state("q0")
 # automate1.display_states()
-# automate1.display_matrix()
-
+automate1.display_matrix()
+print(automate1.recognize_wordAFD("c"))
 
 automate1.edit_csv("test")
