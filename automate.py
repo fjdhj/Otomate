@@ -181,7 +181,7 @@ Final_states: {self.final_states}
         df = df[column_order]
 
         # Write to CSV using pandas, with the header
-        df.to_csv(f"Sample/{filename}.csv", index=False, header=True, sep=';')
+        df.to_csv(f"{filename}.csv", index=False, header=True, sep=';')
 
     # ... (existing methods)
 
@@ -250,18 +250,65 @@ Final_states: {self.final_states}
 
         return product_automaton
 
+    def concatenate(self, other_automaton):
+        combined_transitions = list(set(self.transitions + other_automaton.transitions))
+        concatenated_automaton = automate([], [[], []], combined_transitions)
+
+        prefix_A = "A_"
+        prefix_B = "B_"
+
+        # Concatenate states and transitions from the first automaton
+        for state in self.all_states:
+            new_state = prefix_A + state
+            concatenated_automaton.all_states.append(new_state)
+            concatenated_automaton.initial_states.append(self.initial_states[self.all_states.index(state)])
+            concatenated_automaton.final_states.append(0)  # Final states are only from the second automaton
+
+            new_transitions = [new_state] + ['nan' for _ in combined_transitions]
+            for i, trans_symbol in enumerate(self.transitions):
+                trans_state = self.matrix[self.all_states.index(state)][i + 1]
+                if pd.isna(trans_state):
+                    new_transitions[combined_transitions.index(trans_symbol) + 1] = 'nan'
+                else:
+                    new_transitions[combined_transitions.index(trans_symbol) + 1] = prefix_A + trans_state
+            concatenated_automaton.matrix.append(new_transitions)
+
+        # Concatenate states and transitions from the second automaton
+        for state in other_automaton.all_states:
+            new_state = prefix_B + state
+            concatenated_automaton.all_states.append(new_state)
+            concatenated_automaton.initial_states.append(0)  # Initial state is only from the first automaton
+            concatenated_automaton.final_states.append(other_automaton.final_states[other_automaton.all_states.index(state)])
+
+            new_transitions = [new_state] + ['nan' for _ in combined_transitions]
+            for i, trans_symbol in enumerate(other_automaton.transitions):
+                trans_state = other_automaton.matrix[other_automaton.all_states.index(state)][i + 1]
+                if pd.isna(trans_state):
+                    new_transitions[combined_transitions.index(trans_symbol) + 1] = 'nan'
+                else:
+                    new_transitions[combined_transitions.index(trans_symbol) + 1] = prefix_B + trans_state
+            concatenated_automaton.matrix.append(new_transitions)
+
+        # Link final states of the first automaton to initial state of the second automaton
+        for i, is_final in enumerate(self.final_states):
+            if is_final == 1:
+                initial_state_of_B = other_automaton.all_states[other_automaton.initial_states.index(1)]
+                for trans_symbol in combined_transitions:
+                    if trans_symbol in other_automaton.transitions:
+                        concatenated_automaton.matrix[i][combined_transitions.index(trans_symbol) + 1] = prefix_B + initial_state_of_B
+                        break
+
+        return concatenated_automaton
 
 automate1 = automate(sample_event, sample_state, transition)
 automate2 = automate(sample_event2, sample_state2, transition2)
 
-automate3 = automate2.product(automate1)
-automate3.edit_csv("test")
-automate3.display_matrix()  # Implement this method if not already present to print the matrix
+automate3 = automate1.concatenate(automate2)
+automate3.edit_csv("Sample/test")
+automate3.display_matrix()
 
-#automate3= automate1.product(automate2)
 
-# Now, you can edit and save the mirrored automaton if needed
-#automate3.edit_csv("test")
+#automate3 = automate1.product(automate2)
 
 """
 automate1.split_states()

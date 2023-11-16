@@ -1,5 +1,5 @@
-etat;a;b;EI;EF
-s0,q0;s1,q1;nan,nan;1;0
-s0,q1;s1,nan;nan,nan;0;0
-s1,q0;nan,q1;nan,nan;0;0
-s1,q1;nan,nan;nan,nan;0;1
+etat;b;a;EI;EF
+A_A0;nan;A_A1;1;0
+A_A1;B_B0;nan;0;0
+B_B0;B_B1;nan;0;0
+B_B1;nan;nan;0;1
