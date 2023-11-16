@@ -5,14 +5,19 @@ from pprint import pp, pprint
 import pandas as pd
 import math
 import os
+
 # Initialize variables
 sample_event: list[list[str]] = utilities.init_graph("Sample/default.csv")
 # Final_state and initial_state
-sample_state: list[list[str]] = utilities.init_statestypes(
-    "Sample/default.csv")
-
+sample_state: list[list[str]] = utilities.init_statestypes("Sample/default.csv")
 transition: list = utilities.transitions("Sample/default.csv")
 # fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
+
+sample_event2: list[list[str]] = utilities.init_graph("Sample/default2.csv")
+# Final_state and initial_state
+sample_state2: list[list[str]] = utilities.init_statestypes("Sample/default2.csv")
+transition2: list = utilities.transitions("Sample/default2.csv")
+
 
 
 class automate:
@@ -108,10 +113,14 @@ Final_states: {self.final_states}
                     self.matrix[index_state][index_transition] = ','.join(
                         [current_transition, final_state])
 
-    # ... (rest of the automate class)
-
     def display_matrix(self):
         pprint(self.matrix)
+
+    def display_states(self):
+        """Display the initial states, final states, and all states of the automaton."""
+        print("Initial States:", self.initial_states)
+        print("Final States:", self.final_states)
+        print("All States:", self.all_states)
 
     def delete_state(self, state=""):  # Verifier que l'automate est coupé en 2
         if (state in self.all_states):
@@ -201,20 +210,58 @@ Final_states: {self.final_states}
         # Update the current object with the mirrored matrix and states
         self.matrix = mirrored_matrix
 
+    def product(self, other_automaton):
+        combined_transitions = list(set(self.transitions + other_automaton.transitions))
+        product_automaton = automate([], [[], []], combined_transitions)
 
-automate1 = automate(sample_event, sample_state)
-automate1.display_matrix()
+        for state1 in self.all_states:
+            for state2 in other_automaton.all_states:
+                combined_state = f"{state1},{state2}"
+                product_automaton.all_states.append(combined_state)
 
-automate1.mirror()
+                # Initial state logic: True if both states are initial
+                is_initial = (self.initial_states[self.all_states.index(state1)] == 1 and 
+                            other_automaton.initial_states[other_automaton.all_states.index(state2)] == 1)
+                product_automaton.initial_states.append(1 if is_initial else 0)
 
-automate1.display_matrix()
-automate1.edit_csv("test")
+                # Final state logic: True if both states are final
+                is_final = (self.final_states[self.all_states.index(state1)] == 1 and 
+                            other_automaton.final_states[other_automaton.all_states.index(state2)] == 1)
+                product_automaton.final_states.append(1 if is_final else 0)
 
-# mirror_automaton = automate1.mirror()
-# mirror_automaton.display_matrix()
+        # Initialize the transition matrix with proper length
+        for _ in product_automaton.all_states:
+            product_automaton.matrix.append(['nan'] * (len(combined_transitions) + 1))  # +1 for state itself
+
+        for i, combined_state in enumerate(product_automaton.all_states):
+            state1, state2 = combined_state.split(',')
+            idx1 = self.all_states.index(state1)
+            idx2 = other_automaton.all_states.index(state2)
+
+            for trans_symbol in combined_transitions:
+                trans_idx = combined_transitions.index(trans_symbol)
+                trans_state1 = self.matrix[idx1][self.transitions.index(trans_symbol) + 1] if trans_symbol in self.transitions else 'nan'
+                trans_state2 = other_automaton.matrix[idx2][other_automaton.transitions.index(trans_symbol) + 1] if trans_symbol in other_automaton.transitions else 'nan'
+
+                combined_transition = 'nan'
+                if trans_state1 != 'nan' or trans_state2 != 'nan':
+                    combined_transition = f"{trans_state1 if trans_state1 != 'nan' else state1},{trans_state2 if trans_state2 != 'nan' else state2}"
+                product_automaton.matrix[i][trans_idx + 1] = combined_transition  # +1 for the state itself
+
+        return product_automaton
+
+
+automate1 = automate(sample_event, sample_state, transition)
+automate2 = automate(sample_event2, sample_state2, transition2)
+
+automate3 = automate2.product(automate1)
+automate3.edit_csv("test")
+automate3.display_matrix()  # Implement this method if not already present to print the matrix
+
+#automate3= automate1.product(automate2)
 
 # Now, you can edit and save the mirrored automaton if needed
-# mirror_automaton.edit_csv("test")
+#automate3.edit_csv("test")
 
 """
 automate1.split_states()

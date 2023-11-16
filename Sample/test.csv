@@ -1,3 +1,5 @@
 etat;a;b;EI;EF
-q0;q1;nan;0;1
-q1;nan;q0;1;0
+s0,q0;s1,q1;nan,nan;1;0
+s0,q1;s1,nan;nan,nan;0;0
+s1,q0;nan,q1;nan,nan;0;0
+s1,q1;nan,nan;nan,nan;0;1
