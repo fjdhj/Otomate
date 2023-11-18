@@ -70,6 +70,12 @@ Final_states: {self.final_states}
 
     def display_transition(self):
         print(self.transitions)
+
+    def create_transition(self, transition):
+        self.transitions.append(transition)
+        for line in self.matrix:
+            line.append(["nan"])
+
         
     def add_transition(self,initial_state,transition="c",final_state="sale boulot"):
         if not (transition in self.transitions):
@@ -140,7 +146,6 @@ Final_states: {self.final_states}
                                 self.add_transition("poubelle", bin_transition, "poubelle")
                     self.add_transition(state, transition, "poubelle")
         return modified
-        
 
 
 
@@ -175,6 +180,11 @@ automate1.display_matrix()
 automate1.make_complete()
 print("Make Complete :")
 automate1.display_states()
+automate1.display_matrix()
+
+automate1.create_transition("transtest")
+print("Create Transition:")
+automate1.display_transition()
 automate1.display_matrix()
 
 #automate1.edit_csv("test")
