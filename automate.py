@@ -216,16 +216,16 @@ Final_states: {self.final_states}
 
         for state1 in self.all_states:
             for state2 in other_automaton.all_states:
-                combined_state = f"{state1},{state2}"
+                combined_state = f"{state1}_{state2}"
                 product_automaton.all_states.append(combined_state)
 
                 # Initial state logic: True if both states are initial
-                is_initial = (self.initial_states[self.all_states.index(state1)] == 1 and 
+                is_initial = (self.initial_states[self.all_states.index(state1)] == 1 and
                             other_automaton.initial_states[other_automaton.all_states.index(state2)] == 1)
                 product_automaton.initial_states.append(1 if is_initial else 0)
 
                 # Final state logic: True if both states are final
-                is_final = (self.final_states[self.all_states.index(state1)] == 1 and 
+                is_final = (self.final_states[self.all_states.index(state1)] == 1 and
                             other_automaton.final_states[other_automaton.all_states.index(state2)] == 1)
                 product_automaton.final_states.append(1 if is_final else 0)
 
@@ -234,21 +234,30 @@ Final_states: {self.final_states}
             product_automaton.matrix.append(['nan'] * (len(combined_transitions) + 1))  # +1 for state itself
 
         for i, combined_state in enumerate(product_automaton.all_states):
-            state1, state2 = combined_state.split(',')
+            state1, state2 = combined_state.split('_')
             idx1 = self.all_states.index(state1)
             idx2 = other_automaton.all_states.index(state2)
 
             for trans_symbol in combined_transitions:
                 trans_idx = combined_transitions.index(trans_symbol)
-                trans_state1 = self.matrix[idx1][self.transitions.index(trans_symbol) + 1] if trans_symbol in self.transitions else 'nan'
-                trans_state2 = other_automaton.matrix[idx2][other_automaton.transitions.index(trans_symbol) + 1] if trans_symbol in other_automaton.transitions else 'nan'
+                trans_state1 = str(self.matrix[idx1][self.transitions.index(trans_symbol) + 1]) if trans_symbol in self.transitions else 'nan'
+                trans_state2 = str(other_automaton.matrix[idx2][other_automaton.transitions.index(trans_symbol) + 1]) if trans_symbol in other_automaton.transitions else 'nan'
 
-                combined_transition = 'nan'
-                if trans_state1 != 'nan' or trans_state2 != 'nan':
-                    combined_transition = f"{trans_state1 if trans_state1 != 'nan' else state1},{trans_state2 if trans_state2 != 'nan' else state2}"
-                product_automaton.matrix[i][trans_idx + 1] = combined_transition  # +1 for the state itself
+                if trans_state1 != 'nan' and trans_state2 != 'nan':
+                    # Handling non-deterministic transitions
+                    combined_transitions_list = []
+                    for t1 in trans_state1.split(','):
+                        for t2 in trans_state2.split(','):
+                            combined_transitions_list.append(f"{t1}_{t2}")
+                    combined_transition = ','.join(combined_transitions_list)
+                else:
+                    combined_transition = 'nan'
+
+                product_automaton.matrix[i][trans_idx + 1] = combined_transition
 
         return product_automaton
+
+
 
     def concatenate(self, other_automaton):
         combined_transitions = list(set(self.transitions + other_automaton.transitions))
@@ -300,12 +309,67 @@ Final_states: {self.final_states}
 
         return concatenated_automaton
 
+    # ... (existing methods and constructor)
+    # ... (existing methods and constructor)
+
+    # ... (existing methods and constructor)
+    # ... (existing methods and constructor)
+    # ... (existing methods and constructor)
+    # ... (existing methods and constructor)
+    # ... (existing methods and constructor)
+    # ... (existing methods and constructor)
+
+    def to_regular_expression(self):
+        # Initialize regular expressions for each state
+        state_expressions = {state: '' for state in self.all_states}
+
+        # Resolve the regular expression for each state
+        for state in self.all_states:
+            self._resolve_state_expression(state, state_expressions)
+
+        # The regular expression for the entire automaton starts at the initial state
+        initial_state = self.all_states[self.initial_states.index(1)]
+        return state_expressions[initial_state]
+
+    def _resolve_state_expression(self, state, state_expressions, visited=None):
+        if visited is None:
+            visited = set()
+
+        # Check if the state's expression has been resolved or if we're in a loop
+        if state in visited or state_expressions[state]:
+            return
+        visited.add(state)
+
+        expression_parts = []
+        for trans_symbol, trans_state in zip(self.transitions, self.matrix[self.all_states.index(state)][1:]):
+            if trans_state != 'nan':  # Skip 'nan' values
+                part = trans_symbol
+                if trans_state == state:  # Self-loop
+                    part += '*'  # Apply Kleene star for self-loops
+                else:
+                    # Resolve expressions for non-self transitions
+                    self._resolve_state_expression(trans_state, state_expressions, visited.copy())
+                    part += state_expressions[trans_state]
+                expression_parts.append(part)
+
+        # Combine expressions for the current state
+        state_expressions[state] = '|'.join(expression_parts)
+
+# Example Usage
+"""
+automate1 = automate(sample_event, sample_state, transition)
+regex = automate1.to_regular_expression()
+print("Regular Expression:", regex)
+"""
+
+
 automate1 = automate(sample_event, sample_state, transition)
 automate2 = automate(sample_event2, sample_state2, transition2)
 
-automate3 = automate1.concatenate(automate2)
-automate3.edit_csv("Sample/test")
+automate3 = automate1.product(automate2)
 automate3.display_matrix()
+
+#automate3.edit_csv("Sample/test")
 
 
 #automate3 = automate1.product(automate2)

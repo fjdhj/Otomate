@@ -28,14 +28,19 @@ def csv_to_graphviz(csv_filename):
         # Add edge from invisible node to initial state with green color
         if is_initial:
             dot.edge(f'init_{state_name}', state_name, color='green')
+# ...
 
-        # Add edges
+        # Add edges for transitions
         for input_symbol in df.columns[1:-2]:  # Skip 'etat', 'EI', 'EF'
-            if pd.notnull(row[input_symbol]):
+            if pd.notnull(row[input_symbol]) and row[input_symbol] != 'nan':
                 targets = str(row[input_symbol]).split(',')
                 for target in targets:
-                    if target.strip():
-                        dot.edge(state_name, target.strip(), label=input_symbol)
+                    target = target.strip()  # Clean whitespace
+                    if target and 'nan' not in target:
+                        # Skip adding an edge if any part of the target contains 'nan'
+                        dot.edge(state_name, target, label=input_symbol)
+
+        # ...
 
     return dot
 
@@ -55,7 +60,7 @@ def draw_and_save_automaton(csv_filename, output_image_filename):
 os.makedirs('output-png', exist_ok=True)
 
 # Paths for the CSV and the image file
-csv_path = 'otomate.csv'
+csv_path = 'Sample/test.csv'  # Replace with your actual CSV file path
 image_path = os.path.join('output-png', 'otomate')
 
 # Process the CSV file and save the automaton image
