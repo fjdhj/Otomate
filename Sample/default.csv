@@ -1,3 +1,6 @@
-etat;a1;b;a2;EI;EF
-q1;q1;q2;nan;1;0
-q2;nan;nan;q2;0;1
+etat;a;b;c;EI;EF
+q0;q1;nan;nan;1;0
+q1;nan;q2;q3;0;0
+q2;nan;nan;nan;0;0
+q3;nan;nan;nan;0;1
+q4;q1;nan;nan;0;0

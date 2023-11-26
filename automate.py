@@ -354,9 +354,97 @@ Final_states: {self.final_states}
         if state in self.initial_states and len(expression_parts) > 1:
             state_expressions[state] = '(' + state_expressions[state] + ')*'
 
+    def list_accessible_states(self):
+        accessible_states = set()
+        queue = []
+        initial_state = self.initial_states.index(1)  # Assuming there's only one initial state
+        accessible_states.add(initial_state)
+        queue.append(initial_state)
 
+        while queue:
+            state = queue.pop(0)
+            for trans_symbol, trans_state in zip(self.transitions, self.matrix[state][1:]):
+                next_states = [i for i, st in enumerate(self.all_states) if trans_state == st]
+                for next_state in next_states:
+                    if next_state not in accessible_states:
+                        accessible_states.add(next_state)
+                        queue.append(next_state)
 
+        return [self.all_states[state] for state in accessible_states]
 
+    def list_coaccessible_states(self):
+        co_accessible = set()
+        queue = []
+
+        for final_state in self.final_states:
+            if final_state == 1:
+                final_state_index = self.final_states.index(final_state)
+                co_accessible.add(final_state_index)
+                queue.append(final_state_index)
+
+        while queue:
+            current_state = queue.pop(0)
+            for state in range(len(self.all_states)):
+                if state not in co_accessible:
+                    for trans_symbol, trans_state in zip(self.transitions, self.matrix[state][1:]):
+                        if current_state in [i for i, st in enumerate(self.all_states) if trans_state == st]:
+                            co_accessible.add(state)
+                            queue.append(state)
+                            break
+
+        return [self.all_states[state] for state in co_accessible]
+
+    def trim(self):
+        acc = set(self.list_accessible_states())
+        coacc = set(self.list_coaccessible_states())
+        states_to_remove = []
+
+        # Identify states that are neither accessible nor co-accessible
+        for state in self.all_states:
+            if state not in acc or state not in coacc:
+                states_to_remove.append(state)
+
+        # Remove identified states and their transitions
+        for state in states_to_remove:
+            if state in self.all_states:
+                state_index = self.all_states.index(state)
+                self.all_states.remove(state)
+                del self.matrix[state_index]
+                del self.initial_states[state_index]
+                del self.final_states[state_index]
+
+                # Remove transitions leading to the deleted state
+                for row in self.matrix:
+                    for i in range(1, len(row)):  # Start from 1 to skip the state name
+                        transition_state = row[i]
+                        if isinstance(transition_state, float):
+                            transition_state = str(transition_state)
+                        if transition_state == state:
+                            row[i] = 'nan'
+
+        # Additional step to handle transitions leading from the deleted state
+        for i, row in enumerate(self.matrix):
+            for j in range(1, len(row)):
+                transition_state = row[j]
+                if isinstance(transition_state, float):
+                    transition_state = str(transition_state)
+                if ',' in transition_state:
+                    transitions = transition_state.split(',')
+                    transitions = [t for t in transitions if t in self.all_states]
+                    self.matrix[i][j] = ','.join(transitions) if transitions else 'nan'
+
+automaton1 = automate(sample_event, sample_state, transition)
+
+accessible_states = automaton1.list_accessible_states()
+print("Accessible States:", accessible_states)
+
+co_accessible_states = automaton1.list_coaccessible_states()
+print("Co-Accessible States:", co_accessible_states)
+
+automaton1.trim()
+print("States after trimming:")
+automaton1.display_states()
+automaton1.edit_csv("Sample/test")
 
 
 """
