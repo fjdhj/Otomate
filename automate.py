@@ -117,62 +117,61 @@ Final_states: {self.final_states}
         df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
     
 
-    def possible_transition(self,current_state: str, matrix: list, symbol: str)->list:
-        """Enable to find all the transitions that have the current state
+
+    
+    def possible_transition(self, current_state: str, matrix: list, symbols: list) -> list:
+        """Récupère les transitions possibles pour passer d'un état à un autre en fonction du symbole fourni.
 
         Args:
-            current_state (str): current state in the path
-            matrix (list): it's about the matrix that we want to explore
-            symbol (str): it's the character that we want to analyze
+            current_state (str): État actuel
+            matrix (list): Matrice des transitions
+            symbols (list): Liste des symboles pour les transitions ('a', 'b', 'c', ...)
 
         Returns:
-            list: return all the transitions of a state
+            list: Liste des transitions possibles pour passer de l'état actuel à un autre état
         """
-        i_current_state: int=self.all_states.index(current_state)
-        transition_dict: dict= {}
+        transitions_for_state = matrix[self.all_states.index(current_state)]
         
-        for i_transition, transition in enumerate(self.transitions):
-            transition_dict.update({transition:i_transition})
+        transitions_for_symbol = transitions_for_state[symbols.index(symbols)]
         
-        possible_transition: list=matrix[i_current_state][transition_dict[symbol]]
-        transition_list: list=[]
-        print(possible_transition)
-        for _ in range(len(possible_transition)):
-            for k,v in transition_dict.items():
-                if v == transition_dict[symbol] and possible_transition[0] != self.all_states[i_current_state]:
-                    transition_list.append(k)
-        
-        return transition_list
+        return transitions_for_symbol
+
+
             
 
     # TODO: finish AFD and begin AND
-    def recognize_wordAFD(self,word: str) -> bool:
-        if not (word in self.transitions):
-            raise ValueError(f"{word} is not in the enable transition")  
+    def recognize_wordAFD(self, word: str) -> bool:
         matrix = [elem[1:] for elem in self.matrix]
+        
+        transition_dict = {}
+        for i_transition, transition in enumerate(self.transitions):
+            transition_dict.update({transition: i_transition})
         
         i_current_state = self.initial_states.index(1)
         current_state = self.all_states[i_current_state]
+        i_final_state = self.final_states.index(1)
         
-        final_state=self.final_states.index(1)
-        Possible_Transition=self.possible_transition(current_state, matrix, word[0])
-        print(self.all_states[i_current_state])
-        print(Possible_Transition)
-        # TODO: Complete the algorithme in order to recognize the word bu completing the loop
-        pprint(matrix)
         for c in word:
-            if not (c in Possible_Transition):
-                return False
+            if i_current_state == i_final_state:
+                return True  # If the current state is already a final state, the word is recognized
                 
-             
-        return True    
+            Possible_Transition = self.possible_transition(current_state, matrix, c)
+            
+            if Possible_Transition:
+                i_current_state += 1
+                next_state = matrix[i_current_state][transition_dict[c]]
+                current_state = self.all_states[i_current_state]
+                print(current_state)  # Update the current state
+            
+        return i_current_state == i_final_state  # Check if the final state is reached after processing the word
+
     # TODO: begin transform AND in AEF
 
          
         
 automate1=automate(sample_event, sample_state)
 automate1.split_states()
-automate1.create_state("bidule")
+#automate1.create_state("bidule")
 automate1.display_states()
 
 # print(automate1.is_complete())
@@ -182,14 +181,14 @@ automate1.display_states()
 # automate1.create_state("sale boulot")
 # automate1.display_states()
 # #automate1.display_matrix()
-automate1.add_transition("bidule")
+#automate1.add_transition("bidule")
 # automate1.display_matrix()
 
 
 #Test suppr
 # automate1.delete_state("q0")
 # automate1.display_states()
-automate1.display_matrix()
-print(automate1.recognize_wordAFD("c"))
+# automate1.display_matrix()
+print(automate1.recognize_wordAFD("aada"))
 
-automate1.edit_csv("test")
+#automate1.edit_csv("test")
