@@ -60,7 +60,7 @@ def draw_and_save_automaton(csv_filename, output_image_filename):
 os.makedirs('output-png', exist_ok=True)
 
 # Paths for the CSV and the image file
-csv_path = 'Sample/test.csv'  # Replace with your actual CSV file path
+csv_path = 'Sample/default.csv'  # Replace with your actual CSV file path
 image_path = os.path.join('output-png', 'otomate')
 
 # Process the CSV file and save the automaton image

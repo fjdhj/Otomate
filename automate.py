@@ -308,17 +308,7 @@ Final_states: {self.final_states}
                         break
 
         return concatenated_automaton
-
-    # ... (existing methods and constructor)
-    # ... (existing methods and constructor)
-
-    # ... (existing methods and constructor)
-    # ... (existing methods and constructor)
-    # ... (existing methods and constructor)
-    # ... (existing methods and constructor)
-    # ... (existing methods and constructor)
-    # ... (existing methods and constructor)
-
+    
     def to_regular_expression(self):
         # Initialize regular expressions for each state
         state_expressions = {state: '' for state in self.all_states}
@@ -335,32 +325,45 @@ Final_states: {self.final_states}
         if visited is None:
             visited = set()
 
-        # Check if the state's expression has been resolved or if we're in a loop
-        if state in visited or state_expressions[state]:
+        if state in visited or (state in state_expressions and state_expressions[state]):
             return
         visited.add(state)
 
         expression_parts = []
         for trans_symbol, trans_state in zip(self.transitions, self.matrix[self.all_states.index(state)][1:]):
-            if trans_state != 'nan':  # Skip 'nan' values
-                part = trans_symbol
-                if trans_state == state:  # Self-loop
-                    part += '*'  # Apply Kleene star for self-loops
-                else:
-                    # Resolve expressions for non-self transitions
+            if pd.isna(trans_state) or trans_state == 'nan':
+                continue
+
+            if trans_state == state:
+                # Loop on the same state
+                part = trans_symbol + '*'
+            else:
+                # Transition to a different state
+                if trans_state not in state_expressions or not state_expressions[trans_state]:
                     self._resolve_state_expression(trans_state, state_expressions, visited.copy())
-                    part += state_expressions[trans_state]
-                expression_parts.append(part)
 
-        # Combine expressions for the current state
-        state_expressions[state] = '|'.join(expression_parts)
+                next_state_expression = state_expressions[trans_state]
+                part = trans_symbol + next_state_expression
 
-# Example Usage
+            expression_parts.append(part)
+
+        # Sequential concatenation for transitions
+        state_expressions[state] = ''.join(expression_parts)
+
+        # Additional handling to encapsulate the entire expression for states with multiple transitions
+        if state in self.initial_states and len(expression_parts) > 1:
+            state_expressions[state] = '(' + state_expressions[state] + ')*'
+
+
+
+
+
+
 """
 automate1 = automate(sample_event, sample_state, transition)
 regex = automate1.to_regular_expression()
 print("Regular Expression:", regex)
-"""
+automate1.display_matrix()
 
 
 automate1 = automate(sample_event, sample_state, transition)
@@ -368,7 +371,7 @@ automate2 = automate(sample_event2, sample_state2, transition2)
 
 automate3 = automate1.product(automate2)
 automate3.display_matrix()
-
+"""
 #automate3.edit_csv("Sample/test")
 
 
