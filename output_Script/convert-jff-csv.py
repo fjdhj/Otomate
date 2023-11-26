@@ -55,6 +55,6 @@ def jff_to_csv(jff_filename, csv_filename):
     df.to_csv(csv_filename, index=False, sep=';')
 
 # Exemple d'utilisation
-jff_filename = 'otomate5.jff'  # Remplacer par le chemin de votre fichier JFLAP
+jff_filename = 'test.jff'  # Remplacer par le chemin de votre fichier JFLAP
 csv_filename = 'otomate5.csv'  # Remplacer par le chemin souhaité pour le fichier CSV
 jff_to_csv(jff_filename, csv_filename)
