@@ -147,9 +147,6 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
 
-
-
-        
 automate1=automate(sample_event, sample_state)
 automate1.split_states()
 automate1.create_state("bidule")
