@@ -167,28 +167,8 @@ Final_states: {self.final_states}
             
         return i_current_state >= i_final_state  # Check if the final state is reached after processing the word
 
-    # TODO: begin transform AND in AFD
-    def AND_to_AFD(self, AND)-> list:
-        
-        new_states: list = [[] for i in range(len(self.all_states))] #initialize new empty state
-        is_deterministic: bool = self.is_deterministic()
-        matrix_is_deterministic: list = []
-        queue: list[deque] = [deque(AND[self.initial_states.index(1)])]# add initial state of AND in the queue
-        visited: dict={} # for states that are visited
-        
-        if not is_deterministic:
-            print("Not deterministic\nProcessing the Transformation of the automate in order to make him deterministic.")
-            while queue[0]:
-                print(f"queue before pop: {queue}")
-                current_state=queue[0].popleft()
-                print(f"queue after pop: {queue}\n")
-                if str(current_state) not in visited:
-                    new_states
-                    visited[str(current_state)]=True
-                    print(f"{visited}\n")
-        return matrix_is_deterministic
-            
-        
+    # TODO: begin transform AND in AEF
+
          
         
 automate1=automate(sample_event, sample_state)
