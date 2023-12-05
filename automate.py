@@ -6,11 +6,11 @@ import pandas as pd
 import os
 from collections import deque
 #Initialize variables
-sample_event: list[list[str]]=utilities.init_graph("default.csv")
+sample_event: list[list[str]]=utilities.init_graph("otomate5.csv")
 #Final_state and initial_state
-sample_state: list[list[str]]=utilities.init_statestypes("default.csv")
+sample_state: list[list[str]]=utilities.init_statestypes("otomate5.csv")
 
-transition: list=utilities.transitions("Sample/default2.csv")
+transition: list=utilities.transitions("otomate5.csv")
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 class automate:
     # initialize the basic automate
@@ -145,25 +145,32 @@ Final_states: {self.final_states}
         i_current_state = self.initial_states.index(1)
         current_state = self.all_states[i_current_state]
         i_final_state = self.final_states.index(1)
-        
+        print(f"The final state is {self.all_states[i_final_state]}")
         for c in word:
+            current_state = self.all_states[i_current_state]
+            print(f"\nWe analyze this symbol: {c}")
             if i_current_state == i_final_state:
                 return True  # If the current state is already a final state, the word is recognized
                 
             Possible_Transition = self.possible_transition(current_state, matrix, c)
             print(f"Possible state:{Possible_Transition} for this state: {current_state}")
             if Possible_Transition:
+                print("The transition is possible\n")
                 if i_current_state >= len(matrix[0])-1:
                     i_current_state=0
-                else:
-                    if self.all_states[i_final_state] in Possible_Transition:
-                        to_final=Possible_Transition.index(self.all_states[i_final_state])
-                        i_current_state+=self.all_states.index(Possible_Transition[to_final])-self.all_states.index(current_state)
-                    else:
-                        i_current_state+=self.all_states.index(Possible_Transition[0])-self.all_states.index(current_state)
+                # if we can go directly to the final state without going to another state
+                if self.all_states[i_final_state] in Possible_Transition:
+                    to_final=Possible_Transition.index(self.all_states[i_final_state])
+                    print(f"The index of the current state is {i_current_state}")
+                    i_current_state+=self.all_states.index(Possible_Transition[to_final])
                     current_state = self.all_states[i_current_state]
-                    print(f"The current state: {current_state} \n")  # Update the current state
-            
+                    print(f"The current state: {Possible_Transition[-1]} \n")  # Update the current state
+                else:
+                    i_current_state+=self.all_states.index(Possible_Transition[-1])
+                    print(f"The index of the current state is {i_current_state}")
+                    current_state = self.all_states[i_current_state]
+                    print(f"The current state: {Possible_Transition[-1]} \n")  # Update the current state
+        print("End of process...")   
         return i_current_state == i_final_state  # Check if the final state is reached after processing the word
 
 
@@ -447,7 +454,7 @@ automate1.display_states()
 # automate1.delete_state("q0")
 # automate1.display_states()
 automate1.display_matrix()
-print(automate1.recognize_wordAFD("a"))
+print(automate1.recognize_wordAFD("ab"))
 # if not automate1.is_deterministic():
 #     automate1.AND_to_AFD(automate1.matrix)
 automate1.edit_csv("test")
