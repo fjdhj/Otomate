@@ -132,9 +132,8 @@ Final_states: {self.final_states}
             list: Liste des transitions possibles pour passer de l'état actuel à un autre état
         """
         transitions_for_state = matrix[self.all_states.index(current_state)]
-        
-        transitions_for_symbol = transitions_for_state[symbols.index(symbols)]
-        
+        transition=self.transitions
+        transitions_for_symbol = transitions_for_state[transition.index(symbols)]      
         return transitions_for_symbol
 
 
@@ -143,11 +142,6 @@ Final_states: {self.final_states}
     # TODO: finish AFD and begin AND
     def recognize_wordAFD(self, word: str) -> bool:
         matrix = [elem[1:] for elem in self.matrix]
-        
-        transition_dict = {}
-        for i_transition, transition in enumerate(self.transitions):
-            transition_dict.update({transition: i_transition})
-        
         i_current_state = self.initial_states.index(1)
         current_state = self.all_states[i_current_state]
         i_final_state = self.final_states.index(1)
@@ -157,17 +151,28 @@ Final_states: {self.final_states}
                 return True  # If the current state is already a final state, the word is recognized
                 
             Possible_Transition = self.possible_transition(current_state, matrix, c)
+            print(f"Possible state:{Possible_Transition} for this state: {current_state}")
+            if Possible_Transition:
+                if i_current_state >= len(matrix[0])-1:
+                    i_current_state=0
+                else:
+                    if self.all_states[i_final_state] in Possible_Transition:
+                        to_final=Possible_Transition.index(self.all_states[i_final_state])
+                        i_current_state+=self.all_states.index(Possible_Transition[to_final])-self.all_states.index(current_state)
+                    else:
+                        i_current_state+=self.all_states.index(Possible_Transition[0])-self.all_states.index(current_state)
+                    current_state = self.all_states[i_current_state]
+                    print(f"The current state: {current_state} \n")  # Update the current state
             
-            if Possible_Transition or i_current_state <= i_final_state:
-                i_current_state += 1
-                next_state = matrix[i_current_state][transition_dict[c]]
-                print(f"The next state: {next_state}")
-                current_state = self.all_states[i_current_state]
-                print(current_state)  # Update the current state
-            
-        return i_current_state >= i_final_state  # Check if the final state is reached after processing the word
+        return i_current_state == i_final_state  # Check if the final state is reached after processing the word
 
+
+
+    
     # TODO: begin transform AND in AEF
+
+    def AND_to_AFD(self,matrix):
+        ...
 
     def complement(self):
         # Inverting final states: If a state is final (1), it becomes non-final (0) and vice versa.
@@ -441,8 +446,8 @@ automate1.display_states()
 #Test suppr
 # automate1.delete_state("q0")
 # automate1.display_states()
-# automate1.display_matrix()
-# print(automate1.recognize_wordAFD("aada"))
-if not automate1.is_deterministic():
-    automate1.AND_to_AFD(automate1.matrix)
-#automate1.edit_csv("test")
+automate1.display_matrix()
+print(automate1.recognize_wordAFD("a"))
+# if not automate1.is_deterministic():
+#     automate1.AND_to_AFD(automate1.matrix)
+automate1.edit_csv("test")
