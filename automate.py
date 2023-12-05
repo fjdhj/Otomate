@@ -4,7 +4,8 @@ import utilities
 from pprint import pprint
 import pandas as pd
 import os
-from collections import deque
+import math
+from itertools import combinations
 #Initialize variables
 sample_event: list[list[str]]=utilities.init_graph("otomate5.csv")
 #Final_state and initial_state
@@ -117,9 +118,6 @@ Final_states: {self.final_states}
         df = pd.DataFrame(csv_file)
         df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
     
-
-
-    
     def possible_transition(self, current_state: str, matrix: list, symbols: list) -> list:
         """Récupère les transitions possibles pour passer d'un état à un autre en fonction du symbole fourni.
 
@@ -177,7 +175,33 @@ Final_states: {self.final_states}
 
     
     # TODO: begin transform AND in AEF
-
+    
+    # TODO: 3) Program the algorithm to set transitions between the new states
+    
+    def combination_of_states(self,states: list)->list:
+        """
+        Return combinations of all states possible for new automaton
+        """
+        combin=[comb for size_combination in range(1,len(states)+1)
+                      for comb in combinations(states, size_combination)]
+        return combin
+        
+    def enumerate_new_states(self, states: list) -> dict:
+        """
+        Enumarate all new states that are possible to create for new AFD
+        """
+        len_states=int(math.pow(2,len(states)))
+        new_states={}
+        # print(str(chr(97)).capitalize())
+        all_combinations=self.combination_of_states(self.all_states)
+        for i in range(len_states-1):
+            new_name_for_new_states=str(chr(97+i)).capitalize()
+            new_states.update({new_name_for_new_states : all_combinations[i]})
+        return new_states
+    
+    # TODO: 2) Create function that allow us to determinate new initial_state and new_final state
+    def define_new_state_and_final_states(self):
+        ...
     def AND_to_AFD(self,matrix):
         ...
 
@@ -454,7 +478,8 @@ automate1.display_states()
 # automate1.delete_state("q0")
 # automate1.display_states()
 automate1.display_matrix()
-print(automate1.recognize_wordAFD("ab"))
+# print(automate1.recognize_wordAFD("ab"))
 # if not automate1.is_deterministic():
 #     automate1.AND_to_AFD(automate1.matrix)
-automate1.edit_csv("test")
+# automate1.edit_csv("test")
+automate1.enumerate_new_states(automate1.all_states)
