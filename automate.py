@@ -159,15 +159,20 @@ Final_states: {self.final_states}
                 # if we can go directly to the final state without going to another state
                 if self.all_states[i_final_state] in Possible_Transition:
                     to_final=Possible_Transition.index(self.all_states[i_final_state])
+                    
                     print(f"The index of the current state is {i_current_state}")
-                    i_current_state+=self.all_states.index(Possible_Transition[to_final])
+                    
+                    i_current_state += self.all_states.index(Possible_Transition[to_final])
                     current_state = self.all_states[i_current_state]
+                    
                     print(f"The current state: {Possible_Transition[-1]} \n")  # Update the current state
                 else:
                     i_current_state+=self.all_states.index(Possible_Transition[-1])
+                    
                     print(f"The index of the current state is {i_current_state}")
                     current_state = self.all_states[i_current_state]
                     print(f"The current state: {Possible_Transition[-1]} \n")  # Update the current state
+                    
         print("End of process...")   
         return i_current_state == i_final_state  # Check if the final state is reached after processing the word
 
@@ -190,7 +195,7 @@ Final_states: {self.final_states}
         """
         Enumarate all new states that are possible to create for new AFD
         """
-        len_states=int(math.pow(2,len(states)))
+        len_states=int(math.pow(2,len(states))) # Number of new states = 2**number of state AND
         new_states={}
         # print(str(chr(97)).capitalize())
         all_combinations=self.combination_of_states(self.all_states)
@@ -200,10 +205,66 @@ Final_states: {self.final_states}
         return new_states
     
     # TODO: 2) Create function that allow us to determinate new initial_state and new_final state
-    def define_new_state_and_final_states(self):
+    def define_new_state_and_final_states(self,transitions):   
         ...
-    def AND_to_AFD(self,matrix):
-        ...
+        
+    # FIXME : Create a function that create a state for new afd
+    def create_state_for_AFD(self,symbols:str,i_for_check:int,new_states_to_check:list[dict],name_of_new_state:str,matrix:list)->list:
+        states:list=str(new_states_to_check[-1][name_of_new_state]).split(",")
+        Possible_transitions:list=[]
+        for state in states:
+            Possible_transition: list=self.possible_transition(state,matrix,symbols)
+            Possible_transitions.append(Possible_transition)
+            
+        final=list(set(Possible_transitions))
+        
+        # delete duplicate
+        final_temp=list(set(''.join(final).replace(",","").split("q")))
+
+        finals=[]
+        final_temp=final_temp[1:]
+        for end in final_temp:
+            finals.append(f"q{end}")
+        return {f"S{i_for_check+1}":",".join(list(finals))}
+    
+    # TODO ADD to the table of the new automate 
+    def AND_to_AFD(self)->list:
+        matrix = [elem[1:] for elem in self.matrix]
+        symbols=self.transitions
+        # print(list(set([2,65,5,2,"fzofhe"])))
+        check_if_end=False
+        new_states_to_check:list[dict]=[]
+        i_for_check=0
+        #We add the new state firstly Q0^->q0
+        new_states_to_check.append({f"S0": self.all_states[i_for_check]})
+        
+        name_of_new_state: list=list(new_states_to_check[-1].keys())[i_for_check]
+        Possible_transition=self.possible_transition(new_states_to_check[-1][name_of_new_state],matrix,symbols[0])
+        # We create a new state  
+        while not check_if_end:
+            for symb in symbols:
+                print(f"Here is the symbol to check: {symb}...")
+                print(f"{name_of_new_state} : {Possible_transition} ...")
+                print(f"The list of the new state to check : {new_states_to_check[i_for_check]}")
+                print(f"Here is : {new_states_to_check[i_for_check]}")
+                name_of_new_state=list(new_states_to_check[i_for_check].keys())[0]
+                print(f"The name of the new state to check: {name_of_new_state}")
+                Possible_transition=self.possible_transition(str(new_states_to_check[i_for_check][name_of_new_state]).split(",")[-1],matrix,symb)
+                new_states_to_add:dict=self.create_state_for_AFD(symb,i_for_check,new_states_to_check,name_of_new_state,matrix)
+                # This loop check if there is states in the previous one in the list of new_state_to_check
+                for i in range(len(new_states_to_check)):
+                    if new_states_to_add[list(new_states_to_add.keys())[0]] == new_states_to_check[i][list(new_states_to_check[i].keys())[0]]:
+                        check_if_end=True
+                        
+                if check_if_end:
+                    break
+                
+                new_states_to_check.append(new_states_to_add)
+                print(new_states_to_check)
+                
+                print(i_for_check)
+                i_for_check+=1
+                    
 
     def complement(self):
         # Inverting final states: If a state is final (1), it becomes non-final (0) and vice versa.
@@ -459,9 +520,9 @@ Final_states: {self.final_states}
                     self.matrix[i][j] = ','.join(transitions) if transitions else 'nan'
         
 automate1=automate(sample_event, sample_state)
-automate1.split_states()
-#automate1.create_state("bidule")
-automate1.display_states()
+# automate1.split_states()
+# #automate1.create_state("bidule")
+# automate1.display_states()
 
 # print(automate1.is_complete())
 # automate1.display_matrix()
@@ -477,9 +538,10 @@ automate1.display_states()
 #Test suppr
 # automate1.delete_state("q0")
 # automate1.display_states()
-automate1.display_matrix()
+# automate1.display_matrix()
 # print(automate1.recognize_wordAFD("ab"))
 # if not automate1.is_deterministic():
 #     automate1.AND_to_AFD(automate1.matrix)
 # automate1.edit_csv("test")
 automate1.enumerate_new_states(automate1.all_states)
+automate1.AND_to_AFD()
