@@ -313,14 +313,14 @@ Final_states: {self.final_states}
             for i in range(len(row)):
                 row[i] = "".join(row[i])
         return result
-
+    # intermediate method for the method AND-AFD
     def put_on_new_matrix(self, symbols, new_states_to_check, symb, result, new_st, key_name, final_states):
         for paf in range(len(new_states_to_check)):
             key_name_final=list(new_states_to_check[paf].keys())[0]
             if final_states==new_states_to_check[paf][key_name_final]:
                 print(f"{key_name_final}->{new_st.index(key_name)}")
                 result[new_st.index(key_name)][symbols.index(symb)].append(key_name_final)
-
+    # intermediate method for the method AND-AFD
     def eliminate_duplicate(self, no_doublon_state, no_doublon_states):
         for k in range(len(no_doublon_state)):
             final_states=[]
