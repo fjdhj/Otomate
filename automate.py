@@ -229,6 +229,13 @@ Final_states: {self.final_states}
         return {f"S{i_for_check+1}":",".join(sorted(list(finals)))}
 
     def AND_to_AFD(self)->list:
+        """_summary_
+        The function is separate in two part,
+        1) Enumerate all new state
+        2) place in the new tab
+        Returns:
+            list: list of nex state
+        """
         matrix = [elem[1:] for elem in self.matrix]
         symbols=self.transitions
         # print(list(set([2,65,5,2,"fzofhe"])))
