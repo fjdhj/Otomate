@@ -238,16 +238,14 @@ Final_states: {self.final_states}
         """
         matrix = [elem[1:] for elem in self.matrix]
         symbols=self.transitions
-        # print(list(set([2,65,5,2,"fzofhe"])))
-        check_if_end=False
         new_states_to_check:list[dict]=[]
         i_for_check=0
         #We add the new state firstly S0->q0
         new_states_to_check.append({f"S0": self.all_states[i_for_check]})
-        # Case 0
+        # phase 1
         len_states=len(new_states_to_check)
+        # We loop 10 times in order to be sure that we go through every states
         for i in range(10):
-            end=False
             state_to_check=list(new_states_to_check[-1].keys())[0]
             print("State to visit", state_to_check,"\n")
             for iter_state in range(len(new_states_to_check)):
@@ -265,6 +263,8 @@ Final_states: {self.final_states}
                             print(f"{name_of_new_state} | Possible transition for {symb} -> {Possible_transition}")
                         
                             Possible_transitions.append(Possible_transition)
+                        
+                        # We eliminate duplicate elements
                         unique_elements = set()
                         for element in Possible_transitions:
                             unique_elements.update(element.split(','))
@@ -283,7 +283,7 @@ Final_states: {self.final_states}
         
         i_for_check+=len(new_states_to_check)-1
                 
-        
+        # Phase 2
         result:list[list][list]=[[[] for i in range(len(transition))] for i in range(len(new_states_to_check))]
         new_st=[list(state.keys())[0] for state in new_states_to_check]
         #Put states at the right place
