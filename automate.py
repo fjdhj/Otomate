@@ -239,8 +239,7 @@ Final_states: {self.final_states}
         new_states_to_check.append({f"S0": self.all_states[i_for_check]})
         # Case 0
         len_states=len(new_states_to_check)
-        continuation=True
-        for i in range(3):
+        for i in range(10):
             end=False
             state_to_check=list(new_states_to_check[-1].keys())[0]
             print("State to visit", state_to_check,"\n")
