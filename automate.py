@@ -210,10 +210,11 @@ Final_states: {self.final_states}
         ...
         
     def create_state_for_AFD(self,symbols:str,i_for_check:int,new_states_to_check:list[dict],name_of_new_state:str,matrix:list)->list:
-        states:list=str(new_states_to_check[-1][name_of_new_state]).split(",")
+        states:list=str(new_states_to_check[i_for_check][name_of_new_state]).split(",")
         Possible_transitions:list=[]
         for state in states:
             Possible_transition: list=self.possible_transition(state,matrix,symbols)
+            print(f"Possible transition: {Possible_transition}")
             Possible_transitions.append(Possible_transition)
             
         final=list(set(Possible_transitions))
@@ -234,30 +235,48 @@ Final_states: {self.final_states}
         check_if_end=False
         new_states_to_check:list[dict]=[]
         i_for_check=0
-        #We add the new state firstly Q0^->q0
+        #We add the new state firstly S0->q0
         new_states_to_check.append({f"S0": self.all_states[i_for_check]})
-        
-        # name_of_new_state: list=list(new_states_to_check[-1].keys())[i_for_check]
-        # Possible_transition=self.possible_transition(new_states_to_check[-1][name_of_new_state],matrix,symbols[0])
-        # We create a new state  
-        while not check_if_end:
-            
-            for symb in symbols:
-                
-                name_of_new_state=list(new_states_to_check[i_for_check].keys())[0]
-                Possible_transition=self.possible_transition(str(new_states_to_check[i_for_check][name_of_new_state]).split(",")[-1],matrix,symb)
-                new_states_to_add:dict=self.create_state_for_AFD(symb,i_for_check,new_states_to_check,name_of_new_state,matrix)
-                # This loop check if there is states in the previous one in the list of new_state_to_check
-                for i in range(len(new_states_to_check)):
-                    if new_states_to_add[list(new_states_to_add.keys())[0]] == new_states_to_check[i][list(new_states_to_check[i].keys())[0]]:
-                        check_if_end=True
+        # Case 0
+        len_states=len(new_states_to_check)
+        continuation=True
+        for i in range(3):
+            end=False
+            state_to_check=list(new_states_to_check[-1].keys())[0]
+            print("State to visit", state_to_check,"\n")
+            for iter_state in range(len(new_states_to_check)):
+                name_of_new_state=list(new_states_to_check[iter_state].keys())[0]
+                if name_of_new_state==state_to_check:
+                    
+                    for symb in symbols:
+                        states: list=new_states_to_check[iter_state][name_of_new_state].split(",")
+                       
+                        # loop states ex: S1->{q0,q1}
+                        Possible_transitions=[]
+                        for state in states:
+                            
+                            Possible_transition=self.possible_transition(state,matrix,symb)
+                            print(f"{name_of_new_state} | Possible transition for {symb} -> {Possible_transition}")
                         
-                if check_if_end:
-                    break
+                            Possible_transitions.append(Possible_transition)
+                        unique_elements = set()
+                        for element in Possible_transitions:
+                            unique_elements.update(element.split(','))
+                        Possible_transitions=",".join(list(sorted(unique_elements)))
+                        
+                        not_in_states=False
+                        for j in range(len(new_states_to_check)):
+                            key_name=list(new_states_to_check[j].keys())[0]
+                            if Possible_transitions==new_states_to_check[j][key_name]:
+                                break
+                            elif j==len(new_states_to_check)-1:
+                                not_in_states=True
+                                if not_in_states:
+                                    new_states_to_check.append({f"S{j+1}":Possible_transitions})
+                    print(new_states_to_check,"\n")
+        
+        i_for_check+=len(new_states_to_check)-1
                 
-                new_states_to_check.append(new_states_to_add)
-                print(new_states_to_check,"\n")
-                i_for_check+=1
         
         result:list[list][list]=[[[] for i in range(len(transition))] for i in range(len(new_states_to_check))]
         new_st=[list(state.keys())[0] for state in new_states_to_check]
@@ -272,19 +291,21 @@ Final_states: {self.final_states}
                 for state in state_possible_transition:
                     
                     state_to_check_transition:str=self.possible_transition(state,matrix,symb)
-                    # print("azemfhaeihf",state_to_check_transition)
                     split_state_to_check_transition=state_to_check_transition.split(",")
                     no_doublon_state[transition.index(symb)].append(split_state_to_check_transition)
-                    #print("Update :",no_doublon_state)
+
                     print(f"{key_name} | {state} : {state_to_check_transition} -> {symb}")
                     for i in range(len(new_states_to_check)):
                         states_to_check=new_states_to_check[i][list(new_states_to_check[i].keys())[0]]
                         if state_to_check_transition == states_to_check:
                             print(f"{state_to_check_transition} : {states_to_check} -> {i}")
-                            # Process to eliminate duplicate
+
                 final_states = self.eliminate_duplicate(no_doublon_state, no_doublon_states)
                 print(symb,"Final->",final_states)
                 self.put_on_new_matrix(symbols, new_states_to_check, symb, result, new_st, key_name, final_states)
+        for row in result:
+            for i in range(len(row)):
+                row[i] = "".join(row[i])
         return result
 
     def put_on_new_matrix(self, symbols, new_states_to_check, symb, result, new_st, key_name, final_states):
@@ -562,11 +583,11 @@ automate1=automate(sample_event, sample_state)
 # automate1.display_states()
 
 # print(automate1.is_complete())
-# automate1.display_matrix()
+automate1.display_matrix()
 # print(automate1.is_deterministic())
 
 # automate1.create_state("sale boulot")
-automate1.display_states()
+# automate1.display_states()
 # #automate1.display_matrix()
 #automate1.add_transition("bidule")
 # automate1.display_matrix()
@@ -580,4 +601,4 @@ automate1.display_states()
 # if not automate1.is_deterministic():
 #     automate1.AND_to_AFD(automate1.matrix)
 # automate1.edit_csv("test")
-automate1.AND_to_AFD()
+pprint(automate1.AND_to_AFD())
