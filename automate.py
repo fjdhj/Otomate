@@ -7,11 +7,12 @@ import os
 import math
 from itertools import combinations
 #Initialize variables
-sample_event: list[list[str]]=utilities.init_graph("otomate5.csv")
+file_name: str="otomate5.csv"
+sample_event: list[list[str]]=utilities.init_graph(file_name)
 #Final_state and initial_state
-sample_state: list[list[str]]=utilities.init_statestypes("otomate5.csv")
+sample_state: list[list[str]]=utilities.init_statestypes(file_name)
 
-transition: list=utilities.transitions("otomate5.csv")
+transition: list=utilities.transitions(file_name)
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 class automate:
     # initialize the basic automate
@@ -208,7 +209,6 @@ Final_states: {self.final_states}
     def define_new_state_and_final_states(self,transitions):   
         ...
         
-    # FIXME : Create a function that create a state for new afd
     def create_state_for_AFD(self,symbols:str,i_for_check:int,new_states_to_check:list[dict],name_of_new_state:str,matrix:list)->list:
         states:list=str(new_states_to_check[-1][name_of_new_state]).split(",")
         Possible_transitions:list=[]
@@ -225,9 +225,8 @@ Final_states: {self.final_states}
         final_temp=final_temp[1:]
         for end in final_temp:
             finals.append(f"q{end}")
-        return {f"S{i_for_check+1}":",".join(list(finals))}
-    
-    # TODO ADD to the table of the new automate 
+        return {f"S{i_for_check+1}":",".join(sorted(list(finals)))}
+
     def AND_to_AFD(self)->list:
         matrix = [elem[1:] for elem in self.matrix]
         symbols=self.transitions
@@ -238,17 +237,14 @@ Final_states: {self.final_states}
         #We add the new state firstly Q0^->q0
         new_states_to_check.append({f"S0": self.all_states[i_for_check]})
         
-        name_of_new_state: list=list(new_states_to_check[-1].keys())[i_for_check]
-        Possible_transition=self.possible_transition(new_states_to_check[-1][name_of_new_state],matrix,symbols[0])
+        # name_of_new_state: list=list(new_states_to_check[-1].keys())[i_for_check]
+        # Possible_transition=self.possible_transition(new_states_to_check[-1][name_of_new_state],matrix,symbols[0])
         # We create a new state  
         while not check_if_end:
+            
             for symb in symbols:
-                print(f"Here is the symbol to check: {symb}...")
-                print(f"{name_of_new_state} : {Possible_transition} ...")
-                print(f"The list of the new state to check : {new_states_to_check[i_for_check]}")
-                print(f"Here is : {new_states_to_check[i_for_check]}")
+                
                 name_of_new_state=list(new_states_to_check[i_for_check].keys())[0]
-                print(f"The name of the new state to check: {name_of_new_state}")
                 Possible_transition=self.possible_transition(str(new_states_to_check[i_for_check][name_of_new_state]).split(",")[-1],matrix,symb)
                 new_states_to_add:dict=self.create_state_for_AFD(symb,i_for_check,new_states_to_check,name_of_new_state,matrix)
                 # This loop check if there is states in the previous one in the list of new_state_to_check
@@ -260,11 +256,52 @@ Final_states: {self.final_states}
                     break
                 
                 new_states_to_check.append(new_states_to_add)
-                print(new_states_to_check)
-                
-                print(i_for_check)
+                print(new_states_to_check,"\n")
                 i_for_check+=1
+        
+        result:list[list][list]=[[[] for i in range(len(transition))] for i in range(len(new_states_to_check))]
+        new_st=[list(state.keys())[0] for state in new_states_to_check]
+        #Put states at the right place
+        for new_state in new_states_to_check:
+            key_name=list(new_state.keys())[0]
+            state_possible_transition=new_state[key_name].split(",")
+            
+            for symb in symbols:
+                no_doublon_state:list=[[] for _ in range(len(transition))]
+                no_doublon_states=[]
+                for state in state_possible_transition:
                     
+                    state_to_check_transition:str=self.possible_transition(state,matrix,symb)
+                    # print("azemfhaeihf",state_to_check_transition)
+                    split_state_to_check_transition=state_to_check_transition.split(",")
+                    no_doublon_state[transition.index(symb)].append(split_state_to_check_transition)
+                    #print("Update :",no_doublon_state)
+                    print(f"{key_name} | {state} : {state_to_check_transition} -> {symb}")
+                    for i in range(len(new_states_to_check)):
+                        states_to_check=new_states_to_check[i][list(new_states_to_check[i].keys())[0]]
+                        if state_to_check_transition == states_to_check:
+                            print(f"{state_to_check_transition} : {states_to_check} -> {i}")
+                            # Process to eliminate duplicate
+                final_states = self.eliminate_duplicate(no_doublon_state, no_doublon_states)
+                print(symb,"Final->",final_states)
+                self.put_on_new_matrix(symbols, new_states_to_check, symb, result, new_st, key_name, final_states)
+        return result
+
+    def put_on_new_matrix(self, symbols, new_states_to_check, symb, result, new_st, key_name, final_states):
+        for paf in range(len(new_states_to_check)):
+            key_name_final=list(new_states_to_check[paf].keys())[0]
+            if final_states==new_states_to_check[paf][key_name_final]:
+                print(f"{key_name_final}->{new_st.index(key_name)}")
+                result[new_st.index(key_name)][symbols.index(symb)].append(key_name_final)
+
+    def eliminate_duplicate(self, no_doublon_state, no_doublon_states):
+        for k in range(len(no_doublon_state)):
+            final_states=[]
+            no_doublon_states.extend(no_doublon_state[k])
+            for _ in range(len(no_doublon_states)):
+                final_states.extend(no_doublon_states[_])
+            final_states=",".join(sorted(list(set(final_states))))
+        return final_states
 
     def complement(self):
         # Inverting final states: If a state is final (1), it becomes non-final (0) and vice versa.
@@ -529,7 +566,7 @@ automate1=automate(sample_event, sample_state)
 # print(automate1.is_deterministic())
 
 # automate1.create_state("sale boulot")
-# automate1.display_states()
+automate1.display_states()
 # #automate1.display_matrix()
 #automate1.add_transition("bidule")
 # automate1.display_matrix()
@@ -543,5 +580,4 @@ automate1=automate(sample_event, sample_state)
 # if not automate1.is_deterministic():
 #     automate1.AND_to_AFD(automate1.matrix)
 # automate1.edit_csv("test")
-automate1.enumerate_new_states(automate1.all_states)
 automate1.AND_to_AFD()
