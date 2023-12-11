@@ -9,46 +9,53 @@ from automate import automate
 #        self.liaisons = liaisons
 
 
-def modifier_automate(automate):
+def modifier_automate(actual_auto:automate):
     # Menu de modification d'automate
     while True:
         print("\nMenu de modification d'automate :")
-        print("1. Changement de nom")
-        print("2. Rajouter un état")
-        print("3. Supprimer un état")
-        print("4. Ajouter une transition")
-        print("5. Supprimer une transition")
-        print("6. Ajouter une liaison")
-        print("7. Supprimer une liaison")
-        print("8. Revenir au menu principal")
+        print("1. Rajouter un état")
+        print("2. Supprimer un état")
+        print("3. Ajouter une transition")
+        print("4. Supprimer une transition")
+        print("5. Ajouter une liaison")
+        print("6. Supprimer une liaison")
+        print("7. Revenir au menu principal")
 
         choix_modification = input("Choisissez une action : ")
 
         if choix_modification == "1":
-            nouveau_nom = input("Entrez le nouveau nom de l'automate : ")
-            automate.nom = nouveau_nom
+            state_name = str(input("Entrez le nom du nouvel état"))
+            actual_auto.create_state(state_name)
         elif choix_modification == "2":
-            # Logique pour rajouter un état
-            pass
+            state_name = str(input("Entrez le nom de l'état à supprimer"))
+            actual_auto.delete_state(state_name)
         elif choix_modification == "3":
-            # Logique pour supprimer un état
-            pass
+            transition_name = str(input("Entrez le nom de la nouvelle transition"))
+            actual_auto.create_transition(transition_name)
         elif choix_modification == "4":
-            # Logique pour ajouter une transition
-            pass
+            transition_name = str(input("Entrez le nom de la transition à supprimer"))
+            actual_auto.delete_transition(transition_name)
         elif choix_modification == "5":
-            # Logique pour supprimer une transition
-            pass
+            initial_state_name = str(input("Entrez le nom de l'état de départ"))
+            if not (initial_state_name in actual_auto.all_states):
+                actual_auto.create_state(initial_state_name)
+                
+            final_state_name = str(input("Entrez le nom de l'état d'arrivée"))
+            if not (initial_state_name in actual_auto.all_states):
+                actual_auto.create_state(final_state_name)
+                
+            transition_name = str(input("Entrez le nom de la transition"))
+            if not (transition_name in actual_auto.transitions):
+                actual_auto.create_transition(transition_name)
+                
+            actual_auto.add_transition(initial_state_name, transition_name, final_state_name)
         elif choix_modification == "6":
-            # Logique pour ajouter une liaison
+            #FIXME NATHAN Supprimer liaison 
             pass
         elif choix_modification == "7":
-            # Logique pour supprimer une liaison
-            pass
-        elif choix_modification == "8":
             break
         else:
-            print("Choix invalide. Veuillez réessayer.")
+            print("Choix invalide. Veuillez réessayer.\n")
 
 
 
@@ -111,11 +118,14 @@ while True:
 
     ### IMPORTATION ##############################################################
     
+    #FIXME NATHAN Si le paramètre entré ne correspond pas à un slot ça plante
     if choix == "1":
-        file_name=str(input("Type the file name to import automaton:\n"))
-        new_automaton=automate(file_name)
-        slots[slot_vide] = new_automaton 
-        print(slots)
+        if slot_vide is not None:
+            file_name=str(input("Type the file name to import automaton:\n"))
+            slots[slot_vide] = automate(file_name) 
+            print(slots)
+        else:
+            print("Aucun slot disponible pour créer un nouvel automate.")  
     
     ### EXPORTATION ##############################################################
         
@@ -131,6 +141,14 @@ while True:
             
             
     # ### CREATION #################################################################
+     
+    elif choix == "3":
+        if slot_vide is not None:
+            file_name=str(input("Type the file name to import automaton:\n"))
+            slots[slot_vide] = automate(file_name)
+            print(slots)
+        else:
+            print("Aucun slot disponible pour créer un nouvel automate.")   
             
     # elif choix == "3":
     #     if slot_vide is not None:
@@ -140,45 +158,46 @@ while True:
     
     # ### MODIFICATION ############################################################
             
-    # elif choix == "4":
-    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
-    #     automate = slots_automates[slot - 1]
-    #     if automate:
-    #         modifier_automate(automate)
-    #     else:
-    #         print("Aucun automate dans ce slot.")
+    elif choix == "4":
+        slot = int(input("Entrez le numéro du slot (1-10) : "))
+        automaton = slots[slot - 1]
+        if automaton:
+            modifier_automate(automaton)
+        else:
+            print("Aucun automate dans ce slot.")
             
             
     # ### SUPPRESSION #############################################################
             
-    # elif choix == "5":
-    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
-    #     #supprimer_aef(slot)
+    elif choix == "5":
+        slot = int(input("Entrez le numéro du slot (1-10) : "))
+        slots[slot - 1] = None
         
         
     # ### PASSER UN MOT ###########################################################
         
-    # elif choix == "6":
-    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
-    #     automate = slots_automates[slot - 1]
-    #     if automate:
-    #         mot = input("Entrez le mot à vérifier : ")
-    #         #passer_mot(automate, mot)
-    #     else:
-    #         print("Aucun automate dans ce slot.")
+    elif choix == "6":
+        slot = int(input("Entrez le numéro du slot (1-10) : "))
+        automaton: automate = slots[slot - 1]
+        if automaton:
+            automaton.recognize_wordAFD(str(input("Entrez le mot à vérifier : \n")))
+        else:
+            print("Aucun automate dans ce slot.")
             
             
     # ### AUTOMATE COMPLET #######################################################
             
-    # elif choix == "7":
-    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
-    #     automate = slots_automates[slot - 1]
-    #     if automate:
-    #         #res = automate_complet(automate)
-    #         #if res != None:
-    #             #slot[slot_vide] = res
-    #     else:
-    #         print("Aucun automate dans ce slot.")
+    elif choix == "7":
+        slot = int(input("Entrez le numéro du slot (1-10) : "))
+        automaton = slots[slot - 1]
+        if automaton:
+            if(automaton.is_complete()):
+                print("L'automate est complet")
+            else:
+                if(input("L'automate n'est pas complet, voulez-vous le rendre complet ? [Y/N]\n") == "Y"):
+                    automaton.make_complete()
+        else:
+            print("Aucun automate dans ce slot.")
             
     
     # ### AUTOMATE DETERMINISTE #################################################

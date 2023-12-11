@@ -28,6 +28,8 @@ class automate:
     
     
     def create_state(self,name)->None:
+        while(name in self.all_states):
+            name = str(input("Entrez le nom du nouvel état"))
         self.matrix.append([])
         self.matrix[-1].append([name])
         self.initial_states.append(0)
@@ -112,7 +114,10 @@ Final_states: {self.final_states}
                 del line[index_transition+1] 
         else:
             print("La transition à supprimer n'existe pas")
-    
+            
+    #TODO Créer la suppression d'une liaison (pas supprimer l'intégralité de la transition)
+            
+    # FIXME add origramm for transition
     def edit_csv(self,file):
         self.display_states()
         self.display_matrix()
@@ -184,6 +189,7 @@ Final_states: {self.final_states}
             
 
     # TODO: finish AFD and begin AND
+    #FIXME Prendre en compte le fait qu'un caractère n'existe pas dans l'automate
     def recognize_wordAFD(self, word: str) -> bool:
         matrix = [elem[1:] for elem in self.matrix]
         i_current_state = self.initial_states.index(1)
@@ -208,12 +214,12 @@ Final_states: {self.final_states}
                     
                     print(f"The index of the current state is {i_current_state}")
                     
-                    i_current_state += self.all_states.index(Possible_Transition[to_final])
+                    i_current_state+=self.all_states.index(Possible_Transition[to_final])-self.all_states.index(current_state)
                     current_state = self.all_states[i_current_state]
                     
                     print(f"The current state: {Possible_Transition[-1]} \n")  # Update the current state
                 else:
-                    i_current_state+=self.all_states.index(Possible_Transition[-1])
+                    i_current_state+=self.all_states.index(Possible_Transition[-1])-self.all_states.index(current_state)
                     
                     print(f"The index of the current state is {i_current_state}")
                     current_state = self.all_states[i_current_state]
@@ -650,6 +656,7 @@ Final_states: {self.final_states}
                     transitions = [t for t in transitions if t in self.all_states]
                     self.matrix[i][j] = ','.join(transitions) if transitions else 'nan'
         
+    #FIXME NATHAN MARCHE PAS
     def make_complete(self):
         modified = False
         for state in self.all_states:
@@ -666,13 +673,18 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-automate1=automate("default.csv")
+automate1=automate("Sample/default2.csv")
+automate1.display_matrix()
+automate1.display_states()
+automate1.make_complete()
+automate1.display_matrix()
+automate1.display_states()
 # automate1.split_states()
 # #automate1.create_state("bidule")
 # automate1.display_states()
 
 # print(automate1.is_complete())
-automate1.display_matrix()
+# automate1.display_matrix()
 # print(automate1.is_deterministic())
 
 # automate1.create_state("sale boulot")
@@ -686,14 +698,14 @@ automate1.display_matrix()
 # automate1.delete_state("q0")
 # automate1.display_states()
 # automate1.display_matrix()
-# print(automate1.recognize_wordAFD("ab"))
+# print(automate1.recognize_wordAFD("a"))
 # if not automate1.is_deterministic():
 #     automate1.AND_to_AFD(automate1.matrix)
 # automate1.edit_csv("test")
 # pprint(automate1.AND_to_AFD())
-AFD=automate1.AND_to_AFD()
-print(AFD[0])
-automate1.edit_csv_deterministic("deterministic",AFD[0],AFD[1])
+# AFD=automate1.AND_to_AFD()
+# print(AFD[0])
+# automate1.edit_csv_deterministic("deterministic",AFD[0],AFD[1])
 
 
-automate1.edit_csv("test")
+#automate1.edit_csv("test")
