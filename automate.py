@@ -1,15 +1,17 @@
 import stat
 from tkinter import NO
 import utilities
-from pprint import pp, pprint
+from pprint import pprint
 import pandas as pd
 import os
+import math
+from itertools import combinations
 #Initialize variables
-sample_event: list[list[str]]=utilities.init_graph("Sample/default2.csv")
+sample_event: list[list[str]]=utilities.init_graph("Sample/default.csv")
 #Final_state and initial_state
-sample_state: list[list[str]]=utilities.init_statestypes("Sample/default2.csv")
+sample_state: list[list[str]]=utilities.init_statestypes("Sample/default.csv")
 
-transition: list=utilities.transitions("Sample/default2.csv")
+transition: list=utilities.transitions(file_name)
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 class automate:
     # initialize the basic automate
@@ -48,18 +50,11 @@ Final_states: {self.final_states}
         """
         for i in range(len(self.matrix)):
             for j in range(len(self.matrix[i])):
-                self.matrix[i][j]=str(self.matrix[i][j]).split(',')
+                   self.matrix[i][j]=str(self.matrix[i][j]).split(',')
     
     
     def is_complete(self) -> bool:
-        complete=True
-        i=0
-        len_matrix=len(self.matrix)
-        while complete and i<len_matrix:
-            if ['nan'] in self.matrix[i]:
-                complete=False
-            i+=1
-        return complete
+        return ["nan"] in self.matrix[:][:]
     
     def is_deterministic(self)->bool:
         for line in self.matrix:
@@ -126,62 +121,32 @@ Final_states: {self.final_states}
         csv_file.update({"etat":csv_file_temp[0]})
         for i in range(len(self.transitions)): #J'ai changé transition pour self.transitions
             csv_file.update({self.transitions[i]:[state for state in csv_file_temp[i+1]]})
+            
         csv_file.update({"EI":self.initial_states})
         csv_file.update({"EF":self.final_states})
         df = pd.DataFrame(csv_file)
         df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
-    
-    def make_complete(self):
-        modified = False
-        for state in self.all_states:
-            index_state = self.all_states.index(state)
-            for transition in self.transitions:
-                index_transition = self.transitions.index(transition)
-                if(self.matrix[index_state][index_transition+1] == ["nan"]):
-                    if (modified == False):
-                        modified = True
-                        if ("poubelle" not in self.all_states):
-                            self.create_state("poubelle")
-                            for bin_transition in self.transitions:
-                                self.add_transition("poubelle", bin_transition, "poubelle")
-                    self.add_transition(state, transition, "poubelle")
-        return modified
-
+        
 automate1=automate(sample_event, sample_state)
-automate1.split_states()
-automate1.create_state("bidule")
-automate1.display_states()
+# automate1.split_states()
+# #automate1.create_state("bidule")
+# automate1.display_states()
 
-print(automate1.is_complete())
+# print(automate1.is_complete())
 automate1.display_matrix()
-print(automate1.is_deterministic())
+# print(automate1.is_deterministic())
 
-automate1.create_state("sale boulot")
-automate1.display_states()
-#automate1.display_matrix()
-automate1.add_transition("bidule")
-automate1.display_matrix()
+# automate1.create_state("sale boulot")
+# automate1.display_states()
+# #automate1.display_matrix()
+#automate1.add_transition("bidule")
+# automate1.display_matrix()
 
 
 #Test suppr
 automate1.delete_state("q0")
-automate1.display_states()
-automate1.display_matrix()
-
-#Test suppr TRANSITION
-automate1.delete_transition("a")
-automate1.display_states()
-automate1.display_matrix()
+# automate1.display_states()
+# automate1.display_matrix()
 
 
-automate1.make_complete()
-print("Make Complete :")
-automate1.display_states()
-automate1.display_matrix()
-
-automate1.create_transition("transtest")
-print("Create Transition:")
-automate1.display_transition()
-automate1.display_matrix()
-
-#automate1.edit_csv("test")
+automate1.edit_csv("test")

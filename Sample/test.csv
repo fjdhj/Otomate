@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 etat;b;c;d;EI;EF
 q1;q1,q3;nan;q1;0;0
 q2;nan;q1;q2;0;0
 q3;q1,q3;nan;q1;1;0
 bidule;;nan;nan;0;0
 sale boulot;nan;nan;nan;0;0
+=======
+etat;a;b;EI;EF
+q0;q0,q1;q0;1;0
+q1;q0;q2;0;0
+q2;q1,q2;q0;0;1
+>>>>>>> ee25ce84804257b7aa4c412702a44937475c9043
