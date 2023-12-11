@@ -9,10 +9,12 @@ from itertools import combinations
 file_name="otomate5.csv"
 #Initialize variables
 sample_event: list[list[str]]=utilities.init_graph(file_name)
+
 #Final_state and initial_state
 sample_state: list[list[str]]=utilities.init_statestypes(file_name)
-
 transition: list=utilities.transitions(file_name)
+
+
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 class automate:
     # initialize the basic automate
