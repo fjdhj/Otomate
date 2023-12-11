@@ -598,21 +598,21 @@ Final_states: {self.final_states}
                     transitions = [t for t in transitions if t in self.all_states]
                     self.matrix[i][j] = ','.join(transitions) if transitions else 'nan'
         
-        def make_complete(self):
-            modified = False
-            for state in self.all_states:
-                index_state = self.all_states.index(state)
-                for transition in self.transitions:
-                    index_transition = self.transitions.index(transition)
-                    if(self.matrix[index_state][index_transition+1] == ["nan"]):
-                        if (modified == False):
-                            modified = True
-                            if ("poubelle" not in self.all_states):
-                                self.create_state("poubelle")
-                                for bin_transition in self.transitions:
-                                    self.add_transition("poubelle", bin_transition, "poubelle")
-                        self.add_transition(state, transition, "poubelle")
-            return modified
+    def make_complete(self):
+        modified = False
+        for state in self.all_states:
+            index_state = self.all_states.index(state)
+            for transition in self.transitions:
+                index_transition = self.transitions.index(transition)
+                if(self.matrix[index_state][index_transition+1] == ["nan"]):
+                    if (modified == False):
+                        modified = True
+                        if ("poubelle" not in self.all_states):
+                            self.create_state("poubelle")
+                            for bin_transition in self.transitions:
+                                self.add_transition("poubelle", bin_transition, "poubelle")
+                    self.add_transition(state, transition, "poubelle")
+        return modified
         
 automate1=automate(sample_event, sample_state)
 # automate1.split_states()
