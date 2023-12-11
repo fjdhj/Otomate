@@ -6,7 +6,7 @@ import pandas as pd
 import os
 import math
 from itertools import combinations
-file_name="Sample/default.csv"
+file_name="otomate5.csv"
 #Initialize variables
 sample_event: list[list[str]]=utilities.init_graph(file_name)
 #Final_state and initial_state
@@ -610,14 +610,14 @@ automate1.display_matrix()
 
 
 #Test suppr
-automate1.delete_state("q0")
+# automate1.delete_state("q0")
 # automate1.display_states()
 # automate1.display_matrix()
 # print(automate1.recognize_wordAFD("ab"))
 # if not automate1.is_deterministic():
 #     automate1.AND_to_AFD(automate1.matrix)
 # automate1.edit_csv("test")
-pprint(automate1.AND_to_AFD())
+# pprint(automate1.AND_to_AFD())
 pprint(automate1.AND_to_AFD())
 
 
