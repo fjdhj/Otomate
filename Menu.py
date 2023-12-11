@@ -131,14 +131,14 @@ while True:
         
     elif choix == "2":
         slot = int(input("Entrez le numéro du slot (1-10) : "))
-        
-        automaton = slots[slot - 1]
-        if automaton:
+        is_deterministic:bool=str(input("Votre tableau est il un tableau que vous avez déterminiser [y/n]"))
+        automaton :automate= slots[slot - 1]
+        if is_deterministic=="y":
             file_name=str(input("Type the file name to export automaton:\n"))
-            automaton.edit_csv(file_name)
-        else:
-            print("No automaton in the slot.")
-            
+            automaton.edit_csv(file_name,auto[0],auto[1])
+        elif is_deterministic=="n":
+            file_name=str(input("Type the file name to export automaton:\n"))
+            automaton.edit_csv(file_name, automaton.matrix,automaton.final_states)
             
     # ### CREATION #################################################################
      
@@ -202,15 +202,17 @@ while True:
     
     # ### AUTOMATE DETERMINISTE #################################################
             
-    # elif choix == "8":
-    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
-    #     automate = slots_automates[slot - 1]
-    #     if automate:
-    #         #res = automate_deterministe(automate)
-    #         #if res != None:
-    #             #slot[slot_vide] = res
-    #     else:
-    #         print("Aucun automate dans ce slot.")
+    elif choix == "8":
+        slot = int(input("Entrez le numéro du slot (1-10) : "))
+        automaton = slots[slot - 1]
+        if automaton:
+            if(automaton.is_deterministic()):
+                print("L'automate est déterministe")
+            else:
+                if(input("L'automate n'est pas déterministe, voulez-vous le rendre complet ? [Y/N]\n") == "Y"):
+                    auto=automaton.AND_to_AFD()
+        else:
+            print("Aucun automate dans ce slot.")
             
             
     # ### AUTOMATE MIROIR ######################################################

@@ -118,47 +118,13 @@ Final_states: {self.final_states}
     #TODO Créer la suppression d'une liaison (pas supprimer l'intégralité de la transition)
             
     # FIXME add origramm for transition
-    def edit_csv(self,file):
-        self.display_states()
-        self.display_matrix()
-        csv_data = {
-            'etat': self.all_states,
-            'EI': self.initial_states,
-            'EF': self.final_states
-        }
-
-        for symbol_index, symbol in enumerate(self.transitions):
-            csv_data[symbol] = []
-            for state_index in range(len(self.all_states)):
-                transition_state = self.matrix[state_index][symbol_index + 1]
-
-                # Check if transition_state is a list and convert it to a string
-                if isinstance(transition_state, list):
-                    # Join non-empty elements, skipping 'nan' or empty elements
-                    transition_str = ','.join([str(ts) for ts in transition_state if ts and not pd.isna(ts)])
-                elif pd.isna(transition_state):
-                    # Replace 'nan' with an empty string
-                    transition_str = ''
-                else:
-                    # Convert non-list elements to string directly
-                    transition_str = str(transition_state)
-
-                csv_data[symbol].append(transition_str)
-
-        df = pd.DataFrame(csv_data)
-        column_order = ['etat'] + self.transitions + ['EI', 'EF']
-        df = df[column_order]
-
-        df.to_csv(f"Sample/{file}.csv", index=False, header=True, sep=';')
-
-    
-    def edit_csv_deterministic(self, file_name: str,AFD: list, final_state:list):
+    def edit_csv(self, file_name: str,AFD: list, final_state:list):
         csv_file={}
         rows, cols= len(AFD), len(AFD[0])
         csv_file_temp=[["" for _ in range(rows)] for i in range(cols)]
         for i in range(rows):
             for j in range(cols):
-                csv_file_temp[j][i]=AFD[i][j] if i<len(self.matrix) and j < len(self.matrix[i]) else None
+                csv_file_temp[j][i]=AFD[i][j] if i<len(AFD) and j < len(AFD[i]) else None
         csv_file.update({"etat":csv_file_temp[0]})
         for i in range(len(self.transitions)): #J'ai changé transition pour self.transitions
             csv_file.update({self.transitions[i]:[state for state in csv_file_temp[i+1]]})
@@ -203,23 +169,24 @@ Final_states: {self.final_states}
                 return True  # If the current state is already a final state, the word is recognized
                 
             Possible_Transition = self.possible_transition(current_state, matrix, c)
-            print(f"Possible state:{Possible_Transition} for this state: {current_state}")
+            print(f"Possible state : {Possible_Transition} for this state: {current_state}")
             if Possible_Transition:
                 print("The transition is possible\n")
                 if i_current_state >= len(matrix[0])-1:
                     i_current_state=0
                 # if we can go directly to the final state without going to another state
-                if self.all_states[i_final_state] in Possible_Transition:
-                    to_final=Possible_Transition.index(self.all_states[i_final_state])
+                if self.all_states[i_final_state] in Possible_Transition.split(","):
+                    to_final=Possible_Transition.split(",").index(self.all_states[i_final_state])
                     
                     print(f"The index of the current state is {i_current_state}")
-                    
-                    i_current_state+=self.all_states.index(Possible_Transition[to_final])-self.all_states.index(current_state)
+                    print(self.all_states.index(Possible_Transition.split(",")[to_final])-self.all_states.index(current_state))
+                    i_current_state+=self.all_states.index(Possible_Transition.split(",")[to_final])
+                    print("ff<ff<",i_current_state)
                     current_state = self.all_states[i_current_state]
                     
-                    print(f"The current state: {Possible_Transition[-1]} \n")  # Update the current state
+                    print(f"The current state: {Possible_Transition.split(',')[-1]} \n")  # Update the current state
                 else:
-                    i_current_state+=self.all_states.index(Possible_Transition[-1])-self.all_states.index(current_state)
+                    i_current_state+=self.all_states.index(Possible_Transition.split(",")[-1])
                     
                     print(f"The index of the current state is {i_current_state}")
                     current_state = self.all_states[i_current_state]
@@ -673,12 +640,12 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-automate1=automate("Sample/default2.csv")
-automate1.display_matrix()
-automate1.display_states()
-automate1.make_complete()
-automate1.display_matrix()
-automate1.display_states()
+automate1=automate("otomate5.csv")
+# automate1.display_matrix()
+# automate1.display_states()
+# automate1.make_complete()
+# automate1.display_matrix()
+# automate1.display_states()
 # automate1.split_states()
 # #automate1.create_state("bidule")
 # automate1.display_states()
@@ -698,10 +665,10 @@ automate1.display_states()
 # automate1.delete_state("q0")
 # automate1.display_states()
 # automate1.display_matrix()
-# print(automate1.recognize_wordAFD("a"))
+print(automate1.recognize_wordAFD("ab"))
 # if not automate1.is_deterministic():
-#     automate1.AND_to_AFD(automate1.matrix)
-# automate1.edit_csv("test")
+#     auto=automate1.AND_to_AFD()
+# automate1.edit_csv("a",auto[0],auto[1])
 # pprint(automate1.AND_to_AFD())
 # AFD=automate1.AND_to_AFD()
 # print(AFD[0])
