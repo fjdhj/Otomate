@@ -40,18 +40,30 @@ EF: Etat Final (0 : false, 1: true)
 Note: The "Names of the state" column don't have a name in the header
 ```
 
-**Example :**\
+**Example 1 :**\
 This example represent an AEF reading an binary number with an even number of 1
 ```
-etat;a;b;c;d;e;f;g;h;i;k;EI;EF
-q0;q0;nan;nan;nan;nan;q1;nan;nan;nan;nan;1;1
-q1;nan;q1;nan;nan;nan;nan;q2;nan;nan;nan;0;0
-q2;nan;nan;q2;nan;nan;nan;nan;q3;nan;nan;0;1
-q3;nan;nan;nan;q3;nan;nan;nan;nan;q4;q0,q1;0;0
-q4;nan;nan;nan;nan;q4;nan;nan;nan;nan;nan;0;1
+etat;0;1;EI;EF
+q_even;q_even;q_odd;1;1
+q_odd;q_odd;q_even;0;0
 
 ```
 We can represent this AEF with the folowing graph :\
-![Even AEF graph](Sample/Example/otomate.png)
+![Even AEF graph](Sample/Examples/otomate.png)
 
-You will find more example in [Sample/Example](Sample/Example)
+**Example 2 :**\
+Other abstract example : 
+
+```
+etat;a;b;c;d;e;f;g;h;i;k;EI;EF
+q0;q0;;;;;;q1;;;;1;1
+q1;;;q1;;;;;q2;;;;0;0
+q2;;;;q2;;;;;q3;;;;0;1
+q3;;;;;q3;;;;;;q4;q0,q1;0;0
+q4;;;;;;q4;;;;;;;;;0;1
+
+```
+We can represent this AEF with the folowing graph :\
+![Abstract AEF graph](Sample/Examples/otomate1.png)
+
+You will find more examples in [Sample/Example](Sample/Example)
