@@ -133,11 +133,10 @@ while True:
     # ### CREATION #################################################################
             
     # elif choix == "3":
-        # if slot_vide is not None:
-            # slots_automates[slot_vide] = creer_automate()
+    #     if slot_vide is not None:
+    #         slots[slot_vide] = creer_automate()
     # else:
-        # print("Aucun slot disponible pour créer un nouvel automate.")
-    # 
+    #     print("Aucun slot disponible pour créer un nouvel automate.")
     
     # ### MODIFICATION ############################################################
             

@@ -11,6 +11,9 @@ from itertools import combinations
 class automate:
     # initialize the basic automate
     def __init__(self, file_name: str) -> None:
+        if not (os.path.isfile(file_name)):
+            with open(file_name, "w") as csv_file:
+                csv_file.writelines("etat;EI;EF")
         transition: list=utilities.transitions(file_name)
         #Initialize variables
         sample_event: list[list[str]]=utilities.init_graph(file_name)
