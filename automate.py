@@ -6,27 +6,23 @@ import pandas as pd
 import os
 import math
 from itertools import combinations
-import unittest
 
-file_name="Sample/default.csv"
-#Initialize variables
-sample_event: list[list[str]]=utilities.init_graph(file_name)
-#Final_state and initial_state
-sample_state: list[list[str]]=utilities.init_statestypes(file_name)
 
-transition: list=utilities.transitions(file_name)
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 class automate:
     # initialize the basic automate
-    def __init__(self, sample_event:list[list[str]], sample_state:list[list[str]], transition:list=transition) -> None:
-        
+    def __init__(self, file_name: str) -> None:
+        transition: list=utilities.transitions(file_name)
+        #Initialize variables
+        sample_event: list[list[str]]=utilities.init_graph(file_name)
+        #Final_state and initial_state
+        sample_state: list[list[str]]=utilities.init_statestypes(file_name)
         self.matrix: list=sample_event
         self.initial_states: list=sample_state[0]
         self.all_states: list=[state[0] for state in sample_event]
         self.final_states: list=sample_state[1]
         self.transitions: list=[transit for transit in transition]
         # self.label=[f"q{i}" for i in range(len(self.matrix)) if self.matrix != []]
-    
     
     def create_state(self,name)->None:
         self.matrix.append([])
@@ -131,7 +127,7 @@ Final_states: {self.final_states}
         df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
     """
 
-    def edit3_csv(self, filename):
+    def edit_csv(self, filename):
         csv_data = {
             'etat': self.all_states,
             'EI': self.initial_states,
@@ -631,7 +627,7 @@ Final_states: {self.final_states}
                     transitions = transition_state.split(',')
                     transitions = [t for t in transitions if t in self.all_states]
                     self.matrix[i][j] = ','.join(transitions) if transitions else 'nan'
-        
+
     def make_complete(self):
         modified = False
         for state in self.all_states:
@@ -647,7 +643,13 @@ Final_states: {self.final_states}
                                 self.add_transition("poubelle", bin_transition, "poubelle")
                     self.add_transition(state, transition, "poubelle")
         return modified
-        
+
+
+automate1 = automate("UNITTEST/automaton_uncoaccessible.csv")
+automate1.trim()
+automate1.edit_csv("test")
+
+"""     
 automate1=automate(sample_event, sample_state)
 
 automate1.display_states()
@@ -658,7 +660,7 @@ automate1.trim()
 automate1.display_matrix()
 
 automate1.edit_csv("test")
-
+"""
 # automate1.split_states()
 # #automate1.create_state("bidule")
 # automate1.display_states()

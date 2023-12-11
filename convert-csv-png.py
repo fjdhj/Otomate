@@ -61,7 +61,10 @@ os.makedirs('output-png', exist_ok=True)
 
 # Paths for the CSV and the image file
 csv_path = 'Sample/test.csv'  # Replace with your actual CSV file path
-image_path = os.path.join('output-png', 'otomate')
+
+#csv_path = 'UNITTEST/automaton_uncoaccessible.csv'  # Replace with your actual CSV file path
+
+image_path = os.path.join('output-png', 'otomate1')
 
 # Process the CSV file and save the automaton image
 draw_and_save_automaton(csv_path, image_path)

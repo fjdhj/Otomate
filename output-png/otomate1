@@ -8,7 +8,6 @@ digraph {
 	q1 -> q2 [label=c]
 	q2 [label=q2 shape=circle]
 	q2 -> q4 [label=c]
-	q3 [label=q3 shape=circle]
 	q4 [label=q4 shape=doublecircle]
 	rankdir=LR size="16,10"
 	node [shape=circle]
