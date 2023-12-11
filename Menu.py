@@ -112,7 +112,7 @@ while True:
     ### IMPORTATION ##############################################################
     
     if choix == "1":
-        #slot[slot_vide] = importer_automate()
+        slot[slot_vide] = importer_automate()
         
     
     ### EXPORTATION ##############################################################
@@ -121,8 +121,8 @@ while True:
         slot = int(input("Entrez le numéro du slot (1-10) : "))
         automate = slots_automates[slot - 1]
         if automate:
-            #exporter_automate(automate)
-        else:
+            exporter_automate(automate)
+    else:
             print("Aucun automate dans ce slot.")
             
             
