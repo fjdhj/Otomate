@@ -6,13 +6,16 @@ import pandas as pd
 import os
 import math
 from itertools import combinations
+
 #Initialize variables
 file_name: str="otomate5.csv"
 sample_event: list[list[str]]=utilities.init_graph(file_name)
+
 #Final_state and initial_state
 sample_state: list[list[str]]=utilities.init_statestypes(file_name)
-
 transition: list=utilities.transitions(file_name)
+
+
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 class automate:
     # initialize the basic automate
