@@ -309,6 +309,7 @@ Final_states: {self.final_states}
                 final_states = self.eliminate_duplicate(no_doublon_state, no_doublon_states)
                 print(symb,"Final->",final_states)
                 self.put_on_new_matrix(symbols, new_states_to_check, symb, result, new_st, key_name, final_states)
+            print()
         for row in result:
             for i in range(len(row)):
                 row[i] = "".join(row[i])
@@ -607,4 +608,5 @@ automate1.display_matrix()
 # if not automate1.is_deterministic():
 #     automate1.AND_to_AFD(automate1.matrix)
 # automate1.edit_csv("test")
+pprint(automate1.AND_to_AFD())
 pprint(automate1.AND_to_AFD())
