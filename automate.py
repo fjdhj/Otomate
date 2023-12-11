@@ -6,7 +6,7 @@ import pandas as pd
 import os
 import math
 from itertools import combinations
-file_name="Sample/default.csv"
+file_name="otomate5.csv"
 #Initialize variables
 sample_event: list[list[str]]=utilities.init_graph(file_name)
 #Final_state and initial_state
@@ -252,9 +252,10 @@ Final_states: {self.final_states}
         #We add the new state firstly S0->q0
         new_states_to_check.append({f"S0": self.all_states[i_for_check]})
         # phase 1
+        end=False
         len_states=len(new_states_to_check)
         # We loop 10 times in order to be sure that we go through every states
-        for i in range(10):
+        for i in range(len(self.all_states)**2-len(new_states_to_check)):
             state_to_check=list(new_states_to_check[-1].keys())[0]
             print("State to visit", state_to_check,"\n")
             for iter_state in range(len(new_states_to_check)):
@@ -289,6 +290,7 @@ Final_states: {self.final_states}
                                 if not_in_states:
                                     new_states_to_check.append({f"S{j+1}":Possible_transitions})
                     print(new_states_to_check,"\n")
+            
         
         i_for_check+=len(new_states_to_check)-1
                 
@@ -319,10 +321,13 @@ Final_states: {self.final_states}
                 print(symb,"Final->",final_states)
                 self.put_on_new_matrix(symbols, new_states_to_check, symb, result, new_st, key_name, final_states)
             print()
+        self.join_list(result)
+        return result
+
+    def join_list(self, result):
         for row in result:
             for i in range(len(row)):
                 row[i] = "".join(row[i])
-        return result
     # intermediate method for the method AND-AFD
     def put_on_new_matrix(self, symbols, new_states_to_check, symb, result, new_st, key_name, final_states):
         for paf in range(len(new_states_to_check)):
@@ -593,6 +598,22 @@ Final_states: {self.final_states}
                     transitions = [t for t in transitions if t in self.all_states]
                     self.matrix[i][j] = ','.join(transitions) if transitions else 'nan'
         
+    def make_complete(self):
+        modified = False
+        for state in self.all_states:
+            index_state = self.all_states.index(state)
+            for transition in self.transitions:
+                index_transition = self.transitions.index(transition)
+                if(self.matrix[index_state][index_transition+1] == ["nan"]):
+                    if (modified == False):
+                        modified = True
+                        if ("poubelle" not in self.all_states):
+                            self.create_state("poubelle")
+                            for bin_transition in self.transitions:
+                                self.add_transition("poubelle", bin_transition, "poubelle")
+                    self.add_transition(state, transition, "poubelle")
+        return modified
+        
 automate1=automate(sample_event, sample_state)
 # automate1.split_states()
 # #automate1.create_state("bidule")
@@ -610,14 +631,14 @@ automate1.display_matrix()
 
 
 #Test suppr
-automate1.delete_state("q0")
+# automate1.delete_state("q0")
 # automate1.display_states()
 # automate1.display_matrix()
 # print(automate1.recognize_wordAFD("ab"))
 # if not automate1.is_deterministic():
 #     automate1.AND_to_AFD(automate1.matrix)
 # automate1.edit_csv("test")
-pprint(automate1.AND_to_AFD())
+# pprint(automate1.AND_to_AFD())
 pprint(automate1.AND_to_AFD())
 
 
