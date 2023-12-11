@@ -16,7 +16,7 @@ transition: list=utilities.transitions(file_name)
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 class automate:
     # initialize the basic automate
-    def __init__(self, sample_event:list[list[str]], sample_state:list[list[str]], transition:list=transition) -> None:
+    def __init__(self, filename: str, sample_event:list[list[str]], sample_state:list[list[str]], transition:list=transition) -> None:
         
         self.matrix: list=sample_event
         self.initial_states: list=sample_state[0]
