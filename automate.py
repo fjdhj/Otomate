@@ -128,6 +128,23 @@ Final_states: {self.final_states}
         df = pd.DataFrame(csv_file)
         df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
     
+    def edit_csv_deterministic(self, file_name: str,AFD: list, final_state:list):
+        csv_file={}
+        rows, cols= len(AFD), len(AFD[0])
+        csv_file_temp=[["" for _ in range(rows)] for i in range(cols)]
+        for i in range(rows):
+            for j in range(cols):
+                csv_file_temp[j][i]=AFD[i][j] if i<len(self.matrix) and j < len(self.matrix[i]) else None
+        csv_file.update({"etat":csv_file_temp[0]})
+        for i in range(len(self.transitions)): #J'ai changé transition pour self.transitions
+            csv_file.update({self.transitions[i]:[state for state in csv_file_temp[i+1]]})
+        
+        csv_file.update({"EI":self.initial_states})
+        csv_file.update({"EF":final_state})
+        df = pd.DataFrame(csv_file)
+        df.to_csv(f"Sample/{file_name}.csv", index=False, sep=';')
+        
+        
     def possible_transition(self, current_state: str, matrix: list, symbols: list) -> list:
         """Récupère les transitions possibles pour passer d'un état à un autre en fonction du symbole fourni.
 
@@ -237,13 +254,13 @@ Final_states: {self.final_states}
             finals.append(f"q{end}")
         return {f"S{i_for_check+1}":",".join(sorted(list(finals)))}
 
-    def AND_to_AFD(self)->list:
+    def AND_to_AFD(self)->tuple:
         """_summary_
         The function is separate in two part,
         1) Enumerate all new state
         2) place in the new tab
         Returns:
-            list: list of nex state
+            tuple: tuple[0] -> new_atomaton / tuple[1] -> new_final_state
         """
         matrix = [elem[1:] for elem in self.matrix]
         symbols=self.transitions
@@ -322,7 +339,23 @@ Final_states: {self.final_states}
                 self.put_on_new_matrix(symbols, new_states_to_check, symb, result, new_st, key_name, final_states)
             print()
         self.join_list(result)
-        return result
+        i_final_state: int=self.final_states.index(1)
+        final_state: str=self.all_states[i_final_state]
+        all_final_state=[0 for i in range(len(new_states_to_check))]
+        # Create new and new final
+        self.init_new_final_state(new_states_to_check, final_state, all_final_state)
+        for k in range(len(new_st)):
+           new_st[k]:list=new_st[k].split(",")
+           new_st[k].extend(result[k])
+        return (new_st,all_final_state)
+
+    
+        
+    def init_new_final_state(self, new_states_to_check, final_state, all_final_state):
+        for i in range(len(new_states_to_check)):
+            key_name=list(new_states_to_check[i].keys())[0]
+            if final_state in new_states_to_check[i][key_name].split(","):
+                all_final_state[i]=1
 
     def join_list(self, result):
         for row in result:
@@ -639,7 +672,9 @@ automate1.display_matrix()
 #     automate1.AND_to_AFD(automate1.matrix)
 # automate1.edit_csv("test")
 # pprint(automate1.AND_to_AFD())
-pprint(automate1.AND_to_AFD())
+AFD=automate1.AND_to_AFD()
+print(AFD[0])
+automate1.edit_csv_deterministic("deterministic",AFD[0],AFD[1])
 
 
 automate1.edit_csv("test")
