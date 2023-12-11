@@ -6,8 +6,8 @@ import pandas as pd
 import os
 import math
 from itertools import combinations
+file_name="Sample/default.csv"
 #Initialize variables
-file_name: str="otomate5.csv"
 sample_event: list[list[str]]=utilities.init_graph(file_name)
 #Final_state and initial_state
 sample_state: list[list[str]]=utilities.init_statestypes(file_name)
@@ -66,6 +66,12 @@ Final_states: {self.final_states}
 
     def display_transition(self):
         print(self.transitions)
+
+    def create_transition(self, transition):
+        self.transitions.append(transition)
+        for line in self.matrix:
+            line.append(["nan"])
+
         
     def add_transition(self,initial_state,transition="c",final_state="sale boulot"):
         if not (transition in self.transitions):
@@ -99,7 +105,10 @@ Final_states: {self.final_states}
     
     def delete_transition(self, transition):
         if(transition in self.transitions):
+            index_transition = self.transitions.index(transition)
             self.transitions.remove(transition)
+            for line in self.matrix: #Delete column in the matrix
+                del line[index_transition+1] 
         else:
             print("La transition à supprimer n'existe pas")
     
@@ -108,10 +117,10 @@ Final_states: {self.final_states}
         rows, cols= len(self.matrix), len(self.matrix[0])
         csv_file_temp=[["" for _ in range(rows)] for i in range(cols)]
         for i in range(rows):
-            for j in range(cols): 
+            for j in range(cols):
                 csv_file_temp[j][i]=",".join(self.matrix[i][j]) if i<len(self.matrix) and j < len(self.matrix[i]) else None
         csv_file.update({"etat":csv_file_temp[0]})
-        for i in range(len(transition)):
+        for i in range(len(self.transitions)): #J'ai changé transition pour self.transitions
             csv_file.update({self.transitions[i]:[state for state in csv_file_temp[i+1]]})
             
         csv_file.update({"EI":self.initial_states})
@@ -601,7 +610,7 @@ automate1.display_matrix()
 
 
 #Test suppr
-# automate1.delete_state("q0")
+automate1.delete_state("q0")
 # automate1.display_states()
 # automate1.display_matrix()
 # print(automate1.recognize_wordAFD("ab"))
@@ -610,3 +619,6 @@ automate1.display_matrix()
 # automate1.edit_csv("test")
 pprint(automate1.AND_to_AFD())
 pprint(automate1.AND_to_AFD())
+
+
+automate1.edit_csv("test")
