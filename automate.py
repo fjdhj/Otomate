@@ -11,6 +11,40 @@ sample_state: list[list[str]]=utilities.init_statestypes("Sample/default2.csv")
 
 transition: list=utilities.transitions("Sample/default2.csv")
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
+
+
+
+class expression:
+    def __init__(self, isFactor:bool|None, isStar: bool|None, state: int|None, content) -> None:
+        self.isFactor: bool|None=isFactor
+        self.isStar: bool|None=isStar
+        self.state: int|None=state #Indice de l'état
+        self.content: list|int|expression=content
+
+
+    def parentheses(self):
+        i=0
+        parenthesed = True
+        while(i<len(self.expression) and parenthesed == True):
+            if (isinstance(self.expression[i], expression) and self.expression[i].isFactor == "False"):
+                parenthesed = False
+        if(parenthesed==False):
+            newExpr = expression(self.isFactor, "False", self.state, [self])
+            self.isFactor = True
+            self.state = None
+        return newExpr
+    
+    def ardenne(self):
+        if(self.content == None or self.state == None):
+            return False
+        if(self.content == None):
+            return False
+        if():
+            ...
+
+
+
+
 class automate:
     # initialize the basic automate
     def __init__(self, sample_event:list[list[str]], sample_state:list[list[str]], transition:list=transition) -> None:
@@ -146,6 +180,8 @@ Final_states: {self.final_states}
                                 self.add_transition("poubelle", bin_transition, "poubelle")
                     self.add_transition(state, transition, "poubelle")
         return modified
+    
+    
 
 automate1=automate(sample_event, sample_state)
 automate1.split_states()
