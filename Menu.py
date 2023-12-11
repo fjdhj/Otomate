@@ -1,4 +1,4 @@
-import automate
+from automate import automate
 
 
 #class Automate:
@@ -58,13 +58,13 @@ def modifier_automate(automate):
 
 
 # Instancie la liste des automates en traitement
-slots_automates = [None] * 10
+slots = [None] * 10
 
 while True:
     
     
     # Trouve le prochain slot vide (NONE si complet)
-    slot_vide = next((i for i, automate in enumerate(slots_automates) if automate is None), None)
+    slot_vide = next((i for i, automate in enumerate(slots) if automate is None), None)
     
     
     ### GESTION DES SLOTS ################################################################
@@ -112,205 +112,209 @@ while True:
     ### IMPORTATION ##############################################################
     
     if choix == "1":
-        slot[slot_vide] = importer_automate()
-        
+        file_name=str(input("Type the file name to import automaton:\n"))
+        new_automaton=automate(file_name)
+        slots[slot_vide] = new_automaton 
+        print(slots)
     
     ### EXPORTATION ##############################################################
         
     elif choix == "2":
         slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automate = slots_automates[slot - 1]
-        if automate:
-            exporter_automate(automate)
-    else:
-            print("Aucun automate dans ce slot.")
-            
-            
-    ### CREATION #################################################################
-            
-    elif choix == "3":
-        if slot_vide is not None:
-            slots_automates[slot_vide] = #creer_automate()
+        
+        automaton = slots[slot - 1]
+        if automaton:
+            file_name=str(input("Type the file name to export automaton:\n"))
+            automaton.edit_csv(file_name)
         else:
-            print("Aucun slot disponible pour créer un nouvel automate.")
+            print("No automaton in the slot.")
+            
+            
+    # ### CREATION #################################################################
+            
+    # elif choix == "3":
+        # if slot_vide is not None:
+            # slots_automates[slot_vide] = creer_automate()
+    # else:
+        # print("Aucun slot disponible pour créer un nouvel automate.")
+    # 
+    
+    # ### MODIFICATION ############################################################
+            
+    # elif choix == "4":
+    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
+    #     automate = slots_automates[slot - 1]
+    #     if automate:
+    #         modifier_automate(automate)
+    #     else:
+    #         print("Aucun automate dans ce slot.")
+            
+            
+    # ### SUPPRESSION #############################################################
+            
+    # elif choix == "5":
+    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
+    #     #supprimer_aef(slot)
+        
+        
+    # ### PASSER UN MOT ###########################################################
+        
+    # elif choix == "6":
+    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
+    #     automate = slots_automates[slot - 1]
+    #     if automate:
+    #         mot = input("Entrez le mot à vérifier : ")
+    #         #passer_mot(automate, mot)
+    #     else:
+    #         print("Aucun automate dans ce slot.")
+            
+            
+    # ### AUTOMATE COMPLET #######################################################
+            
+    # elif choix == "7":
+    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
+    #     automate = slots_automates[slot - 1]
+    #     if automate:
+    #         #res = automate_complet(automate)
+    #         #if res != None:
+    #             #slot[slot_vide] = res
+    #     else:
+    #         print("Aucun automate dans ce slot.")
+            
+    
+    # ### AUTOMATE DETERMINISTE #################################################
+            
+    # elif choix == "8":
+    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
+    #     automate = slots_automates[slot - 1]
+    #     if automate:
+    #         #res = automate_deterministe(automate)
+    #         #if res != None:
+    #             #slot[slot_vide] = res
+    #     else:
+    #         print("Aucun automate dans ce slot.")
+            
+            
+    # ### AUTOMATE MIROIR ######################################################
+            
+    # elif choix == "9":
+    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
+    #     automate = slots_automates[slot - 1]
+    #     if automate:
+    #         #slot[slot_vide] = miroir(automate)
+    #     else:
+    #         print("Aucun automate dans ce slot.")
+            
+        
+    # ### AUTOMATE COMPLEMENTAIRE #############################################
+            
+    # elif choix == "10":
+    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
+    #     automate = slots_automates[slot - 1]
+    #     if automate:
+    #         #slot[slot_vide] = complément(automate)
+    #     else:
+    #         print("Aucun automate dans un des slots sélectionnés.")
     
     
-    ### MODIFICATION ############################################################
+    # ### PRODUIT D'AUTOMATES #################################################
             
-    elif choix == "4":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automate = slots_automates[slot - 1]
-        if automate:
-            modifier_automate(automate)
-        else:
-            print("Aucun automate dans ce slot.")
+    # elif choix == "11":
+    #     slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
+    #     automate1 = slots_automates[slot - 1]
+    #     slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
+    #     automate2 = slots_automates[slot - 1]
+    #     if automate1 & automate2:
+    #         #res = produit(automate1,automate2)
+    #         #if res != None:
+    #             #slot[slot_vide] = res
+    #     else:
+    #         print("Aucun automate dans ce slot.")
             
             
-    ### SUPPRESSION #############################################################
+    # ### CONCATENATION ######################################################
             
-    elif choix == "5":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        #supprimer_aef(slot)
+    # elif choix == "12":
+    #     slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
+    #     automate1 = slots_automates[slot - 1]
+    #     slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
+    #     automate2 = slots_automates[slot - 1]
+    #     if automate1 & automate2:
+    #         #res = concatenation(automate1,automate2)
+    #         #if res != None:
+    #             #slot[slot_vide] = res
+    #     else:
+    #         print("Aucun automate dans ce slot.")
+            
+            
+    # ### EXTRAIRE EXPRESSION ################################################
+            
+    # elif choix == "13":
+    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
+    #     automate = slots_automates[slot - 1]
+    #     if automate:
+    #         #extraire_expression(automate, mot)
+    #     else:
+    #         print("Aucun automate dans ce slot.")
+            
+            
+    # ### DETERMINER LANGAGE ################################################
+            
+    # elif choix == "14":
+    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
+    #     automate = slots_automates[slot - 1]
+    #     if automate:
+    #         #langage_automate(automate)
+    #     else:
+    #         print("Aucun automate dans ce slot.")
+            
+            
+    # ### LANGAGES EQUIVALENTS ##############################################
+            
+    # elif choix == "15":
+    #     slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
+    #     automate1 = slots_automates[slot - 1]
+    #     slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
+    #     automate2 = slots_automates[slot - 1]
+    #     if automate1 & automate2:
+    #         #res = equivalence(automate1,automate2)
+    #     else:
+    #         print("Aucun automate dans ce slot.")
+            
+            
+    # ### EMONDER AUTOMATE ##################################################
+            
+    # elif choix == "16":
+    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
+    #     automate = slots_automates[slot - 1]
+    #     if automate:
+    #         #res = emonder(automate)
+    #         #if res != None:
+    #             #slot[slot_vide] = res
+    #     else:
+    #         print("Aucun automate dans ce slot.")
+            
+            
+    # ### RENDRE MINIMAL ###################################################
+            
+    # elif choix == "17":
+    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
+    #     automate = slots_automates[slot - 1]
+    #     if automate:
+    #         #res = minimal(automate)
+    #         #if res != None:
+    #             #slot[slot_vide] = res
+    #     else:
+    #         print("Aucun automate dans ce slot.")
+            
+            
+    # ### MANUEL ###########################################################
+            
+    # elif choix == "18":
+    #     #afficher_manuel()
         
         
-    ### PASSER UN MOT ###########################################################
-        
-    elif choix == "6":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automate = slots_automates[slot - 1]
-        if automate:
-            mot = input("Entrez le mot à vérifier : ")
-            #passer_mot(automate, mot)
-        else:
-            print("Aucun automate dans ce slot.")
-            
-            
-    ### AUTOMATE COMPLET #######################################################
-            
-    elif choix == "7":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automate = slots_automates[slot - 1]
-        if automate:
-            #res = automate_complet(automate)
-            #if res != None:
-                #slot[slot_vide] = res
-        else:
-            print("Aucun automate dans ce slot.")
-            
-    
-    ### AUTOMATE DETERMINISTE #################################################
-            
-    elif choix == "8":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automate = slots_automates[slot - 1]
-        if automate:
-            #res = automate_deterministe(automate)
-            #if res != None:
-                #slot[slot_vide] = res
-        else:
-            print("Aucun automate dans ce slot.")
-            
-            
-    ### AUTOMATE MIROIR ######################################################
-            
-    elif choix == "9":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automate = slots_automates[slot - 1]
-        if automate:
-            #slot[slot_vide] = miroir(automate)
-        else:
-            print("Aucun automate dans ce slot.")
-            
-        
-    ### AUTOMATE COMPLEMENTAIRE #############################################
-            
-    elif choix == "10":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automate = slots_automates[slot - 1]
-        if automate:
-            #slot[slot_vide] = complément(automate)
-        else:
-            print("Aucun automate dans un des slots sélectionnés.")
-    
-    
-    ### PRODUIT D'AUTOMATES #################################################
-            
-    elif choix == "11":
-        slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
-        automate1 = slots_automates[slot - 1]
-        slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
-        automate2 = slots_automates[slot - 1]
-        if automate1 & automate2:
-            #res = produit(automate1,automate2)
-            #if res != None:
-                #slot[slot_vide] = res
-        else:
-            print("Aucun automate dans ce slot.")
-            
-            
-    ### CONCATENATION ######################################################
-            
-    elif choix == "12":
-        slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
-        automate1 = slots_automates[slot - 1]
-        slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
-        automate2 = slots_automates[slot - 1]
-        if automate1 & automate2:
-            #res = concatenation(automate1,automate2)
-            #if res != None:
-                #slot[slot_vide] = res
-        else:
-            print("Aucun automate dans ce slot.")
-            
-            
-    ### EXTRAIRE EXPRESSION ################################################
-            
-    elif choix == "13":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automate = slots_automates[slot - 1]
-        if automate:
-            #extraire_expression(automate, mot)
-        else:
-            print("Aucun automate dans ce slot.")
-            
-            
-    ### DETERMINER LANGAGE ################################################
-            
-    elif choix == "14":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automate = slots_automates[slot - 1]
-        if automate:
-            #langage_automate(automate)
-        else:
-            print("Aucun automate dans ce slot.")
-            
-            
-    ### LANGAGES EQUIVALENTS ##############################################
-            
-    elif choix == "15":
-        slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
-        automate1 = slots_automates[slot - 1]
-        slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
-        automate2 = slots_automates[slot - 1]
-        if automate1 & automate2:
-            #res = equivalence(automate1,automate2)
-        else:
-            print("Aucun automate dans ce slot.")
-            
-            
-    ### EMONDER AUTOMATE ##################################################
-            
-    elif choix == "16":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automate = slots_automates[slot - 1]
-        if automate:
-            #res = emonder(automate)
-            #if res != None:
-                #slot[slot_vide] = res
-        else:
-            print("Aucun automate dans ce slot.")
-            
-            
-    ### RENDRE MINIMAL ###################################################
-            
-    elif choix == "17":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automate = slots_automates[slot - 1]
-        if automate:
-            #res = minimal(automate)
-            #if res != None:
-                #slot[slot_vide] = res
-        else:
-            print("Aucun automate dans ce slot.")
-            
-            
-    ### MANUEL ###########################################################
-            
-    elif choix == "18":
-        #afficher_manuel()
-        
-        
-    ### EXIT #############################################################
+    # ### EXIT #############################################################
         
     elif choix == "19":
         qu = input("Après avoir quitté, vos automates seront supprimés des slots.\nAvez-vous bien exporté tous les automates que vous vouliez ? (0/N) \n")

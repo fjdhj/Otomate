@@ -111,20 +111,38 @@ Final_states: {self.final_states}
             print("La transition à supprimer n'existe pas")
     
     def edit_csv(self,file):
-        csv_file={}
-        rows, cols= len(self.matrix), len(self.matrix[0])
-        csv_file_temp=[["" for _ in range(rows)] for i in range(cols)]
-        for i in range(rows):
-            for j in range(cols):
-                csv_file_temp[j][i]=",".join(self.matrix[i][j]) if i<len(self.matrix) and j < len(self.matrix[i]) else None
-        csv_file.update({"etat":csv_file_temp[0]})
-        for i in range(len(self.transitions)): #J'ai changé transition pour self.transitions
-            csv_file.update({self.transitions[i]:[state for state in csv_file_temp[i+1]]})
-            
-        csv_file.update({"EI":self.initial_states})
-        csv_file.update({"EF":self.final_states})
-        df = pd.DataFrame(csv_file)
-        df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
+        self.display_states()
+        self.display_matrix()
+        csv_data = {
+            'etat': self.all_states,
+            'EI': self.initial_states,
+            'EF': self.final_states
+        }
+
+        for symbol_index, symbol in enumerate(self.transitions):
+            csv_data[symbol] = []
+            for state_index in range(len(self.all_states)):
+                transition_state = self.matrix[state_index][symbol_index + 1]
+
+                # Check if transition_state is a list and convert it to a string
+                if isinstance(transition_state, list):
+                    # Join non-empty elements, skipping 'nan' or empty elements
+                    transition_str = ','.join([str(ts) for ts in transition_state if ts and not pd.isna(ts)])
+                elif pd.isna(transition_state):
+                    # Replace 'nan' with an empty string
+                    transition_str = ''
+                else:
+                    # Convert non-list elements to string directly
+                    transition_str = str(transition_state)
+
+                csv_data[symbol].append(transition_str)
+
+        df = pd.DataFrame(csv_data)
+        column_order = ['etat'] + self.transitions + ['EI', 'EF']
+        df = df[column_order]
+
+        df.to_csv(f"Sample/{file}.csv", index=False, header=True, sep=';')
+
     
     def edit_csv_deterministic(self, file_name: str,AFD: list, final_state:list):
         csv_file={}
