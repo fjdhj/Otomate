@@ -2,6 +2,7 @@ import os
 import pandas as pd
 from graphviz import Digraph
 
+
 def csv_to_graphviz(csv_filename):
     # Read CSV using pandas
     df = pd.read_csv(csv_filename, delimiter=';')
@@ -11,15 +12,14 @@ def csv_to_graphviz(csv_filename):
 
     # Invisible nodes for initial state arrows
     for index, row in df.iterrows():
-        if bool(row['EI']):  # If it's an initial state
-            # Adjust the width and height to control arrow length
+        if row['EI'] == 1:  # If it's an initial state
             dot.node(f'init_{row["etat"]}', '', shape='point', width='0.1', height='0.1')
 
     # Add nodes and edges based on DataFrame 'df'
     for index, row in df.iterrows():
         state_name = row['etat']
-        is_initial = bool(row['EI'])
-        is_final = bool(row['EF'])
+        is_initial = row['EI'] == 1
+        is_final = row['EF'] == 1
 
         # Customize node attributes based on initial or final state
         node_shape = 'doublecircle' if is_final else 'circle'
@@ -28,19 +28,15 @@ def csv_to_graphviz(csv_filename):
         # Add edge from invisible node to initial state with green color
         if is_initial:
             dot.edge(f'init_{state_name}', state_name, color='green')
-# ...
 
         # Add edges for transitions
         for input_symbol in df.columns[1:-2]:  # Skip 'etat', 'EI', 'EF'
-            if pd.notnull(row[input_symbol]) and row[input_symbol] != 'nan':
+            if pd.notnull(row[input_symbol]) and row[input_symbol] != '':
                 targets = str(row[input_symbol]).split(',')
                 for target in targets:
                     target = target.strip()  # Clean whitespace
-                    if target and 'nan' not in target:
-                        # Skip adding an edge if any part of the target contains 'nan'
+                    if target:
                         dot.edge(state_name, target, label=input_symbol)
-
-        # ...
 
     return dot
 
@@ -60,8 +56,8 @@ def draw_and_save_automaton(csv_filename, output_image_filename):
 os.makedirs('output-png', exist_ok=True)
 
 # Paths for the CSV and the image file
-csv_path = 'Sample/test.csv'  # Replace with your actual CSV file path
-image_path = os.path.join('output-png', 'otomate2')
+csv_path = 'Sample/default.csv'  # Replace with your actual CSV file path
+image_path = os.path.join('output-png', 'otomate1')
 
 # Process the CSV file and save the automaton image
 draw_and_save_automaton(csv_path, image_path)

@@ -1,0 +1,14 @@
+// Automaton
+digraph {
+	init_q_even [label="" height=0.1 shape=point width=0.1]
+	q_even [label=q_even shape=doublecircle]
+	init_q_even -> q_even [color=green]
+	q_even -> q_even [label=0]
+	q_even -> q_odd [label=1]
+	q_odd [label=q_odd shape=circle]
+	q_odd -> q_odd [label=0]
+	q_odd -> q_even [label=1]
+	rankdir=LR size="16,10"
+	node [shape=circle]
+	dpi=300
+}
