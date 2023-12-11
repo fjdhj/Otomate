@@ -44,6 +44,11 @@ Note: The "Names of the state" column don't have a name in the header
 This example represent an AEF reading an binary number with an even number of 1
 
 [even.csv](Sample/Examples/even.csv)
+```
+etat;0;1;EI;EF
+q_even;q_even;q_odd;1;1
+q_odd;q_odd;q_even;0;0
+```
 
 We can represent this AEF with the folowing graph :\
 ![Even AEF graph](Sample/Examples/otomate.png)
@@ -52,7 +57,14 @@ We can represent this AEF with the folowing graph :\
 Other abstract example : 
 
 [abstract.csv](Sample/Examples/abstract.csv)
-
+```
+etat;a;b;c;d;e;f;g;h;i;k;EI;EF
+q0;q0;;;;;q1;;;;;1;1
+q1;;q1;;;;;q2;;;;0;0
+q2;;;q2;;;;;q3;;;0;1
+q3;;;;q3;;;;;q4;q0,q1;0;0
+q4;;;;;q4;;;;;;0;1
+```
 We can represent this AEF with the folowing graph :\
 ![Abstract AEF graph](Sample/Examples/otomate1.png)
 
