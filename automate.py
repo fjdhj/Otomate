@@ -646,7 +646,11 @@ Final_states: {self.final_states}
 
 
 automate1 = automate("UNITTEST/automaton_uncoaccessible.csv")
+automate1.display_matrix()
+
 automate1.trim()
+automate1.display_matrix()
+
 automate1.edit_csv("test")
 
 """     
