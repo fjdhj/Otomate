@@ -6,18 +6,16 @@ import pandas as pd
 import os
 import math
 from itertools import combinations
-file_name="otomate5.csv"
-#Initialize variables
-sample_event: list[list[str]]=utilities.init_graph(file_name)
-#Final_state and initial_state
-sample_state: list[list[str]]=utilities.init_statestypes(file_name)
 
-transition: list=utilities.transitions(file_name)
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 class automate:
     # initialize the basic automate
-    def __init__(self, filename: str, sample_event:list[list[str]], sample_state:list[list[str]], transition:list=transition) -> None:
-        
+    def __init__(self, file_name: str) -> None:
+        transition: list=utilities.transitions(file_name)
+        #Initialize variables
+        sample_event: list[list[str]]=utilities.init_graph(file_name)
+        #Final_state and initial_state
+        sample_state: list[list[str]]=utilities.init_statestypes(file_name)
         self.matrix: list=sample_event
         self.initial_states: list=sample_state[0]
         self.all_states: list=[state[0] for state in sample_event]
@@ -295,7 +293,7 @@ Final_states: {self.final_states}
         i_for_check+=len(new_states_to_check)-1
                 
         # Phase 2
-        result:list[list][list]=[[[] for i in range(len(transition))] for i in range(len(new_states_to_check))]
+        result:list[list][list]=[[[] for i in range(len(self.transitions))] for i in range(len(new_states_to_check))]
         new_st=[list(state.keys())[0] for state in new_states_to_check]
         #Put states at the right place
         for new_state in new_states_to_check:
@@ -303,13 +301,13 @@ Final_states: {self.final_states}
             state_possible_transition=new_state[key_name].split(",")
             
             for symb in symbols:
-                no_doublon_state:list=[[] for _ in range(len(transition))]
+                no_doublon_state:list=[[] for _ in range(len(self.transitions))]
                 no_doublon_states=[]
                 for state in state_possible_transition:
                     
                     state_to_check_transition:str=self.possible_transition(state,matrix,symb)
                     split_state_to_check_transition=state_to_check_transition.split(",")
-                    no_doublon_state[transition.index(symb)].append(split_state_to_check_transition)
+                    no_doublon_state[self.transitions.index(symb)].append(split_state_to_check_transition)
 
                     print(f"{key_name} | {state} : {state_to_check_transition} -> {symb}")
                     for i in range(len(new_states_to_check)):
@@ -614,7 +612,7 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-automate1=automate(sample_event, sample_state)
+automate1=automate("default.csv")
 # automate1.split_states()
 # #automate1.create_state("bidule")
 # automate1.display_states()
