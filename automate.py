@@ -550,22 +550,32 @@ Final_states: {self.final_states}
             state_expressions[state] = '(' + state_expressions[state] + ')*'
 
     def list_accessible_states(self):
+        if 1 not in self.initial_states:
+            # Handle the case where no initial state is defined
+            return []
         accessible_states = set()
         queue = []
-        initial_state = self.initial_states.index(1)  # Assuming there's only one initial state
-        accessible_states.add(initial_state)
-        queue.append(initial_state)
+
+        # Adding initial states to the queue
+        for index, is_initial in enumerate(self.initial_states):
+            if is_initial == 1:
+                state_name = self.all_states[index]
+                accessible_states.add(state_name)
+                queue.append(state_name)
 
         while queue:
-            state = queue.pop(0)
-            for trans_symbol, trans_state in zip(self.transitions, self.matrix[state][1:]):
-                next_states = [i for i, st in enumerate(self.all_states) if trans_state == st]
-                for next_state in next_states:
-                    if next_state not in accessible_states:
-                        accessible_states.add(next_state)
-                        queue.append(next_state)
+            current_state_name = queue.pop(0)
+            current_index = self.all_states.index(current_state_name)
 
-        return [self.all_states[state] for state in accessible_states]
+            for trans_symbol, trans_state in zip(self.transitions, self.matrix[current_index][1:]):
+                if trans_state is not None and not pd.isna(trans_state):
+                    next_states = [st for st in self.all_states if trans_state == st]
+                    for next_state_name in next_states:
+                        if next_state_name not in accessible_states:
+                            accessible_states.add(next_state_name)
+                            queue.append(next_state_name)
+
+        return list(accessible_states)
 
     def list_coaccessible_states(self):
         co_accessible = set()
@@ -644,16 +654,17 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
 
-
+#automate1 = automate("Sample/test.csv")
+"""
 automate1 = automate("UNITTEST/automaton_uncoaccessible.csv")
 automate1.display_matrix()
+automate1.display_states()
 
 automate1.trim()
-automate1.display_matrix()
 
 automate1.edit_csv("test")
 
-"""     
+     
 automate1=automate(sample_event, sample_state)
 
 automate1.display_states()
