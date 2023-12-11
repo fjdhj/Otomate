@@ -1,6 +1,3 @@
-;b;c;d;EI;EF;a
-0;q2;q3;bidule;0;0;q1
-1;q1,q2;q3;nan;0;0;q2
-2;nan;q1,q3;nan,boulot;0;0;q3
-3;q1;nan;nan;0;0;bidule
-4;q2;q1;nan;0;0;sale boulot
+etat;a;b;EI;EF
+q1;q2;;1;0
+q2;;q1;0;1

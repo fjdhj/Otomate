@@ -6,8 +6,9 @@ import pandas as pd
 import os
 import math
 from itertools import combinations
+import unittest
 
-file_name="default.csv"
+file_name="Sample/default.csv"
 #Initialize variables
 sample_event: list[list[str]]=utilities.init_graph(file_name)
 #Final_state and initial_state
@@ -112,7 +113,7 @@ Final_states: {self.final_states}
                 del line[index_transition+1] 
         else:
             print("La transition à supprimer n'existe pas")
-    
+    """
     def edit_csv(self,file):
         csv_file={}
         rows, cols= len(self.matrix), len(self.matrix[0])
@@ -128,7 +129,39 @@ Final_states: {self.final_states}
         csv_file.update({"EF":self.final_states})
         df = pd.DataFrame(csv_file)
         df.to_csv(f"Sample/{file}.csv", index=False, sep=';')
-    
+    """
+
+    def edit3_csv(self, filename):
+        csv_data = {
+            'etat': self.all_states,
+            'EI': self.initial_states,
+            'EF': self.final_states
+        }
+
+        for symbol_index, symbol in enumerate(self.transitions):
+            csv_data[symbol] = []
+            for state_index in range(len(self.all_states)):
+                transition_state = self.matrix[state_index][symbol_index + 1]
+
+                # Check if transition_state is a list and convert it to a string
+                if isinstance(transition_state, list):
+                    # Join non-empty elements, skipping 'nan' or empty elements
+                    transition_str = ','.join([str(ts) for ts in transition_state if ts and not pd.isna(ts)])
+                elif pd.isna(transition_state):
+                    # Replace 'nan' with an empty string
+                    transition_str = ''
+                else:
+                    # Convert non-list elements to string directly
+                    transition_str = str(transition_state)
+
+                csv_data[symbol].append(transition_str)
+
+        df = pd.DataFrame(csv_data)
+        column_order = ['etat'] + self.transitions + ['EI', 'EF']
+        df = df[column_order]
+
+        df.to_csv(f"Sample/{filename}.csv", index=False, header=True, sep=';')
+
     def possible_transition(self, current_state: str, matrix: list, symbols: list) -> list:
         """Récupère les transitions possibles pour passer d'un état à un autre en fonction du symbole fourni.
 
@@ -617,6 +650,12 @@ Final_states: {self.final_states}
         
 automate1=automate(sample_event, sample_state)
 
+automate1.display_states()
+automate1.display_matrix()
+
+automate1.trim()
+
+automate1.display_matrix()
 
 automate1.edit_csv("test")
 
