@@ -6,7 +6,8 @@ import pandas as pd
 import os
 import math
 from itertools import combinations
-file_name="otomate5.csv"
+
+file_name="default.csv"
 #Initialize variables
 sample_event: list[list[str]]=utilities.init_graph(file_name)
 #Final_state and initial_state
@@ -615,12 +616,15 @@ Final_states: {self.final_states}
         return modified
         
 automate1=automate(sample_event, sample_state)
+
+
+automate1.edit_csv("test")
+
 # automate1.split_states()
 # #automate1.create_state("bidule")
 # automate1.display_states()
 
 # print(automate1.is_complete())
-automate1.display_matrix()
 # print(automate1.is_deterministic())
 
 # automate1.create_state("sale boulot")
@@ -639,7 +643,3 @@ automate1.display_matrix()
 #     automate1.AND_to_AFD(automate1.matrix)
 # automate1.edit_csv("test")
 # pprint(automate1.AND_to_AFD())
-pprint(automate1.AND_to_AFD())
-
-
-automate1.edit_csv("test")
