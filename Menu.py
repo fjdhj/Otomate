@@ -1,4 +1,4 @@
-import automate
+from automate import *
 
 
 #class Automate:
