@@ -19,7 +19,7 @@ class automate:
         sample_event: list[list[str]]=utilities.init_graph(file_name)
         #Final_state and initial_state
         sample_state: list[list[str]]=utilities.init_statestypes(file_name)
-        self.matrix: list=sample_event
+        self.matrix: list[list[str]]=sample_event
         self.initial_states: list=sample_state[0]
         self.all_states: list=[state[0] for state in sample_event]
         self.final_states: list=sample_state[1]
@@ -31,7 +31,7 @@ class automate:
         while(name in self.all_states):
             name = str(input("Entrez le nom du nouvel état"))
         self.matrix.append([])
-        self.matrix[-1].append([name])
+        self.matrix[-1].append(name)
         self.initial_states.append(0)
         self.final_states.append(0)
         self.all_states.append(name)
@@ -66,6 +66,7 @@ Final_states: {self.final_states}
                 if len(row) > 1:
                     return False
         return True
+    
 
     def display_transition(self):
         print(self.transitions)
@@ -83,9 +84,9 @@ Final_states: {self.final_states}
         index_transition=self.transitions.index(transition)
         if(self.matrix[index_state][index_transition+1][0] == "nan"):
             del self.matrix[index_state][index_transition+1][0]
-        self.matrix[index_state][index_transition+1].append(final_state)
+        self.matrix[index_state][index_transition+1] = final_state
         
-        
+
     def display_matrix(self):
         pprint(self.matrix)
 
@@ -630,7 +631,7 @@ Final_states: {self.final_states}
             index_state = self.all_states.index(state)
             for transition in self.transitions:
                 index_transition = self.transitions.index(transition)
-                if(self.matrix[index_state][index_transition+1] == ["nan"]):
+                if(self.matrix[index_state][index_transition+1]) == "nan":
                     if (modified == False):
                         modified = True
                         if ("poubelle" not in self.all_states):
@@ -640,7 +641,7 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-automate1=automate("otomate5.csv")
+# automate1=automate("otomate5.csv")
 # automate1.display_matrix()
 # automate1.display_states()
 # automate1.make_complete()
@@ -665,7 +666,7 @@ automate1=automate("otomate5.csv")
 # automate1.delete_state("q0")
 # automate1.display_states()
 # automate1.display_matrix()
-print(automate1.recognize_wordAFD("ab"))
+#print(automate1.recognize_wordAFD("ab"))
 # if not automate1.is_deterministic():
 #     auto=automate1.AND_to_AFD()
 # automate1.edit_csv("a",auto[0],auto[1])
@@ -676,3 +677,14 @@ print(automate1.recognize_wordAFD("ab"))
 
 
 #automate1.edit_csv("test")
+
+
+# automate1 = automate("default3.csv")
+# automate1.display_matrix()
+# automate1.display_states()
+# print(automate1.make_complete())
+# automate1.display_matrix()
+# automate1.display_states()
+# list=['jj','cc']
+# list_=",".join(list)
+# print(list,list_)
