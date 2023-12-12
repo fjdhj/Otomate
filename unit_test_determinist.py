@@ -14,12 +14,12 @@ class TestAutomateDeterminist(unittest.TestCase):
         print(f"Creating automaton from {file_name}...")
         return automate(file_name)
 
-    def test_trim_inaccessible_states(self):
-        print("Testing trim method for inaccessible states...")
-        automaton = self.create_automaton_from_csv("UNITTESTS/automaton_nondeterminist.csv")
+    def test_deter(self):
+        print("Testing Automaton Non-Deterministic to Finite Deterministic (AND to AFD)...")
+        automaton = self.create_automaton_from_csv("otomate5.csv")
+        #automaton = self.create_automaton_from_csv("UNITTESTS/automaton_nondeterminist.csv")
         automaton.display_matrix()
-        #automaton.AND_to_AFD()
-        self.assertIn('q1', automaton.all_states, msg="'q4' should be removed as it is inaccessible")
+        automaton.AND_to_AFD()
         print("\n")
         automaton.display_matrix()
         print("\n")

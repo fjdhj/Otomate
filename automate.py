@@ -641,6 +641,7 @@ Final_states: {self.final_states}
         return modified
         
 automate1=automate("otomate5.csv")
+auto=""
 # automate1.display_matrix()
 # automate1.display_states()
 # automate1.make_complete()
@@ -665,10 +666,9 @@ automate1=automate("otomate5.csv")
 # automate1.delete_state("q0")
 # automate1.display_states()
 # automate1.display_matrix()
-print(automate1.recognize_wordAFD("ab"))
-# if not automate1.is_deterministic():
-#     auto=automate1.AND_to_AFD()
-# automate1.edit_csv("a",auto[0],auto[1])
+#print(automate1.recognize_wordAFD("ab"))
+auto=automate1.AND_to_AFD()
+auto.edit_csv("test",auto[0],auto[1])
 # pprint(automate1.AND_to_AFD())
 # AFD=automate1.AND_to_AFD()
 # print(AFD[0])

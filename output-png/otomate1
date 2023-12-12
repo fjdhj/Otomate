@@ -1,23 +1,15 @@
 // Automaton
 digraph {
 	init_q0 [label="" height=0.1 shape=point width=0.1]
-	q0 [label=q0 shape=doublecircle]
+	q0 [label=q0 shape=circle]
 	init_q0 -> q0 [color=green]
 	q0 -> q0 [label=a]
-	q0 -> q1 [label=f]
+	q0 -> q1 [label=a]
 	q1 [label=q1 shape=circle]
-	q1 -> q1 [label=b]
-	q1 -> q2 [label=g]
+	q1 -> q1 [label=a]
+	q1 -> q2 [label=b]
 	q2 [label=q2 shape=doublecircle]
-	q2 -> q2 [label=c]
-	q2 -> q3 [label=h]
-	q3 [label=q3 shape=circle]
-	q3 -> q3 [label=d]
-	q3 -> q4 [label=i]
-	q3 -> q0 [label=k]
-	q3 -> q1 [label=k]
-	q4 [label=q4 shape=doublecircle]
-	q4 -> q4 [label=e]
+	q2 -> q2 [label=a]
 	rankdir=LR size="16,10"
 	node [shape=circle]
 	dpi=300
