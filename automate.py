@@ -373,8 +373,7 @@ Final_states: {self.final_states}
 
     def complement(self):
         # Inverting final states: If a state is final (1), it becomes non-final (0) and vice versa.
-        self.final_states = [1 if state ==
-                             0 else 0 for state in self.final_states]
+        self.final_states = [1 if state == 0 else 0 for state in self.final_states]
 
     def mirror(self):
         # Initialize a mirrored matrix

@@ -217,39 +217,37 @@ while True:
             
     # ### AUTOMATE MIROIR ######################################################
             
-    # elif choix == "9":
-    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
-    #     automate = slots_automates[slot - 1]
-    #     if automate:
-    #         #slot[slot_vide] = miroir(automate)
-    #     else:
-    #         print("Aucun automate dans ce slot.")
+    elif choix == "9":
+        slot = int(input("Entrez le numéro du slot (1-10) : "))
+        automaton = slots[slot - 1]
+        if automaton:
+            automaton.mirror()
+        else:
+            print("Aucun automate dans ce slot.")
             
         
     # ### AUTOMATE COMPLEMENTAIRE #############################################
             
-    # elif choix == "10":
-    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
-    #     automate = slots_automates[slot - 1]
-    #     if automate:
-    #         #slot[slot_vide] = complément(automate)
-    #     else:
-    #         print("Aucun automate dans un des slots sélectionnés.")
+    elif choix == "10":
+        slot = int(input("Entrez le numéro du slot (1-10) : "))
+        automaton = slots[slot - 1]
+        if automaton:
+            automaton.complement()
+        else:
+            print("Aucun automate dans ce slot.")
     
     
     # ### PRODUIT D'AUTOMATES #################################################
             
-    # elif choix == "11":
-    #     slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
-    #     automate1 = slots_automates[slot - 1]
-    #     slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
-    #     automate2 = slots_automates[slot - 1]
-    #     if automate1 & automate2:
-    #         #res = produit(automate1,automate2)
-    #         #if res != None:
-    #             #slot[slot_vide] = res
-    #     else:
-    #         print("Aucun automate dans ce slot.")
+    elif choix == "11":
+        slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
+        automaton1 = slots[slot - 1]
+        slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
+        automaton2 = slots[slot - 1]
+        if automaton1 & automaton2:
+            automaton1.product(automaton2)
+        else:
+            print("Aucun automate dans ce slot.")
             
             
     # ### CONCATENATION ######################################################
