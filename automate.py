@@ -6,7 +6,7 @@ import pandas as pd
 import os
 import math
 from itertools import combinations
-
+import numpy as np
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 class automate:
     # initialize the basic automate
@@ -135,6 +135,9 @@ Final_states: {self.final_states}
         df = pd.DataFrame(csv_file)
         df.to_csv(f"Sample/{file_name}.csv", index=False, sep=';')
         
+        df2=pd.read_csv(f"Sample/{file_name}.csv",sep=";")
+        df2.replace('nan',np.nan, inplace=True)
+        df2.to_csv(f"Sample/{file_name}.csv", index=False, sep=';')
         
     def possible_transition(self, current_state: str, matrix: list, symbols: list) -> list:
         """Récupère les transitions possibles pour passer d'un état à un autre en fonction du symbole fourni.
@@ -640,7 +643,7 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-automate1=automate("otomate5.csv")
+automate1=automate("Sample/fichier2.csv.csv")
 automate1.display_matrix()
 # automate1.display_states()
 # automate1.make_complete()
@@ -668,7 +671,7 @@ automate1.display_matrix()
 #print(automate1.recognize_wordAFD("ab"))
 # if not automate1.is_deterministic():
 #     auto=automate1.AND_to_AFD()
-# automate1.edit_csv("a",auto[0],auto[1])
+automate1.edit_csv("a",automate1.matrix,automate1.final_states)
 # pprint(automate1.AND_to_AFD())
 # AFD=automate1.AND_to_AFD()
 # print(AFD[0])
