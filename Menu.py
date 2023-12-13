@@ -133,12 +133,8 @@ while True:
         slot = int(input("Entrez le numéro du slot (1-10) : "))
         is_deterministic:bool=str(input("Votre tableau est il un tableau que vous avez déterminiser [y/n]"))
         automaton :automate= slots[slot - 1]
-        if is_deterministic=="y":
-            file_name=str(input("Type the file name to export automaton:\n"))
-            automaton.edit_csv(file_name,auto[0],auto[1])
-        elif is_deterministic=="n":
-            file_name=str(input("Type the file name to export automaton:\n"))
-            automaton.edit_csv(file_name, automaton.matrix,automaton.final_states)
+        file_name=str(input("Type the file name to export automaton:\n"))
+        automaton.edit_csv(file_name, automaton.matrix,automaton.final_states)
             
     # ### CREATION #################################################################
      
