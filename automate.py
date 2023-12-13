@@ -690,3 +690,11 @@ automate1.edit_csv("a",automate1.matrix,automate1.final_states)
 # list=['jj','cc']
 # list_=",".join(list)
 # print(list,list_)
+
+"""POUR IMAHD
+Comment edit un csv deterministe:
+1) Tu initialises une variable:
+auto=automate1.AND_to_AFD()
+auto.edit_csv("a", auto[0], auto[1])
+et après tu vas dans sample et le nom de fichier a.csv
+"""
