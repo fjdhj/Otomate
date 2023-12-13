@@ -343,7 +343,7 @@ Final_states: {self.final_states}
         for k in range(len(new_st)):
            new_st[k]:list=new_st[k].split(",")
            new_st[k].extend(result[k])
-        return (new_st,all_final_state)
+        self.matrix,self.final_states=new_st, all_final_state
 
     
         
@@ -671,7 +671,7 @@ automate1.display_matrix()
 #print(automate1.recognize_wordAFD("ab"))
 if not automate1.is_deterministic():
     auto=automate1.AND_to_AFD()
-automate1.edit_csv("a",auto[0],auto[1])
+automate1.edit_csv("ab",automate1.matrix,automate1.final_states)
 # pprint(automate1.AND_to_AFD())
 # AFD=automate1.AND_to_AFD()
 # print(AFD[0])
