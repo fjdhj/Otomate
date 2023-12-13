@@ -118,7 +118,7 @@ Final_states: {self.final_states}
             
     #TODO Créer la suppression d'une liaison (pas supprimer l'intégralité de la transition)
             
-    # FIXME add origramm for transition
+    # FIXME add programm for transition
     def edit_csv(self, file_name: str,AFD: list, final_state:list):
         csv_file={}
         rows, cols= len(AFD), len(AFD[0])
@@ -643,7 +643,7 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-automate1=automate("Sample/fichier2.csv.csv")
+automate1=automate("otomate5.csv")
 automate1.display_matrix()
 # automate1.display_states()
 # automate1.make_complete()
@@ -669,9 +669,9 @@ automate1.display_matrix()
 # automate1.display_states()
 # automate1.display_matrix()
 #print(automate1.recognize_wordAFD("ab"))
-# if not automate1.is_deterministic():
-#     auto=automate1.AND_to_AFD()
-automate1.edit_csv("a",automate1.matrix,automate1.final_states)
+if not automate1.is_deterministic():
+    auto=automate1.AND_to_AFD()
+automate1.edit_csv("a",auto[0],auto[1])
 # pprint(automate1.AND_to_AFD())
 # AFD=automate1.AND_to_AFD()
 # print(AFD[0])
