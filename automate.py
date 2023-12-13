@@ -551,6 +551,10 @@ Final_states: {self.final_states}
             state_expressions[state] = '(' + state_expressions[state] + ')*'
 
     def list_accessible_states(self):
+        if 1 not in self.initial_states:
+            # Handle the scenario when there is no initial state
+            return []
+
         accessible_states = set()
         queue = []
         initial_state = self.initial_states.index(1)  # Assuming there's only one initial state
@@ -646,8 +650,8 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-automate1=automate("otomate5.csv")
-automate1.display_matrix()
+#automate1=automate("otomate5.csv")
+#automate1.display_matrix()
 # automate1.display_states()
 # automate1.make_complete()
 # automate1.display_matrix()
@@ -672,9 +676,9 @@ automate1.display_matrix()
 # automate1.display_states()
 # automate1.display_matrix()
 #print(automate1.recognize_wordAFD("ab"))
-if not automate1.is_deterministic():
-    auto=automate1.AND_to_AFD()
-automate1.edit_csv("ab",automate1.matrix,automate1.final_states)
+#if not automate1.is_deterministic():
+#    automate1.AND_to_AFD()
+#automate1.edit_csv("test",automate1.matrix,automate1.final_states)
 # pprint(automate1.AND_to_AFD())
 # AFD=automate1.AND_to_AFD()
 # print(AFD[0])

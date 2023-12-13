@@ -20,6 +20,9 @@ class TestAutomateDeterminist(unittest.TestCase):
         #automaton = self.create_automaton_from_csv("UNITTESTS/automaton_nondeterminist.csv")
         automaton.display_matrix()
         automaton.AND_to_AFD()
+        self.assertNotIn('q2', automaton.all_states, msg="'q2' should be removed")
+        self.assertEqual(len(automaton.all_states), 3, msg="No states should be removed as all are accessible and coaccessible")
+
         print("\n")
         automaton.display_matrix()
         print("\n")
