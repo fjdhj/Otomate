@@ -344,6 +344,9 @@ Final_states: {self.final_states}
            new_st[k]:list=new_st[k].split(",")
            new_st[k].extend(result[k])
         self.matrix,self.final_states=new_st, all_final_state
+        self.all_states=[]
+        for i in range(len(new_st)):
+            self.all_states.append(new_st[i][0])
 
     
         
