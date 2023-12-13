@@ -18,7 +18,6 @@ def init_graph(file)->list:
     graph = automate.iloc[0 :dimension[0],0 : dimension[1]-2]
     graph_to_list=[graph.loc[i,:].values.tolist() for i in range(dimension[0])]  
     graph_to_list_final = [["nan" if type(graph_to_list[i][j]) == float else graph_to_list[i][j] for j in range(len(graph_to_list[i]))] for i in range(len(graph_to_list)) ]      
-    print(graph_to_list_final)
     return graph_to_list_final
 
 def init_statestypes(file)->list:

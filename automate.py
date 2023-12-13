@@ -640,8 +640,8 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-# automate1=automate("otomate5.csv")
-# automate1.display_matrix()
+automate1=automate("otomate5.csv")
+automate1.display_matrix()
 # automate1.display_states()
 # automate1.make_complete()
 # automate1.display_matrix()
