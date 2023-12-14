@@ -138,10 +138,12 @@ Final_states: {self.final_states}
         for i in range(rows):
             for j in range(cols):
                 csv_file_temp[j][i]=AFD[i][j] if i<len(AFD) and j < len(AFD[i]) else None
+        pprint(csv_file_temp)
         csv_file.update({"etat":csv_file_temp[0]})
         for i in range(len(self.transitions)): #J'ai changé transition pour self.transitions
             csv_file.update({self.transitions[i]:[state for state in csv_file_temp[i+1]]})
         
+        pprint(csv_file)
         csv_file.update({"EI":self.initial_states})
         csv_file.update({"EF":final_state})
         df = pd.DataFrame(csv_file)
@@ -302,7 +304,7 @@ Final_states: {self.final_states}
                         # We eliminate duplicate elements
                         unique_elements = set()
                         for element in Possible_transitions:
-                            unique_elements.update(element.split(','))
+                            unique_elements.update(str(element).split(','))
                         Possible_transitions=",".join(list(sorted(unique_elements)))
                         
                         not_in_states=False
@@ -348,14 +350,25 @@ Final_states: {self.final_states}
             print()
         self.join_list(result)
         i_final_state: int=self.final_states.index(1)
+        i_initial_state: int=self.initial_states.index(1)
         final_state: str=self.all_states[i_final_state]
+        initial_state: str=self.all_states[i_initial_state]
         all_final_state=[0 for i in range(len(new_states_to_check))]
+        all_initial_state=[0 for i in range(len(new_states_to_check))]
+        self.all_states=new_st
+        #create initial_state
+        for i in range(len(new_states_to_check)):
+            key_name=list(new_states_to_check[i].keys())[0]
+            if initial_state in new_states_to_check[i][key_name].split(","):
+                all_initial_state[i]=1
+
         # Create new and new final
         self.init_new_final_state(new_states_to_check, final_state, all_final_state)
         for k in range(len(new_st)):
            new_st[k]:list=new_st[k].split(",")
            new_st[k].extend(result[k])
         self.matrix,self.final_states=new_st, all_final_state
+        self.initial_states=all_initial_state
         self.all_states=[]
         for i in range(len(new_st)):
             self.all_states.append(new_st[i][0])
@@ -662,7 +675,7 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-#automate1=automate("otomate5.csv")
+automate1=automate("otomate5.csv")
 #automate1.display_matrix()
 # automate1.display_states()
 # automate1.make_complete()
@@ -688,9 +701,16 @@ Final_states: {self.final_states}
 # automate1.display_states()
 # automate1.display_matrix()
 #print(automate1.recognize_wordAFD("ab"))
-#if not automate1.is_deterministic():
-#    automate1.AND_to_AFD()
-#automate1.edit_csv("test",automate1.matrix,automate1.final_states)
+
+automate1.make_complete()
+print(automate1.is_complete())
+print(automate1.display_matrix())
+if not automate1.is_deterministic():
+    automate1.AND_to_AFD()
+automate1.display_states()
+automate1.edit_csv("testyy",automate1.matrix,automate1.final_states)
+
+print(automate1.display_matrix())
 # pprint(automate1.AND_to_AFD())
 # AFD=automate1.AND_to_AFD()
 # print(AFD[0])
