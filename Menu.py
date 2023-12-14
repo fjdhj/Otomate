@@ -102,8 +102,9 @@ while True:
     print("15. Equivalence entre 2 automates")
     print("16. Emonder automate")
     print("17. Rendre un automate minimal")
-    print("18. Manuel")
-    print("19. Quitter le programme\n")
+    print("18. Visualiser un automate")
+    print("19. Manuel")
+    print("20. Quitter le programme\n")
     
     choix = input("Choisissez une action : ")
     print("\n")
@@ -285,16 +286,17 @@ while True:
             
     # ### EMONDER AUTOMATE ##################################################
             
-
-    elif choix == "16":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automaton = slots[slot - 1]
-        if automaton:
-            automaton.trim()
-        else:
-            print("Aucun automate dans ce slot.")
-    
-    
+    # elif choix == "16":
+    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
+    #     automate = slots_automates[slot - 1]
+    #     if automate:
+    #         #res = emonder(automate)
+    #         #if res != None:
+    #             #slot[slot_vide] = res
+    #     else:
+    #         print("Aucun automate dans ce slot.")
+            
+            
     # ### RENDRE MINIMAL ###################################################
             
     # elif choix == "17":
@@ -308,15 +310,26 @@ while True:
     #         print("Aucun automate dans ce slot.")
             
             
+    ### VISUALISATION ######################################################
+    
+    elif choix == "18":
+        slot = int(input("Entrez le numéro du slot (1-10) : "))
+        automaton = slots[slot - 1]
+        if automaton:
+            #automaton.visu()
+            pass
+        else:
+            print("Aucun automate dans ce slot.\n")
+        
     # ### MANUEL ###########################################################
             
-    # elif choix == "18":
+    # elif choix == "19":
     #     #afficher_manuel()
         
-        
+    
     # ### EXIT #############################################################
         
-    elif choix == "19":
+    elif choix == "20":
         qu = input("Après avoir quitté, vos automates seront supprimés des slots.\nAvez-vous bien exporté tous les automates que vous vouliez ? (0/N) \n")
         if qu in ["O","OUI","Oui","o","oui","Yes","Y","y","yes","YES"]:
             print("Merci et à bientôt !")
