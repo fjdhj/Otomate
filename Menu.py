@@ -118,6 +118,7 @@ while True:
             file_name=str(input("Type the file name to import automaton:\n"))
             slots[slot_vide] = automate(file_name) 
             print(slots)
+            print("Automate enregistré dans le slot : ",slot_vide,"\n\n")
         else:
             print("Aucun slot disponible pour créer un nouvel automate.\n")  
     
@@ -125,10 +126,11 @@ while True:
         
     elif choix == "2":
         slot = int(input("Entrez le numéro du slot (1-10) : "))
-        is_deterministic:bool=str(input("Votre tableau est il un tableau que vous avez déterminiser [y/n]"))
+        #is_deterministic:bool=str(input("Votre tableau est il un tableau que vous avez déterminiser [y/n]"))
         automaton :automate= slots[slot - 1]
         file_name=str(input("Type the file name to export automaton:\n"))
         automaton.edit_csv(file_name, automaton.matrix,automaton.final_states)
+        print("Traitement effectué.\n\n")
             
     # ### CREATION #################################################################
      
@@ -137,6 +139,7 @@ while True:
             file_name=str(input("Type the file name to import automaton:\n"))
             slots[slot_vide] = automate(file_name)
             print(slots)
+            print("Traitement effectué.\n\n")
         else:
             print("Aucun slot disponible pour créer un nouvel automate.\n")   
     
@@ -147,6 +150,7 @@ while True:
         automaton = slots[slot - 1]
         if automaton:
             modifier_automate(automaton)
+            print("Traitement effectué.\n\n")
         else:
             print("Aucun automate dans ce slot.\n")
             
@@ -156,6 +160,7 @@ while True:
     elif choix == "5":
         slot = int(input("Entrez le numéro du slot (1-10) : "))
         slots[slot - 1] = None
+        print("Surppression effectuée.\n\n")
         
         
     # ### PASSER UN MOT ###########################################################
@@ -165,6 +170,7 @@ while True:
         automaton: automate = slots[slot - 1]
         if automaton:
             automaton.recognize_wordAFD(str(input("Entrez le mot à vérifier : \n")))
+            print("Traitement effectué.\n\n")
         else:
             print("Aucun automate dans ce slot.\n")
             
@@ -176,10 +182,11 @@ while True:
         automaton = slots[slot - 1]
         if automaton:
             if(automaton.is_complete()):
-                print("L'automate est complet")
+                print("L'automate est complet.")
             else:
                 if(input("L'automate n'est pas complet, voulez-vous le rendre complet ? [Y/N]\n") == "Y"):
                     automaton.make_complete()
+                    print("Traitement effectué.\n\n")
         else:
             print("Aucun automate dans ce slot.\n")
             
@@ -191,10 +198,11 @@ while True:
         automaton = slots[slot - 1]
         if automaton:
             if(automaton.is_deterministic()):
-                print("L'automate est déterministe")
+                print("L'automate est déterministe.")
             else:
-                if(input("L'automate n'est pas déterministe, voulez-vous le rendre complet ? [Y/N]\n") == "Y"):
+                if(input("L'automate n'est pas déterministe, voulez-vous le rendre déterministe ? [Y/N]\n") == "Y"):
                     auto=automaton.AND_to_AFD()
+                    print("Traitement effectué.\n\n")
         else:
             print("Aucun automate dans ce slot.\n")
             
@@ -206,6 +214,7 @@ while True:
         automaton = slots[slot - 1]
         if automaton:
             automaton.mirror()
+            print("Traitement effectué.\n\n")
         else:
             print("Aucun automate dans ce slot.\n")
             
@@ -217,6 +226,7 @@ while True:
         automaton = slots[slot - 1]
         if automaton:
             automaton.complement()
+            print("Traitement effectué.\n\n")
         else:
             print("Aucun automate dans ce slot.\n")
     
@@ -230,6 +240,7 @@ while True:
         automaton2 = slots[slot - 1]
         if automaton1 & automaton2:
             automaton1.product(automaton2)
+            print("Traitement effectué.\n\n")
         else:
             print("Aucun automate dans ce slot.\n")
             
@@ -318,6 +329,7 @@ while True:
         if automaton:
             #automaton.visu()
             pass
+            print("Traitement effectué.\n\n")
         else:
             print("Aucun automate dans ce slot.\n")
         
