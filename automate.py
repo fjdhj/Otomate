@@ -365,14 +365,8 @@ Final_states: {self.final_states}
         final_state: str=self.all_states[i_final_state]
         initial_state: str=self.all_states[i_initial_state]
         all_final_state=[0 for i in range(len(new_states_to_check))]
-        all_initial_state=[0 for i in range(len(new_states_to_check))]
+        all_initial_state=[1 if new_states_to_check[i][new_st[i]]==new_states_to_check[0]["S0"] else 0 for i in range(len(new_states_to_check)) ]
         self.all_states=new_st
-        #create initial_state
-        for i in range(len(new_states_to_check)):
-            key_name=list(new_states_to_check[i].keys())[0]
-            if initial_state in new_states_to_check[i][key_name].split(","):
-                all_initial_state[i]=1
-
         # Create new and new final
         self.init_new_final_state(new_states_to_check, final_state, all_final_state)
         for k in range(len(new_st)):
