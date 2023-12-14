@@ -1,14 +1,6 @@
 from automate import automate
 
 
-#class Automate:
-#    def __init__(self, nom, etats, transitions, liaisons):
-#        self.nom = nom
-#        self.etats = etats
-#        self.transitions = transitions
-#        self.liaisons = liaisons
-
-
 def modifier_automate(actual_auto:automate):
     # Menu de modification d'automate
     while True:
@@ -19,7 +11,7 @@ def modifier_automate(actual_auto:automate):
         print("4. Supprimer une transition")
         print("5. Ajouter une liaison")
         print("6. Supprimer une liaison")
-        print("7. Revenir au menu principal")
+        print("7. Revenir au menu principal\n")
 
         choix_modification = input("Choisissez une action : ")
 
@@ -92,7 +84,7 @@ while True:
             
     ### MENU #############################################################################
     
-    print("\nMenu principal :")
+    print("\nMenu principal :\n")
     print("1. Importer automate")
     print("2. Exporter automate")
     print("3. Créer automate")
@@ -111,9 +103,10 @@ while True:
     print("16. Emonder automate")
     print("17. Rendre un automate minimal")
     print("18. Manuel")
-    print("19. Quitter le programme")
+    print("19. Quitter le programme\n")
     
     choix = input("Choisissez une action : ")
+    print("\n")
 
 
     ### IMPORTATION ##############################################################
@@ -125,7 +118,7 @@ while True:
             slots[slot_vide] = automate(file_name) 
             print(slots)
         else:
-            print("Aucun slot disponible pour créer un nouvel automate.")  
+            print("Aucun slot disponible pour créer un nouvel automate.\n")  
     
     ### EXPORTATION ##############################################################
         
@@ -144,13 +137,7 @@ while True:
             slots[slot_vide] = automate(file_name)
             print(slots)
         else:
-            print("Aucun slot disponible pour créer un nouvel automate.")   
-            
-    # elif choix == "3":
-    #     if slot_vide is not None:
-    #         slots[slot_vide] = creer_automate()
-    # else:
-    #     print("Aucun slot disponible pour créer un nouvel automate.")
+            print("Aucun slot disponible pour créer un nouvel automate.\n")   
     
     # ### MODIFICATION ############################################################
             
@@ -160,7 +147,7 @@ while True:
         if automaton:
             modifier_automate(automaton)
         else:
-            print("Aucun automate dans ce slot.")
+            print("Aucun automate dans ce slot.\n")
             
             
     # ### SUPPRESSION #############################################################
@@ -178,7 +165,7 @@ while True:
         if automaton:
             automaton.recognize_wordAFD(str(input("Entrez le mot à vérifier : \n")))
         else:
-            print("Aucun automate dans ce slot.")
+            print("Aucun automate dans ce slot.\n")
             
             
     # ### AUTOMATE COMPLET #######################################################
@@ -193,7 +180,7 @@ while True:
                 if(input("L'automate n'est pas complet, voulez-vous le rendre complet ? [Y/N]\n") == "Y"):
                     automaton.make_complete()
         else:
-            print("Aucun automate dans ce slot.")
+            print("Aucun automate dans ce slot.\n")
             
     
     # ### AUTOMATE DETERMINISTE #################################################
@@ -208,7 +195,7 @@ while True:
                 if(input("L'automate n'est pas déterministe, voulez-vous le rendre complet ? [Y/N]\n") == "Y"):
                     auto=automaton.AND_to_AFD()
         else:
-            print("Aucun automate dans ce slot.")
+            print("Aucun automate dans ce slot.\n")
             
             
     # ### AUTOMATE MIROIR ######################################################
@@ -219,7 +206,7 @@ while True:
         if automaton:
             automaton.mirror()
         else:
-            print("Aucun automate dans ce slot.")
+            print("Aucun automate dans ce slot.\n")
             
         
     # ### AUTOMATE COMPLEMENTAIRE #############################################
@@ -230,7 +217,7 @@ while True:
         if automaton:
             automaton.complement()
         else:
-            print("Aucun automate dans ce slot.")
+            print("Aucun automate dans ce slot.\n")
     
     
     # ### PRODUIT D'AUTOMATES #################################################
@@ -243,7 +230,7 @@ while True:
         if automaton1 & automaton2:
             automaton1.product(automaton2)
         else:
-            print("Aucun automate dans ce slot.")
+            print("Aucun automate dans ce slot.\n")
             
             
     # ### CONCATENATION ######################################################
@@ -335,6 +322,6 @@ while True:
             print("Merci et à bientôt !")
             break
         else:
-            print("Retour au menu principal.")
+            print("\nRetour au menu principal.\n")
     else:
-        print("Choix invalide. Veuillez réessayer.")
+        print("\nChoix invalide. Veuillez réessayer.\n")
