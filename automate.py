@@ -301,6 +301,7 @@ Final_states: {self.final_states}
                         # loop states ex: S1->{q0,q1}
                         Possible_transitions=[]
                         for state in states:
+                            # if there is a nan we do nothing
                             try:
                                 Possible_transition=self.possible_transition(state,matrix,symb)
                             except ValueError as e:
