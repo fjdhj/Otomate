@@ -271,7 +271,7 @@ while True:
             file_name=str(input("Type the file name to import automaton:\n"))
             slots[slot_vide] = automate(file_name) 
             print(slots)
-            print("Automate enregistré dans le slot : ",slot_vide,"\n\n")
+            print("Automate enregistré dans le slot : ",slot_vide+1,"\n\n")
         else:
             print("Aucun slot disponible pour créer un nouvel automate.\n")  
     
@@ -289,7 +289,7 @@ while True:
      
     elif choix == "3":
         if slot_vide is not None:
-            file_name=str(input("Type the file name to import automaton:\n"))
+            file_name=str(input("Type the file name to create automaton:\n"))
             slots[slot_vide] = automate(file_name)
             print(slots)
             print("Traitement effectué.\n\n")
