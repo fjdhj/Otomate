@@ -64,14 +64,14 @@ class automate:
     
     def create_state(self,name)->None:
         while(name in self.all_states):
-            name = str(input("Entrez le nom du nouvel état"))
+            name = str(input("Entrez le nom du nouvel état : "))
         self.matrix.append([])
         self.matrix[-1].append(name)
         self.initial_states.append(0)
         self.final_states.append(0)
         self.all_states.append(name)
         for i in range(1,len(self.matrix[0])):
-            self.matrix[-1].append(['nan'])
+            self.matrix[-1].append(["nan"])
 
     # display the necessary information about the states 
     def display_states(self) -> None:
@@ -121,6 +121,7 @@ Final_states: {self.final_states}
     def create_transition(self, transition):
         self.transitions.append(transition)
         for line in self.matrix:
+            line.append("nan")
             line.append("nan")
 
         
@@ -218,9 +219,6 @@ Final_states: {self.final_states}
         for c in word:
             current_state = self.all_states[i_current_state]
             print(f"\nWe analyze this symbol: {c}")
-            if i_current_state == i_final_state:
-                return True  # If the current state is already a final state, the word is recognized
-                
             Possible_Transition = self.possible_transition(current_state, matrix, c)
             print(f"Possible state : {Possible_Transition} for this state: {current_state}")
             if Possible_Transition:
@@ -234,12 +232,14 @@ Final_states: {self.final_states}
                     print(f"The index of the current state is {i_current_state}")
                     print(self.all_states.index(Possible_Transition.split(",")[to_final])-self.all_states.index(current_state))
                     i_current_state+=self.all_states.index(Possible_Transition.split(",")[to_final])
-                    print("ff<ff<",i_current_state)
                     current_state = self.all_states[i_current_state]
                     
                     print(f"The current state: {Possible_Transition.split(',')[-1]} \n")  # Update the current state
                 else:
-                    i_current_state+=self.all_states.index(Possible_Transition.split(",")[-1])
+                    try:
+                        i_current_state+=self.all_states.index(Possible_Transition.split(",")[-1])
+                    except:
+                        pass
                     
                     print(f"The index of the current state is {i_current_state}")
                     current_state = self.all_states[i_current_state]
@@ -741,11 +741,15 @@ Final_states: {self.final_states}
 # automate1.delete_state("q0")
 # automate1.display_states()
 # automate1.display_matrix()
-#print(automate1.recognize_wordAFD("ab"))
+#print(automate1.recognize_wordAFD("bba"))
 
 # automate1.make_complete()
 # print(automate1.is_complete())
 # print(automate1.display_matrix())
+# if not automate1.is_deterministic():
+#     automate1.AND_to_AFD()
+# automate1.display_states()
+# automate1.edit_csv("testyy",automate1.matrix,automate1.final_states)
 # if not automate1.is_deterministic():
 #     automate1.AND_to_AFD()
 # automate1.display_states()
