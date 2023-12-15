@@ -305,12 +305,16 @@ while True:
         
     elif choix == "6":
         slot = int(input("Entrez le numéro du slot (1-10) : "))
+        qu = input("Ecrivez un mot à reconnaitre pour l'automate: \n")
         automaton: automate = slots[slot - 1]
         if automaton:
-            automaton.recognize_wordAFD(str(input("Entrez le mot à vérifier : \n")))
-            print("Traitement effectué.\n\n")
+            recognize=automaton.recognize_wordAFD(qu)
+            if recognize:
+                print("Le mot est reconnu")
+            else:
+                print("Le mot n'est pas reconnu")
         else:
-            print("Aucun automate dans ce slot.\n")
+            print("Aucun automate dans le slot")
             
             
     # ### AUTOMATE COMPLET #######################################################
