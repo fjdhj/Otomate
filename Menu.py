@@ -325,11 +325,11 @@ while True:
         if automaton:
             recognize=automaton.recognize_wordAFD(qu)
             if recognize:
-                print("Le mot est reconnu")
+                print("Le mot est reconnu.\n")
             else:
-                print("Le mot n'est pas reconnu")
+                print("Le mot n'est pas reconnu.\n")
         else:
-            print("Aucun automate dans le slot")
+            print("Aucun automate dans le slot.\n")
             
             
     # ### AUTOMATE COMPLET #######################################################
