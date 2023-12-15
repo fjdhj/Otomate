@@ -680,7 +680,7 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-automate1=automate("otomate5.csv")
+automate1=automate("Sample/default3det.csv")
 #automate1.display_matrix()
 # automate1.display_states()
 # automate1.make_complete()
@@ -714,8 +714,6 @@ if not automate1.is_deterministic():
     automate1.AND_to_AFD()
 automate1.display_states()
 automate1.edit_csv("testyy",automate1.matrix,automate1.final_states)
-
-print(automate1.display_matrix())
 # pprint(automate1.AND_to_AFD())
 # AFD=automate1.AND_to_AFD()
 # print(AFD[0])
