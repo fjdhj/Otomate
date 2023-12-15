@@ -824,14 +824,8 @@ Final_states: {self.final_states}
     def is_complete(self) -> bool:
         return ["nan"] in self.matrix[:][:]
     
-    def is_deterministic(self)->bool:
-        for line in self.matrix:
-            for row in line:
-                if len(row) > 1:
-                    return False
-        return True
 
-    def is__deterministic(self) -> bool:
+    def is_deterministic(self) -> bool:
         """
         Check if the automaton is deterministic based on the transition matrix.
 
