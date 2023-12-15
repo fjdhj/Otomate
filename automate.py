@@ -24,6 +24,7 @@ class automate:
         self.all_states: list=[state[0] for state in sample_event]
         self.final_states: list=sample_state[1]
         self.transitions: list=[transit for transit in transition]
+        self.name: str=file_name
         # self.label=[f"q{i}" for i in range(len(self.matrix)) if self.matrix != []]
     
     
@@ -86,7 +87,7 @@ Final_states: {self.final_states}
     def create_transition(self, transition):
         self.transitions.append(transition)
         for line in self.matrix:
-            line.append(["nan"])
+            line.append("nan")
 
         
     def add_transition(self,initial_state,transition="c",final_state="sale boulot"):
@@ -124,7 +125,7 @@ Final_states: {self.final_states}
             index_transition = self.transitions.index(transition)
             self.transitions.remove(transition)
             for line in self.matrix: #Delete column in the matrix
-                del line[index_transition+1] 
+                del line[index_transition+1]
         else:
             print("La transition à supprimer n'existe pas")
             
@@ -438,7 +439,8 @@ Final_states: {self.final_states}
 
     def product(self, other_automaton):
         combined_transitions = list(set(self.transitions + other_automaton.transitions))
-        product_automaton = automate([], [[], []], combined_transitions)
+        #CHANGE product_automaton = automate([], [[], []], combined_transitions)
+        product_automaton = automate(f"product{self.name}{other_automaton.name}.csv")
 
         for state1 in self.all_states:
             for state2 in other_automaton.all_states:
