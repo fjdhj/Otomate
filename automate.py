@@ -9,39 +9,6 @@ from itertools import combinations
 import numpy as np
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 
-
-
-class expression:
-    def __init__(self, isFactor:bool|None, isStar: bool|None, state: int|None, content) -> None:
-        self.isFactor: bool|None=isFactor
-        self.isStar: bool|None=isStar
-        self.state: int|None=state #Indice de l'état
-        self.content: list|int|expression=content
-
-
-    def parentheses(self):
-        i=0
-        parenthesed = True
-        while(i<len(self.expression) and parenthesed == True):
-            if (isinstance(self.expression[i], expression) and self.expression[i].isFactor == "False"):
-                parenthesed = False
-        if(parenthesed==False):
-            newExpr = expression(self.isFactor, "False", self.state, [self])
-            self.isFactor = True
-            self.state = None
-        return newExpr
-    
-    def ardenne(self):
-        if(self.content == None or self.state == None):
-            return False
-        if(self.content == None):
-            return False
-        if():
-            ...
-
-
-
-
 class automate:
     # initialize the basic automate
     def __init__(self, file_name: str) -> None:
@@ -58,7 +25,7 @@ class automate:
         self.all_states: list=[state[0] for state in sample_event]
         self.final_states: list=sample_state[1]
         self.transitions: list=[transit for transit in transition]
-        self.name: str=file_name
+        self.name: str=os.path.splitext(file_name)[0].replace("/", "")
         # self.label=[f"q{i}" for i in range(len(self.matrix)) if self.matrix != []]
     
     
@@ -71,7 +38,7 @@ class automate:
         self.final_states.append(0)
         self.all_states.append(name)
         for i in range(1,len(self.matrix[0])):
-            self.matrix[-1].append(["nan"])
+            self.matrix[-1].append("nan")
 
     # display the necessary information about the states 
     def display_states(self) -> None:
@@ -121,7 +88,6 @@ Final_states: {self.final_states}
     def create_transition(self, transition):
         self.transitions.append(transition)
         for line in self.matrix:
-            line.append("nan")
             line.append("nan")
 
         
@@ -250,7 +216,7 @@ Final_states: {self.final_states}
 
 
 
-    
+
     # TODO: begin transform AND in AEF
     
     # TODO: 3) Program the algorithm to set transitions between the new states
@@ -262,7 +228,7 @@ Final_states: {self.final_states}
         combin=[comb for size_combination in range(1,len(states)+1)
                       for comb in combinations(states, size_combination)]
         return combin
-        
+
     def enumerate_new_states(self, states: list) -> dict:
         """
         Enumarate all new states that are possible to create for new AFD
@@ -275,7 +241,7 @@ Final_states: {self.final_states}
             new_name_for_new_states=str(chr(97+i)).capitalize()
             new_states.update({new_name_for_new_states : all_combinations[i]})
         return new_states
-    
+
     # TODO: 2) Create function that allow us to determinate new initial_state and new_final state
     def define_new_state_and_final_states(self,transitions):   
         ...
@@ -472,9 +438,20 @@ Final_states: {self.final_states}
         self.matrix = mirrored_matrix
 
     def product(self, other_automaton):
+        sample_event=[]
+        sample_state=[[],[]]
         combined_transitions = list(set(self.transitions + other_automaton.transitions))
+
         #CHANGE product_automaton = automate([], [[], []], combined_transitions)
-        product_automaton = automate(f"product{self.name}{other_automaton.name}.csv")
+        # def __init__(self, sample_event: list[list[str]], sample_state: list[list[str]], transition: list = transition) -> None:
+
+        product_automaton = automate(f"product{self.name}_{other_automaton.name}.csv")
+
+        product_automaton.matrix = sample_event
+        product_automaton.initial_state = sample_state[0]
+        product_automaton.all_states = [state[0] for state in sample_event]
+        product_automaton.final_states = sample_state[1]
+        product_automaton.transitions = [transit for transit in combined_transitions]
 
         for state1 in self.all_states:
             for state2 in other_automaton.all_states:
@@ -516,7 +493,8 @@ Final_states: {self.final_states}
                     combined_transition = 'nan'
 
                 product_automaton.matrix[i][trans_idx + 1] = combined_transition
-
+                product_automaton.display_matrix
+                product_automaton.display_states
         return product_automaton
 
 
