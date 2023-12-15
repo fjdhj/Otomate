@@ -52,7 +52,7 @@ def modifier_automate(actual_auto:automate):
             pass
         elif choix_modification == "7":
             i_initial_state=actual_auto.initial_states.index(1)
-            print(f"Voici l'état initial: {actual_auto.all_states[i_initial_state]}")
+            print(f"Voici l'état initial actuel: {actual_auto.all_states[i_initial_state]}")
             new_initial_state=str(input(f"Choisissez un automate à rendre en état initial parmi ceux là:\n{actual_auto.all_states}"))
             state_in_states:bool=new_initial_state in actual_auto.all_states
             while not state_in_states:
@@ -62,7 +62,14 @@ def modifier_automate(actual_auto:automate):
             i_initial_state=actual_auto.initial_states.index(1)
             print(f"Voici le nouvel état initial: {actual_auto.all_states[i_initial_state]}")
         elif choix_modification == "8":
-            i_final_states=[i for i in range(len(actual_auto)) if actual_auto[i]==1]
+            i_final_states=[i for i in range(len(actual_auto.final_states)) if actual_auto.final_states[i]==1]
+            print(f"Voici la liste des états finaux:")
+            for index in i_final_states:
+                print(actual_auto.all_states[index], end=" ")
+            print()
+            i_state_to_change=int(input(f"Choisissez parmi ceux-là: {[int(i)+1 for i in i_final_states]}:\n"))
+            print(i_state_to_change)
+            # FIXME : finir modifier etats finaux
         elif choix_modification == "9":
             break
         else:
