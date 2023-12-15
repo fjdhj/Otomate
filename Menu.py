@@ -22,27 +22,27 @@ def modifier_automate(actual_auto:automate):
         choix_modification = input("Choisissez une action : ")
 
         if choix_modification == "1":
-            state_name = str(input("Entrez le nom du nouvel état"))
+            state_name = str(input("Entrez le nom du nouvel état : "))
             actual_auto.create_state(state_name)
         elif choix_modification == "2":
-            state_name = str(input("Entrez le nom de l'état à supprimer"))
+            state_name = str(input("Entrez le nom de l'état à supprimer : "))
             actual_auto.delete_state(state_name)
         elif choix_modification == "3":
-            transition_name = str(input("Entrez le nom de la nouvelle transition"))
+            transition_name = str(input("Entrez le nom de la nouvelle transition : "))
             actual_auto.create_transition(transition_name)
         elif choix_modification == "4":
-            transition_name = str(input("Entrez le nom de la transition à supprimer"))
+            transition_name = str(input("Entrez le nom de la transition à supprimer : "))
             actual_auto.delete_transition(transition_name)
         elif choix_modification == "5":
-            initial_state_name = str(input("Entrez le nom de l'état de départ"))
+            initial_state_name = str(input("Entrez le nom de l'état de départ : "))
             if not (initial_state_name in actual_auto.all_states):
                 actual_auto.create_state(initial_state_name)
                 
-            final_state_name = str(input("Entrez le nom de l'état d'arrivée"))
+            final_state_name = str(input("Entrez le nom de l'état d'arrivée : "))
             if not (initial_state_name in actual_auto.all_states):
                 actual_auto.create_state(final_state_name)
                 
-            transition_name = str(input("Entrez le nom de la transition"))
+            transition_name = str(input("Entrez le nom de la transition : "))
             if not (transition_name in actual_auto.transitions):
                 actual_auto.create_transition(transition_name)
                 

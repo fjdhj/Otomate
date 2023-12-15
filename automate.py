@@ -29,14 +29,14 @@ class automate:
     
     def create_state(self,name)->None:
         while(name in self.all_states):
-            name = str(input("Entrez le nom du nouvel état"))
+            name = str(input("Entrez le nom du nouvel état : "))
         self.matrix.append([])
         self.matrix[-1].append(name)
         self.initial_states.append(0)
         self.final_states.append(0)
         self.all_states.append(name)
         for i in range(1,len(self.matrix[0])):
-            self.matrix[-1].append(['nan'])
+            self.matrix[-1].append(["nan"])
 
     # display the necessary information about the states 
     def display_states(self) -> None:
@@ -86,7 +86,7 @@ Final_states: {self.final_states}
     def create_transition(self, transition):
         self.transitions.append(transition)
         for line in self.matrix:
-            line.append(["nan"])
+            line.append("nan")
 
         
     def add_transition(self,initial_state,transition="c",final_state="sale boulot"):
