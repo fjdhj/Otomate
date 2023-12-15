@@ -152,7 +152,7 @@ Final_states: {self.final_states}
         df2=pd.read_csv(f"Sample/{file_name}.csv",sep=";")
         df2.replace('nan',np.nan, inplace=True)
         df2.to_csv(f"Sample/{file_name}.csv", index=False, sep=';')
-        
+    
     def possible_transition(self, current_state: str, matrix: list, symbols: list) -> list:
         """Récupère les transitions possibles pour passer d'un état à un autre en fonction du symbole fourni.
 
@@ -483,11 +483,20 @@ Final_states: {self.final_states}
 
         return product_automaton
 
-
-
+    # ... [other methods and initializations of the automate class] ...
+    # ... [existing __init__ and other methods] ...
     def concatenate(self, other_automaton):
         combined_transitions = list(set(self.transitions + other_automaton.transitions))
-        concatenated_automaton = automate([], [[], []], combined_transitions)
+
+        # Initialize a new automate object with a dummy file name
+        concatenated_automaton = automate("Sample/dummy.csv")
+        
+        # Manually set the properties of concatenated_automaton
+        concatenated_automaton.transitions = combined_transitions
+        concatenated_automaton.matrix = []
+        concatenated_automaton.all_states = []
+        concatenated_automaton.initial_states = []
+        concatenated_automaton.final_states = []
 
         prefix_A = "A_"
         prefix_B = "B_"
@@ -532,7 +541,7 @@ Final_states: {self.final_states}
                     if trans_symbol in other_automaton.transitions:
                         concatenated_automaton.matrix[i][combined_transitions.index(trans_symbol) + 1] = prefix_B + initial_state_of_B
                         break
-
+        os.remove("Sample/dummy.csv")
         return concatenated_automaton
     
     def to_regular_expression(self):
@@ -680,9 +689,22 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-automate1=automate("Sample/default3det.csv")
-#automate1.display_matrix()
-# automate1.display_states()
+automate1=automate("Sample/default.csv")
+automate2=automate("Sample/default2.csv")
+
+automate1.display_matrix()
+automate1.display_states()
+
+print("\n")
+automate2.display_matrix()
+print(automate2.initial_states)
+
+
+automate_conca = automate1.concatenate(automate2)
+automate_conca.display_states()
+automate_conca.display_matrix()
+automate_conca.edit_csv("test", automate_conca.matrix, automate_conca.final_states)
+
 # automate1.make_complete()
 # automate1.display_matrix()
 # automate1.display_states()
@@ -710,10 +732,10 @@ automate1=automate("Sample/default3det.csv")
 # automate1.make_complete()
 # print(automate1.is_complete())
 # print(automate1.display_matrix())
-if not automate1.is_deterministic():
-    automate1.AND_to_AFD()
-automate1.display_states()
-automate1.edit_csv("testyy",automate1.matrix,automate1.final_states)
+#if not automate1.is_deterministic():
+#    automate1.AND_to_AFD()
+#automate1.display_states()
+#automate1.edit_csv("testyy",automate1.matrix,automate1.final_states)
 # pprint(automate1.AND_to_AFD())
 # AFD=automate1.AND_to_AFD()
 # print(AFD[0])

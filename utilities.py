@@ -34,7 +34,6 @@ def init_statestypes(file)->list:
     dimension: tuple=automate.shape
     states = automate.iloc[0 :dimension[0],dimension[1]-2 : dimension[1]]
     states_to_list=[states.loc[:,i].values.tolist() for i in ['EI', 'EF']]
-    print(states_to_list)
     return states_to_list
 
 def transitions(file)->list:
