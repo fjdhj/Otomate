@@ -8,6 +8,40 @@ import math
 from itertools import combinations
 import numpy as np
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
+
+
+
+class expression:
+    def __init__(self, isFactor:bool|None, isStar: bool|None, state: int|None, content) -> None:
+        self.isFactor: bool|None=isFactor
+        self.isStar: bool|None=isStar
+        self.state: int|None=state #Indice de l'état
+        self.content: list|int|expression=content
+
+
+    def parentheses(self):
+        i=0
+        parenthesed = True
+        while(i<len(self.expression) and parenthesed == True):
+            if (isinstance(self.expression[i], expression) and self.expression[i].isFactor == "False"):
+                parenthesed = False
+        if(parenthesed==False):
+            newExpr = expression(self.isFactor, "False", self.state, [self])
+            self.isFactor = True
+            self.state = None
+        return newExpr
+    
+    def ardenne(self):
+        if(self.content == None or self.state == None):
+            return False
+        if(self.content == None):
+            return False
+        if():
+            ...
+
+
+
+
 class automate:
     # initialize the basic automate
     def __init__(self, file_name: str) -> None:
@@ -682,7 +716,7 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-automate1=automate("Sample/default3det.csv")
+#automate1=automate("Sample/default3det.csv")
 #automate1.display_matrix()
 # automate1.display_states()
 # automate1.make_complete()
@@ -712,10 +746,10 @@ automate1=automate("Sample/default3det.csv")
 # automate1.make_complete()
 # print(automate1.is_complete())
 # print(automate1.display_matrix())
-if not automate1.is_deterministic():
-    automate1.AND_to_AFD()
-automate1.display_states()
-automate1.edit_csv("testyy",automate1.matrix,automate1.final_states)
+# if not automate1.is_deterministic():
+#     automate1.AND_to_AFD()
+# automate1.display_states()
+# automate1.edit_csv("testyy",automate1.matrix,automate1.final_states)
 # pprint(automate1.AND_to_AFD())
 # AFD=automate1.AND_to_AFD()
 # print(AFD[0])
