@@ -183,9 +183,6 @@ Final_states: {self.final_states}
         for c in word:
             current_state = self.all_states[i_current_state]
             print(f"\nWe analyze this symbol: {c}")
-            if i_current_state == i_final_state:
-                return True  # If the current state is already a final state, the word is recognized
-                
             Possible_Transition = self.possible_transition(current_state, matrix, c)
             print(f"Possible state : {Possible_Transition} for this state: {current_state}")
             if Possible_Transition:
@@ -199,12 +196,14 @@ Final_states: {self.final_states}
                     print(f"The index of the current state is {i_current_state}")
                     print(self.all_states.index(Possible_Transition.split(",")[to_final])-self.all_states.index(current_state))
                     i_current_state+=self.all_states.index(Possible_Transition.split(",")[to_final])
-                    print("ff<ff<",i_current_state)
                     current_state = self.all_states[i_current_state]
                     
                     print(f"The current state: {Possible_Transition.split(',')[-1]} \n")  # Update the current state
                 else:
-                    i_current_state+=self.all_states.index(Possible_Transition.split(",")[-1])
+                    try:
+                        i_current_state+=self.all_states.index(Possible_Transition.split(",")[-1])
+                    except:
+                        pass
                     
                     print(f"The index of the current state is {i_current_state}")
                     current_state = self.all_states[i_current_state]
@@ -680,7 +679,7 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-automate1=automate("Sample/default3det.csv")
+automate1=automate("test.csv")
 #automate1.display_matrix()
 # automate1.display_states()
 # automate1.make_complete()
@@ -705,15 +704,15 @@ automate1=automate("Sample/default3det.csv")
 # automate1.delete_state("q0")
 # automate1.display_states()
 # automate1.display_matrix()
-#print(automate1.recognize_wordAFD("ab"))
+print(automate1.recognize_wordAFD("bba"))
 
 # automate1.make_complete()
 # print(automate1.is_complete())
 # print(automate1.display_matrix())
-if not automate1.is_deterministic():
-    automate1.AND_to_AFD()
-automate1.display_states()
-automate1.edit_csv("testyy",automate1.matrix,automate1.final_states)
+# if not automate1.is_deterministic():
+#     automate1.AND_to_AFD()
+# automate1.display_states()
+# automate1.edit_csv("testyy",automate1.matrix,automate1.final_states)
 # pprint(automate1.AND_to_AFD())
 # AFD=automate1.AND_to_AFD()
 # print(AFD[0])

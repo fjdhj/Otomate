@@ -5,6 +5,7 @@ from convertJffCsv import jff_to_csv
 import os
 import webbrowser
 
+
 def modifier_automate(actual_auto:automate):
     # Menu de modification d'automate
     while True:
@@ -15,8 +16,9 @@ def modifier_automate(actual_auto:automate):
         print("4. Supprimer une transition")
         print("5. Ajouter une liaison")
         print("6. Supprimer une liaison")
-        print("7. Revenir au menu principal\n")
-
+        print("7. Modifier états initiaux")
+        print("8. Modifier états finals")
+        print("9. Revenir au menu principal\n")
         choix_modification = input("Choisissez une action : ")
 
         if choix_modification == "1":
@@ -49,6 +51,19 @@ def modifier_automate(actual_auto:automate):
             #FIXME NATHAN Supprimer liaison 
             pass
         elif choix_modification == "7":
+            i_initial_state=actual_auto.initial_states.index(1)
+            print(f"Voici l'état initial: {actual_auto.all_states[i_initial_state]}")
+            new_initial_state=str(input(f"Choisissez un automate à rendre en état initial parmi ceux là:\n{actual_auto.all_states}"))
+            state_in_states:bool=new_initial_state in actual_auto.all_states
+            while not state_in_states:
+                new_initial_state=str(input(f"Choisissez un automate à rendre en état initial parmi ceux là:\n{actual_auto.all_states}"))
+            actual_auto.initial_states[i_initial_state]=0
+            actual_auto.initial_states[actual_auto.all_states.index(new_initial_state)] = 1
+            i_initial_state=actual_auto.initial_states.index(1)
+            print(f"Voici le nouvel état initial: {actual_auto.all_states[i_initial_state]}")
+        elif choix_modification == "8":
+            i_final_states=[i for i in range(len(actual_auto)) if actual_auto[i]==1]
+        elif choix_modification == "9":
             break
         else:
             print("Choix invalide. Veuillez réessayer.\n")
