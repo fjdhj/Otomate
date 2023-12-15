@@ -183,9 +183,6 @@ Final_states: {self.final_states}
         for c in word:
             current_state = self.all_states[i_current_state]
             print(f"\nWe analyze this symbol: {c}")
-            if i_current_state == i_final_state:
-                return True  # If the current state is already a final state, the word is recognized
-                
             Possible_Transition = self.possible_transition(current_state, matrix, c)
             print(f"Possible state : {Possible_Transition} for this state: {current_state}")
             if Possible_Transition:
@@ -199,12 +196,14 @@ Final_states: {self.final_states}
                     print(f"The index of the current state is {i_current_state}")
                     print(self.all_states.index(Possible_Transition.split(",")[to_final])-self.all_states.index(current_state))
                     i_current_state+=self.all_states.index(Possible_Transition.split(",")[to_final])
-                    print("ff<ff<",i_current_state)
                     current_state = self.all_states[i_current_state]
                     
                     print(f"The current state: {Possible_Transition.split(',')[-1]} \n")  # Update the current state
                 else:
-                    i_current_state+=self.all_states.index(Possible_Transition.split(",")[-1])
+                    try:
+                        i_current_state+=self.all_states.index(Possible_Transition.split(",")[-1])
+                    except:
+                        pass
                     
                     print(f"The index of the current state is {i_current_state}")
                     current_state = self.all_states[i_current_state]
@@ -273,6 +272,12 @@ Final_states: {self.final_states}
             tuple: tuple[0] -> new_atomaton / tuple[1] -> new_final_state
         """
         matrix = [elem[1:] for elem in self.matrix]
+        pprint(matrix)
+        # for i in range(len(matrix)):
+        #     for j in range(len(matrix[i])):
+        #         print(matrix[i][j])
+        #         if matrix[i][j]=="nan":
+        #             matrix[i][j]='poubelle'
         symbols=self.transitions
         new_states_to_check:list[dict]=[]
         i_for_check=0
@@ -295,8 +300,11 @@ Final_states: {self.final_states}
                         # loop states ex: S1->{q0,q1}
                         Possible_transitions=[]
                         for state in states:
-                            
-                            Possible_transition=self.possible_transition(state,matrix,symb)
+                            # if there is a nan we do nothing
+                            try:
+                                Possible_transition=self.possible_transition(state,matrix,symb)
+                            except ValueError as e:
+                                pass
                             print(f"{name_of_new_state} | Possible transition for {symb} -> {Possible_transition}")
                         
                             Possible_transitions.append(Possible_transition)
@@ -333,8 +341,10 @@ Final_states: {self.final_states}
                 no_doublon_state:list=[[] for _ in range(len(self.transitions))]
                 no_doublon_states=[]
                 for state in state_possible_transition:
-                    
-                    state_to_check_transition:str=self.possible_transition(state,matrix,symb)
+                    try:
+                        state_to_check_transition:str=self.possible_transition(state,matrix,symb)
+                    except:
+                        pass
                     split_state_to_check_transition=state_to_check_transition.split(",")
                     no_doublon_state[self.transitions.index(symb)].append(split_state_to_check_transition)
 
@@ -354,14 +364,8 @@ Final_states: {self.final_states}
         final_state: str=self.all_states[i_final_state]
         initial_state: str=self.all_states[i_initial_state]
         all_final_state=[0 for i in range(len(new_states_to_check))]
-        all_initial_state=[0 for i in range(len(new_states_to_check))]
+        all_initial_state=[1 if new_states_to_check[i][new_st[i]]==new_states_to_check[0]["S0"] else 0 for i in range(len(new_states_to_check)) ]
         self.all_states=new_st
-        #create initial_state
-        for i in range(len(new_states_to_check)):
-            key_name=list(new_states_to_check[i].keys())[0]
-            if initial_state in new_states_to_check[i][key_name].split(","):
-                all_initial_state[i]=1
-
         # Create new and new final
         self.init_new_final_state(new_states_to_check, final_state, all_final_state)
         for k in range(len(new_st)):
@@ -675,7 +679,7 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-automate1=automate("otomate5.csv")
+automate1=automate("test.csv")
 #automate1.display_matrix()
 # automate1.display_states()
 # automate1.make_complete()
@@ -700,17 +704,15 @@ automate1=automate("otomate5.csv")
 # automate1.delete_state("q0")
 # automate1.display_states()
 # automate1.display_matrix()
-#print(automate1.recognize_wordAFD("ab"))
+print(automate1.recognize_wordAFD("bba"))
 
-automate1.make_complete()
-print(automate1.is_complete())
-print(automate1.display_matrix())
-if not automate1.is_deterministic():
-    automate1.AND_to_AFD()
-automate1.display_states()
-automate1.edit_csv("testyy",automate1.matrix,automate1.final_states)
-
-print(automate1.display_matrix())
+# automate1.make_complete()
+# print(automate1.is_complete())
+# print(automate1.display_matrix())
+# if not automate1.is_deterministic():
+#     automate1.AND_to_AFD()
+# automate1.display_states()
+# automate1.edit_csv("testyy",automate1.matrix,automate1.final_states)
 # pprint(automate1.AND_to_AFD())
 # AFD=automate1.AND_to_AFD()
 # print(AFD[0])
