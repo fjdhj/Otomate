@@ -221,7 +221,7 @@ while True:
     
     ### GESTION DES SLOTS ################################################################
     
-    """
+
     while slot_vide == None:
         print ("Aucun slot de disponible. Veuillez en supprimer un ou l'exporter.")
         print("1. Supprimer un automate\n2. Exporter un automate\n")
@@ -229,10 +229,16 @@ while True:
         choix = input("Choisissez une action : \n1. Supprimer automate\n2. Exporter automate\n")
         
         if choix == "1":
-            #supprimer_automate()
+            slot = int(input("Entrez le numéro du slot (1-10) : "))
+            slots[slot - 1] = None
+            print("Suppression effectuée.\n\n")
         elif choix == "2":
-            #exporter_automate()
-    """
+            slot = int(input("Entrez le numéro du slot (1-10) : "))
+            #is_deterministic:bool=str(input("Votre tableau est il un tableau que vous avez déterminiser [y/n]"))
+            automaton :automate= slots[slot - 1]
+            file_name=str(input("Type the file name to export automaton:\n"))
+            automaton.edit_csv(file_name, automaton.matrix,automaton.final_states)
+            print("Traitement effectué.\n\n")
             
             
     ### MENU #############################################################################
@@ -313,7 +319,7 @@ while True:
     elif choix == "5":
         slot = int(input("Entrez le numéro du slot (1-10) : "))
         slots[slot - 1] = None
-        print("Surppression effectuée.\n\n")
+        print("Suppression effectuée.\n\n")
         
         
     # ### PASSER UN MOT ###########################################################
