@@ -679,7 +679,7 @@ Final_states: {self.final_states}
                     self.add_transition(state, transition, "poubelle")
         return modified
         
-automate1=automate("test.csv")
+#automate1=automate("test.csv")
 #automate1.display_matrix()
 # automate1.display_states()
 # automate1.make_complete()
@@ -704,7 +704,7 @@ automate1=automate("test.csv")
 # automate1.delete_state("q0")
 # automate1.display_states()
 # automate1.display_matrix()
-print(automate1.recognize_wordAFD("bba"))
+#print(automate1.recognize_wordAFD("bba"))
 
 # automate1.make_complete()
 # print(automate1.is_complete())
