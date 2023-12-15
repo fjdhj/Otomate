@@ -244,25 +244,23 @@ while True:
         automaton1 = slots[slot - 1]
         slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
         automaton2 = slots[slot - 1]
-        if automaton1 & automaton2:
+        if automaton1 and automaton2:
             automaton1.product(automaton2)
         else:
-            print("Aucun automate dans ce slot.")
+            print("Aucun automate dans un des slots.")
             
             
     # ### CONCATENATION ######################################################
             
-    # elif choix == "12":
-    #     slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
-    #     automate1 = slots_automates[slot - 1]
-    #     slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
-    #     automate2 = slots_automates[slot - 1]
-    #     if automate1 & automate2:
-    #         #res = concatenation(automate1,automate2)
-    #         #if res != None:
-    #             #slot[slot_vide] = res
-    #     else:
-    #         print("Aucun automate dans ce slot.")
+    elif choix == "12":
+        slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
+        automaton1 = slots[slot - 1]
+        slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
+        automaton2 = slots[slot - 1]
+        if automaton1 and automaton2:
+            automaton1.concatenate(automaton2)
+        else:
+            print("Aucun automate dans un des slots.")
             
             
     # ### EXTRAIRE EXPRESSION ################################################
@@ -302,15 +300,13 @@ while True:
             
     # ### EMONDER AUTOMATE ##################################################
             
-    # elif choix == "16":
-    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
-    #     automate = slots_automates[slot - 1]
-    #     if automate:
-    #         #res = emonder(automate)
-    #         #if res != None:
-    #             #slot[slot_vide] = res
-    #     else:
-    #         print("Aucun automate dans ce slot.")
+    elif choix == "16":
+        slot = int(input("Entrez le numéro du slot (1-10) : "))
+        automaton = slots[slot - 1]
+        if automaton:
+            automaton.trim()
+        else:
+            print("Aucun automate dans ce slot.")
             
             
     # ### RENDRE MINIMAL ###################################################
