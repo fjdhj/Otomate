@@ -106,7 +106,8 @@ while True:
     print("17. Rendre un automate minimal")
     print("18. Visualiser un automate")
     print("19. Manuel")
-    print("20. Quitter le programme\n")
+    print("20. Reconnaitre un automate\n")
+    print("21. Quitter le programme\n")
     
     choix = input("Choisissez une action : ")
     print("\n")
@@ -354,7 +355,18 @@ while True:
             print("Traitement effectué.\n\n")
         else:
             print("Aucun automate dans ce slot.\n")
-        
+    elif choix == "20":
+        qu = input("Ecrivez un mot à reconnaitre pour l'automate: \n")
+        slot = int(input("Entrez le numéro du slot (1-10) : "))
+        automaton=slots[slot - 1]
+        if automaton:
+            recognize=automaton.recognize_wordAFD(qu)
+            if recognize:
+                print("Le mot est reconnu")
+            else:
+                print("Le mot n'est pas reconnu")
+        else:
+            print("Aucun automate dans le slot")
     # ### MANUEL ###########################################################
             
     # elif choix == "19":
@@ -362,8 +374,8 @@ while True:
         
     
     # ### EXIT #############################################################
-        
-    elif choix == "20":
+         
+    elif choix == "21":
         qu = input("Après avoir quitté, vos automates seront supprimés des slots.\nAvez-vous bien exporté tous les automates que vous vouliez ? (0/N) \n")
         if qu in ["O","OUI","Oui","o","oui","Yes","Y","y","yes","YES"]:
             print("Merci et à bientôt !")
