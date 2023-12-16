@@ -4,11 +4,14 @@ from pile import pile
 
 class expression:
     debug = False
-    def __init__(self, isFactor:bool|None, isStar: bool|None, state: int|None, content) -> None:
+    def __init__(self, isFactor:bool|None, isStar: bool|None, state: int|None, content, stateList:list[str]=None, eventList:list[str]=None) -> None:
         self.isFactor: bool|None=isFactor
         self.isStar: bool|None=isStar
         self.state: int|None=state #Indice de l'état
         self.content: list|int|expression=content
+
+        self.stateList: list = stateList
+        self.eventList: list = eventList
 
 
     def parentheses(self):
@@ -472,28 +475,55 @@ class expression:
             lst.pop()
             lst.extend(data)
 
-    """def __eq__(self, obj, strictFactor:bool=True, strictStar:bool=True, strictState=True):
-        if type(obj) != expression:
-            return False
+    def __str__(self, eventList:list=None, stateList:list=None) -> str:
+        if eventList == None:
+            eventList = self.eventList if self.eventList != None else [str(chr(c)) for c in range(ord('a'), ord('z')+1)]
         
-        if len(self.content) != len(obj.content):
-            return False
+        if stateList == None:
+            stateList = self.stateList if self.stateList != None else ["q"+str(i) for i in range(0, 30)]
 
-        if strictState and self.state != obj.state:
-            return False
+        result = str()
+        temp = str()
+        nbValue = 0
+        needPar = False
 
-        if strictStar and self.isStar != obj.isStar:
-            return False
+        while nbValue < len(self.content) and type(self.content[nbValue]) == int:
+            result += str(eventList[self.content[nbValue]])+" " if self.content[nbValue] != -1 else str('\u03b5 ')
+            nbValue+=1
+        
+        #Use to remove the last unsed space
+        result = result[:len(result)-1]
 
-        if strictFactor and self.isFactor != obj.isFactor:
-            return False
+        while nbValue < len(self.content):
+            if self.content[nbValue].isFactor == False:
+                needPar = True
 
-        if len(self.content == 0):
-            return True
+            temp += self.content[nbValue].__str__(eventList, stateList)
+            nbValue += 1
 
-        for i in range(len(self.content)):
-            if not self.content[i] == obj.content:
-                return False"""
+        if self.isStar == True and not(needPar and self.isFactor):
+            result  = "(" + result + ")*"
+
+        if needPar and self.isFactor:
+            result  = "(" + result + temp + ")"
+
+            if self.isStar == True:
+                result += "*"
+
+            if self.state != None:
+                result += " " + stateList[self.state]
+
+        else:
+            if self.state != None:
+                result += " " + stateList[self.state]
+
+            result += temp
+        
+        if self.isFactor == False:
+            result = " + " + result
+
+        return result
+        
 
 
     def __repr__(self: expression, end:str=""):
@@ -567,83 +597,84 @@ class expression:
     @staticmethod
     def setDebugEnable(enable:bool):
         expression.debug = enable
-        
+
+
+if False:
+    #Test à la wanagun
+    #e1 : (a + b)c * q0 + bc * q0
+    #     _[ *[a; +[b] ]; *q0[c] +q0[b ; c]]
+    print("e1 :")
+    e1 = expression(None, False, None, [ expression(True, False, None, [0, expression(False, False, None, [1])]), expression(True, False, 0, [2]), expression(False, False, 0, [1, 2]) ])
+    print("Testing expression e1 :", e1)
+    e1.factorize(1)
+    print("Result of factorization :", e1)
+    if repr(e1) != "_[ *[ 0 +[ 1 ] ] *q0[ 2 ] ]":
+        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
+    print("\n")
+
+
+    #e2 : abc * q0
+    # _q0[a; b; c]
+    print("e2 : ")
+    e2 = expression(None, False, 0, [0,1,2])
+    print("Testing expression e2 :", e2)
+    e2.factorize(1)
+    print("Result of factorization :", e2)
+    if repr(e2) != "_q0[ 0 1 2 ]":
+        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
+    print("\n")
+
+    #e3 : ab * q0 + c * q0
+    print("e3 : ")
+    e3 = expression(None, False, 0, [0,1, expression(False, False, 0, [2])])
+    print("Testing expression e3 :", e3)
+    e3.factorize(1)
+    print("Result of factorization e3 :", e3)
+    if repr(e3) != "_[ *q0[ 0 1 +[ 2 ] ] ]":
+        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
+    print("\n")
+
+    #e4 : ab * q0 + c * q1
+    print("e4 : ")
+    e4 = expression(None, False, 0, [0,1, expression(False, False, 1, [2])])
+    print("Testing expression e4 :", e4)
+    e4.factorize(2 )
+    print("Result of factorization e4 :", e4)
+    if repr(e4) != "_q0[ 0 1 +q1[ 2 ] ]":
                 
-#Test à la wanagun
-#e1 : (a + b)c * q0 + bc * q0
-#     _[ *[a; +[b] ]; *q0[c] +q0[b ; c]]
-print("e1 :")
-e1 = expression(None, False, None, [ expression(True, False, None, [0, expression(False, False, None, [1])]), expression(True, False, 0, [2]), expression(False, False, 0, [1, 2]) ])
-print("Testing expression e1 :", e1)
-e1.factorize(1)
-print("Result of factorization :", e1)
-if repr(e1) != "_[ *[ 0 +[ 1 ] ] *q0[ 2 ] ]":
-    print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
-print("\n")
+        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
+    print("\n")
 
+    #e5 : (a + b)^ * q0 + c * q0 -> ( (a + b)^ + c )q0 
+    #        -> _[ *q0^[ 0 +[ 1 ] ] +q0[ 2 ] ]
+    # result -> _[ *q0[ *^[ 0 +[ 1 ] ] +[ 2 ] ] ]
+    print("e5")
+    e5 = expression(None, False, None, [expression(True, True, 0, [0, expression(False, False, None, [1]) ]), expression(False, False, 0, [2]) ])
+    print("Testing expression e5 :", e5)
+    e5.factorize(1)
+    print("Result of factorization e5 :", e5)
+    if repr(e5) != "_[ *q0[ *^[ 0 +[ 1 ] ] +[ 2 ] ] ]":
+        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
+    print("\n")
 
-#e2 : abc * q0
-# _q0[a; b; c]
-print("e2 : ")
-e2 = expression(None, False, 0, [0,1,2])
-print("Testing expression e2 :", e2)
-e2.factorize(1)
-print("Result of factorization :", e2)
-if repr(e2) != "_q0[ 0 1 2 ]":
-    print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
-print("\n")
+    #e6 : (a + b) * q0 + c * q0 -> ( (a + b + c )q0 
+    #        -> _[ *q0[ 0 +[ 1 ] ] +q0[ 2 ] ]
+    # result -> _[ *q0[ 0 +[ 1 ] +[ 2 ] ] ]
+    print("e6")
+    e6 = expression(None, False, None, [expression(True, False, 0, [0, expression(False, False, None, [1]) ]), expression(False, False, 0, [2]) ])
+    print("Testing expression e5 :", e6)
+    e6.factorize(1)
+    print("Result of factorization e5 :", e6)
+    if repr(e6) != "_[ *q0[ 0 +[ 1 ] +[ 2 ] ] ]":
+        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
+    print("\n")
 
-#e3 : ab * q0 + c * q0
-print("e3 : ")
-e3 = expression(None, False, 0, [0,1, expression(False, False, 0, [2])])
-print("Testing expression e3 :", e3)
-e3.factorize(1)
-print("Result of factorization e3 :", e3)
-if repr(e3) != "_[ *q0[ 0 1 +[ 2 ] ] ]":
-    print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
-print("\n")
-
-#e4 : ab * q0 + c * q1
-print("e4 : ")
-e4 = expression(None, False, 0, [0,1, expression(False, False, 1, [2])])
-print("Testing expression e4 :", e4)
-e4.factorize(2 )
-print("Result of factorization e4 :", e4)
-if repr(e4) != "_q0[ 0 1 +q1[ 2 ] ]":
-            
-    print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
-print("\n")
-
-#e5 : (a + b)^ * q0 + c * q0 -> ( (a + b)^ + c )q0 
-#        -> _[ *q0^[ 0 +[ 1 ] ] +q0[ 2 ] ]
-# result -> _[ *q0[ *^[ 0 +[ 1 ] ] +[ 2 ] ] ]
-print("e5")
-e5 = expression(None, False, None, [expression(True, True, 0, [0, expression(False, False, None, [1]) ]), expression(False, False, 0, [2]) ])
-print("Testing expression e5 :", e5)
-e5.factorize(1)
-print("Result of factorization e5 :", e5)
-if repr(e5) != "_[ *q0[ *^[ 0 +[ 1 ] ] +[ 2 ] ] ]":
-    print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
-print("\n")
-
-#e6 : (a + b) * q0 + c * q0 -> ( (a + b + c )q0 
-#        -> _[ *q0[ 0 +[ 1 ] ] +q0[ 2 ] ]
-# result -> _[ *q0[ 0 +[ 1 ] +[ 2 ] ] ]
-print("e6")
-e6 = expression(None, False, None, [expression(True, False, 0, [0, expression(False, False, None, [1]) ]), expression(False, False, 0, [2]) ])
-print("Testing expression e5 :", e6)
-e6.factorize(1)
-print("Result of factorization e5 :", e6)
-if repr(e6) != "_[ *q0[ 0 +[ 1 ] +[ 2 ] ] ]":
-    print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
-print("\n")
-
-#e7 : abc * q0 + ab * q0
-# -> ab(c + ε) * q0
-print("e7 : ")
-e7 = expression(None, False, 0, [0,1,2, expression(False, False, 0, [0, 1])])
-print("Testing expression e7 :", e7)
-e7.factorize(1)
-print("Result of factorization e7 :", e7)
-if repr(e7) != "_[ 0 1 *q0[ 2 +[ -1 ] ] ]":
-    print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
+    #e7 : abc * q0 + ab * q0
+    # -> ab(c + ε) * q0
+    print("e7 : ")
+    e7 = expression(None, False, 0, [0,1,2, expression(False, False, 0, [0, 1])])
+    print("Testing expression e7 :", e7)
+    e7.factorize(1)
+    print("Result of factorization e7 :", e7)
+    if repr(e7) != "_[ 0 1 *q0[ 2 +[ -1 ] ] ]":
+        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
