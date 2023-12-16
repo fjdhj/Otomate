@@ -5,25 +5,25 @@ This program is an Finite-state automaton (FSA) editor.
 *All the information come from [Instruction/Projet](Instruction/Projet).*
 
 The program need to contains the following features :
-- [ ] FSA Editing, which means :
-  - [ ] Adding
-  - [ ] Importation/Exportation with a file
-  - [ ] Editing
-  - [ ] Removing
+- [X] FSA Editing, which means :
+  - [X] Adding
+  - [X] Importation/Exportation with a file
+  - [X] Editing
+  - [X] Removing
 - [ ] Check if a word can be read by the FSA
-- [ ] Check if an AEF is complete
-- [ ] Transform an AEF into an complete AEF
+- [X] Check if an AEF is complete
+- [X] Transform an AEF into an complete AEF
 - [ ] Check if an AEF is deterministic
 - [ ] Transform an AEF into a deterministic one
 - [ ] Do the folow operation
-    - [ ] Complement of an AEF
-    - [ ] Mirror of an AEF
+    - [X] Complement of an AEF
+    - [X] Mirror of an AEF
     - [ ] Product of two AEFs
     - [ ] Concatenation of two AEFs 
 - [ ] Extract a regular expression from an AEF. For example, a\*b is a regular exepression.
 - [ ] Find AEF admited language. For example, {a*b} is a language
 - [ ] Check if two AEF are equivalen (they recognized same language)
-- [ ] Transform an AEF into an "émondé" one
+- [X] Transform an AEF into an trim one
 - [ ] Transform an AEF into a minimal one. The new AEF will recognized the same language, with the minmal number of state. Which means that no state can be removed from the AEF and without change the know language
 - [ ] The interface need to be in the shell
 
