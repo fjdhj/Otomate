@@ -410,19 +410,20 @@ while True:
             
     # ### CONCATENATION ######################################################
             
-    # elif choix == "12":
-    #     slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
-    #     automate1 = slots_automates[slot - 1]
-    #     slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
-    #     automate2 = slots_automates[slot - 1]
-    #     if automate1 & automate2:
-    #         #res = concatenation(automate1,automate2)
-    #         #if res != None:
-    #             #slot[slot_vide] = res
-    #     else:
-    #         print("Aucun automate dans ce slot.")
-            
-            
+    elif choix == "12":
+        slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
+        automaton1 = slots[slot - 1]
+        slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
+        automaton2 = slots[slot - 1]
+        automate_conca = automaton1.concatenate(automaton2)
+        slots[slot_vide]=automate_conca
+        print("lala")
+        print("Automate enregistré dans le slot : ",slot_vide+1,"\n\n")
+        automate_conca.edit_csv("test", automate_conca.matrix, automate_conca.final_states)
+
+        print("Traitement effectué.\n\n")
+
+        
     # ### EXTRAIRE EXPRESSION ################################################
             
     # elif choix == "13":
