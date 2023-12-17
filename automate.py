@@ -96,9 +96,16 @@ Final_states: {self.final_states}
              raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
         index_state=self.all_states.index(initial_state)
         index_transition=self.transitions.index(transition)
-        if(self.matrix[index_state][index_transition+1][0] == "nan"):
-            del self.matrix[index_state][index_transition+1][0]
-        self.matrix[index_state][index_transition+1] = final_state
+        self.display_matrix()
+        print("Indice état:", index_state)
+        print("Indice transition:", index_transition)
+        print("ELEMENT:",self.matrix[index_state][index_transition+1])
+        print("TYPE:", type(self.matrix[index_state][index_transition+1]))
+        if(self.matrix[index_state][index_transition+1] == "nan"):
+            del self.matrix[index_state][index_transition+1]
+            self.matrix[index_state][index_transition+1] = final_state
+        else:
+            self.matrix[index_state][index_transition+1]="{0},{1}".format(str(self.matrix[index_state][index_transition+1]), final_state)
         
 
     def display_matrix(self):
@@ -152,7 +159,7 @@ Final_states: {self.final_states}
         df.to_csv(f"Sample/{file_name}.csv", index=False, sep=';')
         
         df2=pd.read_csv(f"Sample/{file_name}.csv",sep=";")
-        df2.replace('nan',np.nan, inplace=True)
+        df2.replace('nan',float("nan"), inplace=True)
         df2.to_csv(f"Sample/{file_name}.csv", index=False, sep=';')
         
     def possible_transition(self, current_state: str, matrix: list, symbols: list) -> list:
@@ -437,26 +444,77 @@ Final_states: {self.final_states}
         # Update the current object with the mirrored matrix and states
         self.matrix = mirrored_matrix
 
+    # def product(self, other_automaton):
+    #     sample_event=[]
+    #     sample_state=[[],[]]
+    #     combined_transitions = list(set(self.transitions + other_automaton.transitions))
+
+    #     #CHANGE product_automaton = automate([], [[], []], combined_transitions)
+    #     # def __init__(self, sample_event: list[list[str]], sample_state: list[list[str]], transition: list = transition) -> None:
+
+    #     product_automaton = automate(f"product{self.name}_{other_automaton.name}.csv")
+
+    #     product_automaton.matrix = sample_event
+    #     product_automaton.initial_state = sample_state[0]
+    #     product_automaton.all_states = [state[0] for state in sample_event]
+    #     product_automaton.final_states = sample_state[1]
+    #     product_automaton.transitions = [transit for transit in combined_transitions]
+
+    #     for state1 in self.all_states:
+    #         for state2 in other_automaton.all_states:
+    #             combined_state = f"{state1}_{state2}"
+    #             product_automaton.all_states.append(combined_state)
+
+    #             # Initial state logic: True if both states are initial
+    #             is_initial = (self.initial_states[self.all_states.index(state1)] == 1 and
+    #                         other_automaton.initial_states[other_automaton.all_states.index(state2)] == 1)
+    #             product_automaton.initial_states.append(1 if is_initial else 0)
+
+    #             # Final state logic: True if both states are final
+    #             is_final = (self.final_states[self.all_states.index(state1)] == 1 and
+    #                         other_automaton.final_states[other_automaton.all_states.index(state2)] == 1)
+    #             product_automaton.final_states.append(1 if is_final else 0)
+
+    #     # Initialize the transition matrix with proper length
+    #     for _ in product_automaton.all_states:
+    #         product_automaton.matrix.append(['nan'] * (len(combined_transitions) + 1))  # +1 for state itself
+
+    #     for i, combined_state in enumerate(product_automaton.all_states):
+    #         state1, state2 = combined_state.split('_')
+    #         idx1 = self.all_states.index(state1)
+    #         idx2 = other_automaton.all_states.index(state2)
+
+    #         for trans_symbol in combined_transitions:
+    #             trans_idx = combined_transitions.index(trans_symbol)
+    #             trans_state1 = str(self.matrix[idx1][self.transitions.index(trans_symbol) + 1]) if trans_symbol in self.transitions else 'nan'
+    #             trans_state2 = str(other_automaton.matrix[idx2][other_automaton.transitions.index(trans_symbol) + 1]) if trans_symbol in other_automaton.transitions else 'nan'
+
+    #             if trans_state1 != 'nan' and trans_state2 != 'nan':
+    #                 # Handling non-deterministic transitions
+    #                 combined_transitions_list = []
+    #                 for t1 in trans_state1.split(','):
+    #                     for t2 in trans_state2.split(','):
+    #                         combined_transitions_list.append(f"{t1}_{t2}")
+    #                 combined_transition = ','.join(combined_transitions_list)
+    #             else:
+    #                 combined_transition = 'nan'
+
+    #             product_automaton.matrix[i][trans_idx + 1] = combined_transition
+    #             product_automaton.display_matrix
+    #             product_automaton.display_states
+    #     return product_automaton
+
     def product(self, other_automaton):
-        sample_event=[]
-        sample_state=[[],[]]
-        combined_transitions = list(set(self.transitions + other_automaton.transitions))
-
-        #CHANGE product_automaton = automate([], [[], []], combined_transitions)
-        # def __init__(self, sample_event: list[list[str]], sample_state: list[list[str]], transition: list = transition) -> None:
-
         product_automaton = automate(f"product{self.name}_{other_automaton.name}.csv")
 
-        product_automaton.matrix = sample_event
-        product_automaton.initial_state = sample_state[0]
-        product_automaton.all_states = [state[0] for state in sample_event]
-        product_automaton.final_states = sample_state[1]
-        product_automaton.transitions = [transit for transit in combined_transitions]
+        combined_transitions = list(set(self.transitions + other_automaton.transitions))
+        for trans in combined_transitions:
+            product_automaton.create_transition(trans)
 
         for state1 in self.all_states:
             for state2 in other_automaton.all_states:
                 combined_state = f"{state1}_{state2}"
-                product_automaton.all_states.append(combined_state)
+                product_automaton.create_state(combined_state)
 
                 # Initial state logic: True if both states are initial
                 is_initial = (self.initial_states[self.all_states.index(state1)] == 1 and
@@ -467,11 +525,7 @@ Final_states: {self.final_states}
                 is_final = (self.final_states[self.all_states.index(state1)] == 1 and
                             other_automaton.final_states[other_automaton.all_states.index(state2)] == 1)
                 product_automaton.final_states.append(1 if is_final else 0)
-
-        # Initialize the transition matrix with proper length
-        for _ in product_automaton.all_states:
-            product_automaton.matrix.append(['nan'] * (len(combined_transitions) + 1))  # +1 for state itself
-
+        
         for i, combined_state in enumerate(product_automaton.all_states):
             state1, state2 = combined_state.split('_')
             idx1 = self.all_states.index(state1)
@@ -491,12 +545,11 @@ Final_states: {self.final_states}
                     combined_transition = ','.join(combined_transitions_list)
                 else:
                     combined_transition = 'nan'
+                product_automaton.add_transition(combined_state, trans_symbol, combined_transition)
+                #product_automaton.matrix[i][trans_idx + 1] = combined_transition
 
-                product_automaton.matrix[i][trans_idx + 1] = combined_transition
-                product_automaton.display_matrix
-                product_automaton.display_states
+        
         return product_automaton
-
 
 
     def concatenate(self, other_automaton):
