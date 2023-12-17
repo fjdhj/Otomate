@@ -96,17 +96,10 @@ Final_states: {self.final_states}
              raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
         index_state=self.all_states.index(initial_state)
         index_transition=self.transitions.index(transition)
-        self.display_matrix()
-        print("Indice état:", index_state)
-        print("Indice transition:", index_transition)
-        print("ELEMENT:",self.matrix[index_state][index_transition+1])
-        print("TYPE:", type(self.matrix[index_state][index_transition+1]))
         if(self.matrix[index_state][index_transition+1] == "nan"):
-            del self.matrix[index_state][index_transition+1]
             self.matrix[index_state][index_transition+1] = final_state
         else:
             self.matrix[index_state][index_transition+1]="{0},{1}".format(str(self.matrix[index_state][index_transition+1]), final_state)
-        
 
     def display_matrix(self):
         pprint(self.matrix)
@@ -159,7 +152,7 @@ Final_states: {self.final_states}
         df.to_csv(f"Sample/{file_name}.csv", index=False, sep=';')
         
         df2=pd.read_csv(f"Sample/{file_name}.csv",sep=";")
-        df2.replace('nan',float("nan"), inplace=True)
+        df2.replace('nan',np.nan, inplace=True)
         df2.to_csv(f"Sample/{file_name}.csv", index=False, sep=';')
         
     def possible_transition(self, current_state: str, matrix: list, symbols: list) -> list:
