@@ -490,7 +490,7 @@ Final_states: {self.final_states}
 
         # Initialize a new automate object with a dummy file name
         concatenated_automaton = automate("Sample/dummy.csv")
-        
+
         # Manually set the properties of concatenated_automaton
         concatenated_automaton.transitions = combined_transitions
         concatenated_automaton.matrix = []
@@ -533,7 +533,7 @@ Final_states: {self.final_states}
                     new_transitions[combined_transitions.index(trans_symbol) + 1] = prefix_B + trans_state
             concatenated_automaton.matrix.append(new_transitions)
 
-        # Link final states of the first automaton to initial state of the second automaton
+        # Link final states of the first automaton to the initial state of the second automaton
         for i, is_final in enumerate(self.final_states):
             if is_final == 1:
                 initial_state_of_B = other_automaton.all_states[other_automaton.initial_states.index(1)]
@@ -541,8 +541,16 @@ Final_states: {self.final_states}
                     if trans_symbol in other_automaton.transitions:
                         concatenated_automaton.matrix[i][combined_transitions.index(trans_symbol) + 1] = prefix_B + initial_state_of_B
                         break
+
+        # Replace "A_nan," "B_nan," or "something_nan" with "nan" in the matrix
+        for i in range(len(concatenated_automaton.matrix)):
+            for j in range(len(concatenated_automaton.matrix[i])):
+                if "_nan" in concatenated_automaton.matrix[i][j]:
+                    concatenated_automaton.matrix[i][j] = "nan"
+
         os.remove("Sample/dummy.csv")
         return concatenated_automaton
+
     
     def to_regular_expression(self):
         # Initialize regular expressions for each state
