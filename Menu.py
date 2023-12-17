@@ -456,10 +456,16 @@ while True:
             if slot != -1 :
                 automaton2 = slots[slot - 1]
         if automaton1 and automaton2:
-            automaton1.product(automaton2)
+            slots[slot_vide]=automaton1.product(automaton2)
+            print("Automate enregistré dans le slot : ",slot_vide+1,"\n\n")
             print("Traitement effectué.\n\n")
         else:
-            print("Aucun automate dans un des slots.\n")
+            if not (automaton1):
+                print("Il n'y a aucun automate dans le premier slot.\n")
+            elif not (automaton2):
+                print("Il n'y a aucun automate dans le premier slot.\n")
+            else:
+                print("Il y a eu un problème.")
             
             
     # ### CONCATENATION ######################################################
