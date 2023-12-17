@@ -484,27 +484,8 @@ while True:
             automate_conca.edit_csv("test", automate_conca.matrix, automate_conca.final_states)
 
             print("Traitement effectué.\n\n")
-
-    elif choix == "12":
-        slot1 = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
-        automaton1 = slots[slot1 - 1]
-
-        slot2 = int(input("Entrez le numéro du slot (1-10) du second automate : "))
-        automaton2 = slots[slot2 - 1]
-
-        if automaton1 and automaton2:
-            # Perform the concatenate operation
-            automate_conca = automaton1.concatenate(automaton2)
-
-            # Store the concatenated automaton in the available slot
-            slots[slot_vide] = automate_conca
-
-            print("Opération de concaténation effectuée. Automate enregistré dans le slot :", slot_vide + 1, "\n\n")
-
-            print("Traitement effectué.\n\n")
         else:
             print("Au moins l'un des automates n'existe pas dans les slots choisis.")
-
             
     # ### EXTRAIRE EXPRESSION ################################################
             

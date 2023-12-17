@@ -489,8 +489,6 @@ Final_states: {self.final_states}
         product_automaton.display_transition()
         return product_automaton
 
-    # ... [other methods and initializations of the automate class] ...
-    # ... [existing __init__ and other methods] ...
     def concatenate(self, other_automaton):
         combined_transitions = list(set(self.transitions + other_automaton.transitions))
 
