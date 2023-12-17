@@ -1,7 +1,7 @@
 from automate import automate
 from convertCsvPng import draw_and_save_automaton
 from convertJffCsv import jff_to_csv
-
+import datetime
 import os
 import webbrowser
 
@@ -202,7 +202,12 @@ def display_manual():
     ############################################################################
     """
     print(manual)
-
+    
+# Define the print_timestamp function
+def print_timestamp():
+    current_time = datetime.datetime.now()
+    formatted_time = current_time.strftime("%Y-%m-%d %H_%M_%S")
+    return formatted_time
 
 ##########################################################################################
 ################################## Menu principal ########################################
@@ -490,32 +495,34 @@ while True:
     elif choix == "18":
         slot = int(input("Entrez le numéro du slot (1-10) : "))
         automaton = slots[slot - 1]
+        
         if automaton:
-            automaton.edit_csv("buffer", automaton.matrix,automaton.final_states)
+            automaton.edit_csv("buffer", automaton.matrix, automaton.final_states)
             # Ensure the output directory exists
             os.makedirs('output-png', exist_ok=True)
 
-            # Paths for the CSV and the image file
+            # Define the CSV and image file paths
             csv_path = 'Sample/buffer.csv'  # Replace with your actual CSV file path
+            timestamp = print_timestamp()
+            image_filename = f'otomate_{timestamp}'
 
-            # Loop to find the next available file name
-            counter = 1
-            while os.path.exists(os.path.join('output-png', f'otomate{counter}')):
-                counter += 1
-            image_path = os.path.join('output-png', f'otomate{counter}')
-
+            # Set the image path with a timestamp
+            image_path = os.path.join('output-png', image_filename)
 
             # Process the CSV file and save the automaton image
             draw_and_save_automaton(csv_path, image_path)
             image_path_with_extension = image_path + '.png'
-            os.remove(image_path)
+
+            # Open the saved image in a web browser
             webbrowser.open('file://' + os.path.realpath(image_path_with_extension))
 
+            #Erase .dot file
+            os.remove('output-png/' + (image_filename))
 
-            pass
             print("Traitement effectué.\n\n")
         else:
             print("Aucun automate dans ce slot.\n")
+
         
     #### JFF to CSV ###########################################################
 
