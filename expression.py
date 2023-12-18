@@ -1,20 +1,31 @@
 from __future__ import annotations
 
 from pile import pile
+import copy
 
 class expression:
+    __LEFT__ = 0
+    __RIGHT__ = 1
+
     debug = False
     def __init__(self, isFactor:bool|None, isStar: bool|None, state: int|None, content, stateList:list[str]=None, eventList:list[str]=None) -> None:
-        self.isFactor: bool|None=isFactor
-        self.isStar: bool|None=isStar
-        self.state: int|None=state #Indice de l'état
-        self.content: list|int|expression=content
+        self.isFactor: bool|None=isFactor          # Defnine what's in front of the expression : nothing(None), +(False), *(True)
+        self.isStar: bool=isStar                   # Define if it's needed to put a star
+        self.state: int|None=state                 # State id
+        self.content: list|int|expression=content  # List of event id and expression object
 
         self.stateList: list = stateList
         self.eventList: list = eventList
 
 
     def parentheses(self):
+        """
+        This methods puts self.content in parenthesis if needed, it's usefull when it's needed to ad a factor (state or event)
+        For example :
+            - ax + (b+c) -> (ax + (b+c))
+            - (ax + b)(c + d) -> (ax + b)(c + d)
+            - (ax + b) + (c + d) -> ((ax + b) + (c + d))
+        """
         i=0
         parenthesed = True
 
@@ -31,6 +42,11 @@ class expression:
         #return self
 
     def factorize(self: expression, numberOfState: int):
+        """
+        This function is use to factorize an expression with all his state in common factor
+        numberOfState is used to create a list of size numberOfState.
+        If the max index of the states is more than numberOfState, numberOfState need to be equals to this number + 1
+        """
         listState:list[int|expression] = [[] for i in range(numberOfState+1)]
         currentState: int|None = None
 
@@ -327,9 +343,11 @@ class expression:
                     expression._expression__debugClassMessage(self.content)
                     self.content.append(buffer)
 
-    #Returns au many object element are in self
-    #Returns the number of index of obj, self check
     def contain(self, obj:list[int|expression]|expression, step=1, start:int=None) -> (int, int):
+        """
+        Returns au many object element are in self
+        Returns the number of index of obj, self check
+        """
         if obj == None:
             return 0
 
@@ -415,9 +433,105 @@ class expression:
         expression._expression__debugClassMessage("Contain debug : returning global ", result, ";", i)
         return (result, i)
 
+    def concatenate(self, expr:expression) -> int:
+        """
+        Return -1 if an error occure
+        Return 0 otherwise
+        """
+        expression._expression__debugClassMessage("Calling concatenate function with :", self, expr)
+        if(not isinstance(expr, expression)):
+            expression._expression__debugClassMessage("WARNING concatenate function ;: call with non expression objetc")
+            return -1
 
+        if len(self.content) == 0 and expr.isFactor != True:
+            expression._expression__debugClassMessage("Info concatenate function : self.content was empty")
+            self.isStar = expr.isStar
+            self.state = expr.state
+            self.content = expr.content
+        else:
+            self.content.append(expression(False, False, None, [expr]))
+        return 0
+
+    def breakExpressionDown(self) -> expression:
+        """
+        Breakdown self into multiple expression with the isFactor == False (+ sign)
+        For example _q0[ a +[ a *q0[b +[ c ] ] ] ] // a q0 + a(b + c) q0
+        Will return [_q0[ a ] ; _[ b *q0[ b +[ c ] ] ]] // [a q0 ; a(b + c) q0]
+        """
+
+        current = expression(None, False, None, [])
+        breakDown = []
+
+        for e in self.content:
+            if isinstance(e, int):
+                current.content.append(e)
+                current.isFactor = self.isFactor
+                current.isStar   = self.isStar
+                current.state    = self.state
+            else:
+                #Sum, stop the breakdown, creating a new current expression
+                if e.isFactor == False:
+                    breakDown.append(current)
+                    current = expression(None, e.isStar, e.state, copy.deepcopy(e.content))
+
+                else:
+                    current.append(copy.deepcopy(e))
+        
+        breakDown.append(current)
+        return breakDown
+
+    def addFactor(self, value:int|expression, side:int) -> None:
+        """
+        Add a factor at the left or the right
+        Use expression.__LEFT__ and expression.__RIGHT__ const to select the sideau
+        """
+        expression._expression__debugClassMessage("addFactor function debug, input =", self, value, side)
+        self.parentheses()
+        initSize = len(self.content)
+
+        if len(self.content) == 0 and isinstance(value, expression) and value.isFactor != True:
+            expression._expression__debugClassMessage("addFactor function info : unpackaking value because self.content was empty")
+            self.state = value.state
+            self.isStar = value.isStar
+            self.content.extend(value.content)
+
+        elif side == expression.__LEFT__:
+            buffer = [self.content.pop(0) for i in range(initSize)]
+            self.content.append(value)
+            self.content.extend(buffer)
+
+        else:
+            self.content.append(value)
+
+        print("addFactor function debug, output =", self, value, side)
+
+    def append(self, value:int|expression) -> None:
+        """
+        Add value at the end of the expression
+        This function take the len of self.content to unpack value if necessary
+        """
+
+        if len(self.content) == 0 and isinstance(value, expression) and value.isFactor != True:
+            expression._expression__debugClassMessage("addFactor function info : unpackaking value because self.content was empty")
+            self.state = value.state
+            self.isStar = value.isStar
+            self.content.extend(value.content)
+        else:
+            self.content.append(value)
+
+    def ArdenLemma(self, state:int):
+        """
+        This methods tranform an expression object by using the Arden lemma on state
+        It returns a heavy unfactorised expression because it will allow user to perform easely more operation on it
+        """
     @staticmethod
     def unparenthesis(lst:list[int|expression]):
+        """
+        This static methods is use to remove unsed parenthesis of multiple expression
+        Because of this initial usage case it's static but a classical way to call it is :
+        expression.unparenthesis(expr.content) with expr an expression object
+
+        """
         expression._expression__debugClassMessage("Unparenthesis debug :", lst)
         if lst == None or len(lst) == 0:
             return
@@ -442,6 +556,8 @@ class expression:
             #Case unused parenthesis without factor
             elif len(lst[i].content) == 1 and type(lst[i].content[0]) == expression and lst[i].content[0].isFactor != True:
                 expression._expression__debugClassMessage("arf", lst[i], lst[i].content[0])
+                lst[i].isStar = lst[i].content[0].isStar
+                lst[i].state = lst[i].content[0].state
                 lst[i].content = lst[i].content[0].content
                 i+=1
 
@@ -524,8 +640,6 @@ class expression:
 
         return result
         
-
-
     def __repr__(self: expression, end:str=""):
         if self.isFactor == None:
             op = "_"
@@ -556,20 +670,24 @@ class expression:
         return result
 
     @staticmethod
-    #Remove a range of a list and return the value, end is also remove
     def __rangePop(list:list, start:int, end:int) -> list:
+        """
+        This is a private static methode
+        Remove a range of a list and return the value, end is also remove
+        """
         expression._expression__debugClassMessage("Calling __rangePop with :", list, start, end)
         return [list.pop(start) for i in range(start, end+1)]
 
-    """
-    Return lenth of associated expression in a expression objet
-    Step define if we read from th left or the right
-    For example : ab + cd(g+h) + rt
-        - with index = 3 (+ rt) returns 0 (+ rt)
-        - with index = 0 (a) returns 1 (ab)
-    """
     @staticmethod
     def __getAssociatedExpression(tab:list[int|expression], index:int, step=1):
+        """
+        This is a private static function
+        Return lenth of associated expression in a expression objet
+        Step define if we read from th left or the right
+        For example : ab + cd(g+h) + rt
+            - with index = 3 (+ rt) returns 0 (+ rt)
+            - with index = 0 (a) returns 1 (ab)
+        """
         expression._expression__debugClassMessage("__getAssociatedExpression call with", tab, index, step)
         if(step != 1 and step != -1):
             return 0
@@ -586,16 +704,21 @@ class expression:
 
         return abs(lenght-step)
 
-    def affichage(self: expression):
-        print(self)
-
     @staticmethod
-    def __debugClassMessage(*values:object, sep: Optional[str] =" ", end: Optional[str] = "\n" ):
+    def __debugClassMessage(*values:object, sep: Optional[str] =" ", end: Optional[str] = "\n" ) -> None:
+        """
+        This is a private stati function
+        Allow class methods and function to print debug message if user need it
+        Debug message can be activate/desactivate with expression.setDebugEnable(enable:bool) function
+        """
         if expression.debug:
             print(*values, sep=sep, end=end)
 
     @staticmethod
-    def setDebugEnable(enable:bool):
+    def setDebugEnable(enable:bool) -> None:
+        """
+        This function allow the user to activate/desactivate debug message of this class
+        """
         expression.debug = enable
 
 

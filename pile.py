@@ -16,3 +16,7 @@ class pile:
 
     def upperData(self):
         return self.data[-1]
+
+    def pileUpAll(self, elements:list):
+        for e in elements:
+            self.pileUp(e)

@@ -1,6 +1,8 @@
 import stat
 from tkinter import NO
 import utilities
+from expression import expression
+from pile import pile
 from pprint import pprint
 import pandas as pd
 import os
@@ -128,6 +130,26 @@ Final_states: {self.final_states}
         else:
             print("La transition à supprimer n'existe pas")
             
+    def get_neighbour(self, state:int) -> dict:
+        """
+        This function return the list of neighboors for state
+        
+        state : the state to check
+        
+        Return a dictionary of str:list(str) with the name of the transition link to neighbour
+        Example : {a:[q0], b:[q0 q1]}
+        """
+        neighbour:list = {}
+        for i in range(1, len(self.matrix[state])):
+            if not "nan" in self.matrix[state][i]:
+                if isinstance(self.matrix[state][i], str):
+                    neighbour[self.transitions[i-1]] = [self.matrix[state][i]]
+                else:
+                    neighbour[self.transitions[i-1]] = self.matrix[state][i]
+
+        #This is use to remove duplicate entry
+        return neighbour
+        
     #TODO Créer la suppression d'une liaison (pas supprimer l'intégralité de la transition)
             
     # FIXME add programm for transition
@@ -688,7 +710,100 @@ Final_states: {self.final_states}
                                 self.add_transition("poubelle", bin_transition, "poubelle")
                     self.add_transition(state, transition, "poubelle")
         return modified
-        
+
+
+    def get_regular_expression(self) -> expression:
+        """
+        This function return a expression object representing the regular expression of the current automate
+        If the automate have no state, transition or more/less than 1 initial state, return None
+        """
+
+        # On veut faire une fonction qui retourne un objet expression représentant l'expression reconnu par notre otomate
+        # Pour se faire on va parcourir notre automate et contruire l'expression au fur et a mesure
+
+        #Return None if an error occure
+        if len(self.all_states) == 0 or len(self.transitions) == 0 or self.initial_states.count(1) != 1:
+            return None
+
+        #Creating a tab to store the regular expression of each state
+        stateExpression:list[expression] = [None for i in range(len(self.all_states))]
+
+        #This pile will be use to store which state we need to check
+        stack:pile = pile()
+
+        #This tab will be use to know if a state as already been check on time
+        #If nots because he is check that he have is expression already find
+        isAlreadyCheck:list[bool] = [False for i in range(len(self.all_states))]
+
+        #Initialize the pile with initial state
+        stack.pileUp([i for i in range(len(self.initial_states)) if self.initial_states[i] == 1][0])
+
+        while not stack.isEmpty():
+            currentState:int = stack.unstack()
+            print("Current State :", currentState)
+
+            if not isAlreadyCheck[currentState]:
+                isAlreadyCheck[currentState] = True
+
+            #We need to find the expression only if we don't have it 
+            if stateExpression[currentState] == None:
+                #Getting all no check state
+                neighboursDic   = self.get_neighbour(currentState) # = {'a':['q0'], 'b':['q1', 'q0'], ...}
+                neighboursId = {}                                  # = {'q0':0, 'q1':1, ...}
+                neighboursLabel = []
+
+                #Storing neigbours id
+                for eList in neighboursDic.values():
+                    for e in eList:
+                        if not e in neighboursLabel:
+                            neighboursId[e] = self.all_states.index(e)
+                            neighboursLabel.append(e)
+
+                needToCheck = []
+                for id in neighboursId.values():
+                    if not isAlreadyCheck[id]:
+                        needToCheck.append(id)
+
+                print("Debug get_regular_expression function :", neighboursDic, neighboursId, neighboursLabel, needToCheck)
+                
+                #Adding no visted neighbour
+                if len(needToCheck) != 0:
+                    print("Piling up")
+                    stack.pileUp(currentState)
+                    stack.pileUpAll(needToCheck)
+
+                #We have all needed material to find the easiest current expression
+                else:
+                    currentExpression:expression = expression(None, False, None, [])
+
+                    for eventLabel in neighboursDic.keys():
+                        transitionId = self.transitions.index(eventLabel)
+
+                        for neighbour in [neighboursId[e] for e in neighboursDic[eventLabel]]:
+                            #Case transition go into current state or another unknow state without expression
+                            if stateExpression[neighbour] == None:
+                                currentExpression.concatenate(expression(False, None, neighbour, [transitionId]))
+                            
+                            #Case we know the expression of the neighbour
+                            else:
+                                breakDown:list[expression] = stateExpression[neighbour].breakExpressionDown()
+                                print("Breakdown result :", breakDown)
+                                for e in breakDown:
+                                    e.addFactor(transitionId, expression.__LEFT__)
+                                    e.isFactor = False
+                                    currentExpression.append(e)
+
+                    #FIXME with Sample/default.csv state are remove /!\
+                    expression.unparenthesis(currentExpression.content)
+                    stateExpression[currentState] = currentExpression
+
+        print("Visited state :", isAlreadyCheck)
+        print("Result :", stateExpression)
+
+expression.setDebugEnable(True)
+automate("Sample/default.csv").get_regular_expression()
+#a = automate("Sample/default.csv")
+#print(a.get_neighbour(0))
 
 # automate1.make_complete()
 # automate1.display_matrix()
