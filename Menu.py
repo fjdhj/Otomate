@@ -210,7 +210,7 @@ def display_manual():
 
 
 # Instancie la liste des automates en traitement
-slots = [None] * 10
+slots:list = [None] * 10
 
 while True:
     
@@ -424,15 +424,15 @@ while True:
         print("Traitement effectué.\n\n")
 
         
-    # ### EXTRAIRE EXPRESSION ################################################
+    ### EXTRAIRE EXPRESSION ################################################
             
-    # elif choix == "13":
-    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
-    #     automate = slots_automates[slot - 1]
-    #     if automate:
-    #         #extraire_expression(automate, mot)
-    #     else:
-    #         print("Aucun automate dans ce slot.")
+    elif choix == "13":
+        slot = int(input("Entrez le numéro du slot (1-10) : "))
+        automate:automate = slots[slot - 1]
+        if automate:
+            automate.get_regular_expression()
+        else:
+            print("Aucun automate dans ce slot.")
             
             
     # ### DETERMINER LANGAGE ################################################

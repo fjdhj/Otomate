@@ -62,10 +62,10 @@ class expression:
                 #Looking for the state if we do not know which one it is
                 if(currentState == None):
                     j:int = i+1
-                    currentState:int = self.state if self.state != None else numberOfState+1
+                    currentState:int = self.state if self.state != None else numberOfState
 
                     #if we don't have a currentState, we need to check if it's not after
-                    while(currentState == numberOfState+1 and j< len(self.content) and (type(self.content[j]) != expression or self.content[j].isFactor) ):
+                    while(currentState == numberOfState+1 and j< len(self.content) and (type(self.content[j]) != expression or self.content[j].isFactor)):
                         if(type(self.content[j]) == expression and self.content[j].state != None):
                             currentState = self.content[j].state
 
@@ -151,7 +151,7 @@ class expression:
                                             buffer = []
                                         elif buffer[0] > 0:
                                             expression._expression__debugClassMessage("Sailor : Captain, somthing strange appen, what do we need to do ?")
-                                            start, end = (0, buffer[0]-1) if step == -1 else (buffer[0], len(currentFacto[2]) - 1)
+                                            start, end = (0, len(currentFacto[2][jSize].content)-buffer[0]-1) if step == -1 else (buffer[0], len(currentFacto[2][jSize].content) - 1)
                                             j+=(buffer[1]+1)*step
                                             expression._expression__debugClassMessage(currentFacto[2][jSize].content, start, end)
                                             buffer = expression._expression__rangePop(currentFacto[2][jSize].content, start, end)
@@ -165,18 +165,16 @@ class expression:
                                         else:
                                             buffer = expression._expression__rangePop(currentFacto[2], 0, jSize)
 
-                                        
 
                                         #if step != -1:
                                          #   j+=1
                                         j-=step
 
-
                                         #Putting the associated expression in parenthesis
                                         lenght = expression._expression__getAssociatedExpression(currentTab, j, step)
                                         expression._expression__debugClassMessage("NINI :", currentTab, lenght, j)
-                                        
-                                        
+                                                                            
+
                                         if type(currentTab[j]) == expression:
                                             currentTab[j] = expression(currentTab[j].isFactor, False, None, [currentTab[j]])
                                             currentTab[j].content[0].isFactor = True
@@ -191,7 +189,6 @@ class expression:
                                                     currentTab[j].content = [bufferBis] + currentTab[j].content
                                             else:
                                                 bufferBis = currentTab[j]
-
                                         else:
                                             currentTab[j] = expression(True, False, None, [currentTab[j]])
                                             bufferBis = currentTab[j]
@@ -201,6 +198,13 @@ class expression:
                                         #Putting in parenthesis things who are factor
                                         if(lenght != 0):
                                             bufferBis.content.extend(expression._expression__rangePop(currentTab, j, j+lenght))
+
+                                        #TODO We need to do the same for the common factor if he is at the right (case step == -1)
+                                        if step == -1  and j+1 < len(currentTab):
+                                            bufferThird = expression(True, False, None, expression._expression__rangePop(currentTab, j+1, j+1+expression._expression__getAssociatedExpression(currentTab, j+1, 1)))
+                                            tempBuffer = expression._expression__rangePop(currentTab, j+1, len(currentTab)-1)
+                                            currentTab.append(bufferThird)
+                                            currentTab.extend(tempBuffer)
 
                                         stack.pileUp(currentTab)
                                         expression._expression__debugClassMessage("pile up", currentTab, "at index", j)
@@ -262,18 +266,24 @@ class expression:
                     if i < len(self.content):
                         #Captain, we don't know the state, we need to find him !
                         expression._expression__debugClassMessage("Path Finding : Bip. Bip. Starting state path finding, OS version : ImadOss 3.5.78.chocolat")
-                        j = i+1
+                        j = i
 
-                        if i == 0 and type(self.content[0]) == int:
+                        if i == 0:
+                            #It's a int or a product
                             currentState = self.state if self.state != None else len(listState)-1
+                            lookin = self.content
                         else:
+                            #It's a sum and not product because after int we have produtct of int then sum
                             currentState = self.content[i].state if self.content[i].state != None else len(listState)-1
+                            lookin = self.content[i].content
+                            j = 0
                         
                         toAdd = []
 
-                        while currentState == len(listState)-1 and j < len(self.content) and self.content[j].isFactor:
-                            if self.content[j].state != None:
-                                currentState = self.content[j].state
+                        while currentState == len(listState)-1 and j < len(lookin) and (isinstance(lookin[j], int) or lookin[j].isFactor):
+                            if isinstance(lookin[j], expression) and lookin[j].state != None:
+                                currentState = lookin[j].state
+                                lookin[j].state = None
                             j+=1
                         expression._expression__debugClassMessage("Path Finding : Finding a state with id", currentState)
                     
@@ -345,14 +355,17 @@ class expression:
 
     def contain(self, obj:list[int|expression]|expression, step=1, start:int=None) -> (int, int):
         """
-        Returns au many object element are in self
+        Returns how many object element are in self
         Returns the number of index of obj, self check
         """
         if obj == None:
             return 0
 
-        if type(obj) == expression:
+        if isinstance(obj, expression):
             obj = obj.content
+
+        if isinstance(obj, int):
+            obj = [obj]
         
         diff = 0 if step == 1 else len(obj)-1
         i, end = (0, len(self.content)) if step == 1 else (len(self.content)-1, -1)
@@ -384,7 +397,7 @@ class expression:
                 #All obj need to be in self, so if it
                 # 's not, returning 0
                 if buff[0] == 0:
-                    return 0
+                    return (0, i)
                 
                 if buff[0] < len(obj[abs(diff-result)])-1:
                     expression._expression__debugClassMessage("Stric mod change the value")
@@ -471,7 +484,8 @@ class expression:
             else:
                 #Sum, stop the breakdown, creating a new current expression
                 if e.isFactor == False:
-                    breakDown.append(current)
+                    if len(current.content) != 0:
+                        breakDown.append(current)
                     current = expression(None, e.isStar, e.state, copy.deepcopy(e.content))
 
                 else:
@@ -503,7 +517,7 @@ class expression:
         else:
             self.content.append(value)
 
-        print("addFactor function debug, output =", self, value, side)
+        expression._expression__debugClassMessage("addFactor function debug, output =", self, value, side)
 
     def append(self, value:int|expression) -> None:
         """
@@ -524,6 +538,76 @@ class expression:
         This methods tranform an expression object by using the Arden lemma on state
         It returns a heavy unfactorised expression because it will allow user to perform easely more operation on it
         """
+
+        #Case no expression
+        if len(self.content) == 0:
+            expression._expression__debugClassMessage("Lemma debug : No content")
+            return False
+
+        breakDown = self.breakExpressionDown()
+
+        #Extracting state in self.content
+        i = 0
+        found = False
+        while i < len(breakDown) and not found:
+            expression._expression__debugClassMessage("Lemma debug : content of current breakdown :", breakDown[i])
+            if breakDown[i].state == state or (isinstance(breakDown[i].content[-1], expression) and breakDown[i].content[-1].state == state):
+                found = True
+                newExpression = breakDown.pop(i)
+            i+=1
+
+        #Can't find state, need to return False
+        if not found:
+            expression._expression__debugClassMessage("Lemma debug : State not found")
+            return False
+
+        #Because self.breakExpressionDown do not empty the main list, we need to do it
+        self.content = []
+        self.state = None
+            
+
+        newExpression.isFactor = True
+        newExpression.isStar = True
+        if newExpression.state == state:
+            newExpression.state = None
+        else:
+            newExpression.content[-1].state = None
+
+        while len(breakDown) != 0:
+            currentBreak = breakDown.pop(0)
+            currentBreak.isFactor = True
+            if len(self.content) != 0:
+                self.content.append(expression(False, False, None, [copy.deepcopy(newExpression), currentBreak]))
+            else:
+                self.content.extend([copy.deepcopy(newExpression), currentBreak])
+
+        return True
+
+    def containState(self, state, maxDepth=1) -> int|False:
+        """
+        Return the index in current state if  self contain this state
+        return a negatif index if he is not in self.content but in a child expression 
+        return True if define in self.state, and False if it was not found
+        """
+
+        if maxDepth < 0:
+            return False
+
+        if len(self.content) == 0:
+            return False
+
+        if self.state == state:
+            return -1
+
+        for i in range(len(self.content)):
+            e = self.content[i]
+            if isinstance(e, expression) and e.isFactor == False and (buffer := e.containState(state, maxDepth-1) != False):
+                return -i if isinstance(buffer, int) else i
+            elif isinstance(e, expression) and e.state == state:
+                return i
+        return False
+
+
     @staticmethod
     def unparenthesis(lst:list[int|expression]):
         """
@@ -549,8 +633,8 @@ class expression:
             elif lst[i].isStar == True:
                 i+=1
 
-            #Case it's empty
-            elif len(lst[i].content) == 0:
+            #Case it's empty or contain -1 (empty word)
+            elif len(lst[i].content) == 0 or (len(lst[i].content) == 1 and lst[i].isFactor == True and lst[i].content[0] == -1):
                 lst.pop(i)
 
             #Case unused parenthesis without factor
@@ -582,6 +666,11 @@ class expression:
                 lst.extend(content)
                 lst.extend(end)
                 i+= len(buffer)
+
+            #Case it's a sum whitout previous modif
+            elif lst[i].isFactor == False:
+                expression.unparenthesis(lst[i].content)
+                i+=1
             
             else:
                 i+=1
@@ -603,12 +692,17 @@ class expression:
         nbValue = 0
         needPar = False
 
-        while nbValue < len(self.content) and type(self.content[nbValue]) == int:
+        while nbValue < len(self.content) and isinstance(self.content[nbValue], int):
             result += str(eventList[self.content[nbValue]])+" " if self.content[nbValue] != -1 else str('\u03b5 ')
             nbValue+=1
         
+        while nbValue < len(self.content) and self.content[nbValue].isFactor == True:
+            result += self.content[nbValue].__str__(eventList, stateList)
+            nbValue+=1
+        
         #Use to remove the last unsed space
-        result = result[:len(result)-1]
+        if len(result) > 0 and result[-1] == " ":
+            result = result[:len(result)-1]
 
         while nbValue < len(self.content):
             if self.content[nbValue].isFactor == False:
@@ -618,13 +712,16 @@ class expression:
             nbValue += 1
 
         if self.isStar == True and not(needPar and self.isFactor):
-            result  = "(" + result + ")*"
+            if len(result) > 1:
+                result  = "(" + result + ")* "
+            else:
+                result += "* "
 
         if needPar and self.isFactor:
             result  = "(" + result + temp + ")"
 
             if self.isStar == True:
-                result += "*"
+                result += "* "
 
             if self.state != None:
                 result += " " + stateList[self.state]
@@ -735,7 +832,6 @@ if False:
         print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
     print("\n")
 
-
     #e2 : abc * q0
     # _q0[a; b; c]
     print("e2 : ")
@@ -764,7 +860,6 @@ if False:
     e4.factorize(2 )
     print("Result of factorization e4 :", e4)
     if repr(e4) != "_q0[ 0 1 +q1[ 2 ] ]":
-                
         print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
     print("\n")
 
@@ -801,3 +896,4 @@ if False:
     print("Result of factorization e7 :", e7)
     if repr(e7) != "_[ 0 1 *q0[ 2 +[ -1 ] ] ]":
         print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
+    print("\n")

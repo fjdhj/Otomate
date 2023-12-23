@@ -735,12 +735,13 @@ Final_states: {self.final_states}
         #If nots because he is check that he have is expression already find
         isAlreadyCheck:list[bool] = [False for i in range(len(self.all_states))]
 
+        initial_state = [i for i in range(len(self.initial_states)) if self.initial_states[i] == 1][0]
+
         #Initialize the pile with initial state
-        stack.pileUp([i for i in range(len(self.initial_states)) if self.initial_states[i] == 1][0])
+        stack.pileUp(initial_state)
 
         while not stack.isEmpty():
             currentState:int = stack.unstack()
-            print("Current State :", currentState)
 
             if not isAlreadyCheck[currentState]:
                 isAlreadyCheck[currentState] = True
@@ -764,11 +765,9 @@ Final_states: {self.final_states}
                     if not isAlreadyCheck[id]:
                         needToCheck.append(id)
 
-                print("Debug get_regular_expression function :", neighboursDic, neighboursId, neighboursLabel, needToCheck)
                 
                 #Adding no visted neighbour
                 if len(needToCheck) != 0:
-                    print("Piling up")
                     stack.pileUp(currentState)
                     stack.pileUpAll(needToCheck)
 
@@ -787,21 +786,47 @@ Final_states: {self.final_states}
                             #Case we know the expression of the neighbour
                             else:
                                 breakDown:list[expression] = stateExpression[neighbour].breakExpressionDown()
-                                print("Breakdown result :", breakDown)
                                 for e in breakDown:
                                     e.addFactor(transitionId, expression.__LEFT__)
                                     e.isFactor = False
                                     currentExpression.append(e)
 
-                    #FIXME with Sample/default.csv state are remove /!\
+                    # Checking if current expression is final, we add the empty word
+                    if self.final_states[currentState] == 1:
+                        currentExpression.append(expression(False, False, None, [-1]))
+
+                    #FIXME with Sample/default.csv state are remove /!\ (maybe not, maybe yes)
                     expression.unparenthesis(currentExpression.content)
+                   
+                    # Trying Arden lemma
+                    currentExpression.factorize(len(self.all_states))
+                    currentExpression.ArdenLemma(currentState)
+                    
                     stateExpression[currentState] = currentExpression
 
-        print("Visited state :", isAlreadyCheck)
-        print("Result :", stateExpression)
+        globalExpression = stateExpression[initial_state]
+        globalExpression.stateList = self.all_states
+        globalExpression.eventList = self.transitions
 
-expression.setDebugEnable(True)
-automate("Sample/default.csv").get_regular_expression()
+        return globalExpression
+
+if False:
+    print("Testing Sample/default.csv")
+    res = automate("Sample/default.csv").get_regular_expression()
+    print("The result is :", res)
+    print("A representation of res is", repr(res))
+    print("And the wanted repr. is    _[ *^[ 0 *^[ 1 ] *[ 0 ] ] *[ 0 *^[ 1 ] ] ]")
+    if repr(res) != "_[ *^[ 0 *^[ 1 ] *[ 0 ] ] *[ 0 *^[ 1 ] ] ]":
+        print("ALERT GENERAAAALLLLLLL")
+    print("\n")
+
+    print("Testing Sample/Test/sample8_1.csv")
+    res = automate("Sample/Test/sample8_1.csv").get_regular_expression()
+    print("The result is :", res)
+    print("A representation of res is", repr(res))
+    print("And the wanted repr. is    _[ *^[ *[ 0 1 2 +[ 3 *[ 4 1 2 +[ 5 ] ] ] ] ] *[ *[ 0 +[ 3 4 ] ] *[ 2 ] ] ]")
+    if repr(res) != "_[ *^[ *[ 0 1 2 +[ 3 *[ 4 1 2 +[ 5 ] ] ] ] ] *[ *[ 0 +[ 3 4 ] ] *[ 2 ] ] ]":
+        print("ALERT GENERAAAALLLLLLL")
 #a = automate("Sample/default.csv")
 #print(a.get_neighbour(0))
 
