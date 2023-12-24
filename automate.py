@@ -10,10 +10,12 @@ import math
 from itertools import combinations
 import numpy as np
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
+
 class automate:
     # initialize the basic automate
     def __init__(self, file_name: str) -> None:
         if not (os.path.isfile(file_name)):
+            print("Création du fichier : ", file_name)
             with open(file_name, "w") as csv_file:
                 csv_file.writelines("etat;EI;EF")
         transition: list=utilities.transitions(file_name)
@@ -26,6 +28,7 @@ class automate:
         self.all_states: list=[state[0] for state in sample_event]
         self.final_states: list=sample_state[1]
         self.transitions: list=[transit for transit in transition]
+        self.name: str=os.path.splitext(file_name)[0].replace("/", "")
         # self.label=[f"q{i}" for i in range(len(self.matrix)) if self.matrix != []]
     
     
@@ -37,8 +40,8 @@ class automate:
         self.initial_states.append(0)
         self.final_states.append(0)
         self.all_states.append(name)
-        for i in range(1,len(self.matrix[0])):
-            self.matrix[-1].append(['nan'])
+        for i in range(1,len(self.transitions)+1):
+            self.matrix[-1].append("nan")
 
     # display the necessary information about the states 
     def display_states(self) -> None:
@@ -96,10 +99,10 @@ Final_states: {self.final_states}
              raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
         index_state=self.all_states.index(initial_state)
         index_transition=self.transitions.index(transition)
-        if(self.matrix[index_state][index_transition+1][0] == "nan"):
-            del self.matrix[index_state][index_transition+1][0]
-        self.matrix[index_state][index_transition+1] = final_state
-        
+        if(self.matrix[index_state][index_transition+1] == "nan"):
+            self.matrix[index_state][index_transition+1] = final_state
+        else:
+            self.matrix[index_state][index_transition+1]="{0},{1}".format(str(self.matrix[index_state][index_transition+1]), final_state)
 
     def display_matrix(self):
         pprint(self.matrix)
@@ -126,7 +129,7 @@ Final_states: {self.final_states}
             index_transition = self.transitions.index(transition)
             self.transitions.remove(transition)
             for line in self.matrix: #Delete column in the matrix
-                del line[index_transition+1] 
+                del line[index_transition+1]
         else:
             print("La transition à supprimer n'existe pas")
             
@@ -162,7 +165,7 @@ Final_states: {self.final_states}
                 csv_file_temp[j][i]=AFD[i][j] if i<len(AFD) and j < len(AFD[i]) else None
         pprint(csv_file_temp)
         csv_file.update({"etat":csv_file_temp[0]})
-        for i in range(len(self.transitions)): #J'ai changé transition pour self.transitions
+        for i in range(len(self.transitions)):
             csv_file.update({self.transitions[i]:[state for state in csv_file_temp[i+1]]})
         
         pprint(csv_file)
@@ -237,7 +240,7 @@ Final_states: {self.final_states}
 
 
 
-    
+
     # TODO: begin transform AND in AEF
     
     # TODO: 3) Program the algorithm to set transitions between the new states
@@ -249,7 +252,7 @@ Final_states: {self.final_states}
         combin=[comb for size_combination in range(1,len(states)+1)
                       for comb in combinations(states, size_combination)]
         return combin
-        
+
     def enumerate_new_states(self, states: list) -> dict:
         """
         Enumarate all new states that are possible to create for new AFD
@@ -262,7 +265,7 @@ Final_states: {self.final_states}
             new_name_for_new_states=str(chr(97+i)).capitalize()
             new_states.update({new_name_for_new_states : all_combinations[i]})
         return new_states
-    
+
     # TODO: 2) Create function that allow us to determinate new initial_state and new_final state
     def define_new_state_and_final_states(self,transitions):   
         ...
@@ -459,28 +462,29 @@ Final_states: {self.final_states}
         self.matrix = mirrored_matrix
 
     def product(self, other_automaton):
+        product_automaton = automate(f"product{self.name}_{other_automaton.name}.csv")
+
         combined_transitions = list(set(self.transitions + other_automaton.transitions))
-        product_automaton = automate([], [[], []], combined_transitions)
+        for trans in combined_transitions:
+            print(trans)
+            product_automaton.create_transition(trans)
 
         for state1 in self.all_states:
             for state2 in other_automaton.all_states:
                 combined_state = f"{state1}_{state2}"
-                product_automaton.all_states.append(combined_state)
+                print(combined_state)
+                product_automaton.create_state(combined_state)
 
                 # Initial state logic: True if both states are initial
                 is_initial = (self.initial_states[self.all_states.index(state1)] == 1 and
                             other_automaton.initial_states[other_automaton.all_states.index(state2)] == 1)
-                product_automaton.initial_states.append(1 if is_initial else 0)
+                product_automaton.initial_states[-1] = 1 if is_initial else 0
 
                 # Final state logic: True if both states are final
                 is_final = (self.final_states[self.all_states.index(state1)] == 1 and
                             other_automaton.final_states[other_automaton.all_states.index(state2)] == 1)
-                product_automaton.final_states.append(1 if is_final else 0)
-
-        # Initialize the transition matrix with proper length
-        for _ in product_automaton.all_states:
-            product_automaton.matrix.append(['nan'] * (len(combined_transitions) + 1))  # +1 for state itself
-
+                product_automaton.final_states[-1] = 1 if is_final else 0
+        
         for i, combined_state in enumerate(product_automaton.all_states):
             state1, state2 = combined_state.split('_')
             idx1 = self.all_states.index(state1)
@@ -500,19 +504,19 @@ Final_states: {self.final_states}
                     combined_transition = ','.join(combined_transitions_list)
                 else:
                     combined_transition = 'nan'
-
-                product_automaton.matrix[i][trans_idx + 1] = combined_transition
-
+                
+                product_automaton.add_transition(combined_state, trans_symbol, combined_transition)
+        product_automaton.display_matrix()
+        product_automaton.display_states()
+        product_automaton.display_transition()
         return product_automaton
 
-    # ... [other methods and initializations of the automate class] ...
-    # ... [existing __init__ and other methods] ...
     def concatenate(self, other_automaton):
         combined_transitions = list(set(self.transitions + other_automaton.transitions))
 
         # Initialize a new automate object with a dummy file name
         concatenated_automaton = automate("Sample/dummy.csv")
-        
+
         # Manually set the properties of concatenated_automaton
         concatenated_automaton.transitions = combined_transitions
         concatenated_automaton.matrix = []
@@ -555,7 +559,7 @@ Final_states: {self.final_states}
                     new_transitions[combined_transitions.index(trans_symbol) + 1] = prefix_B + trans_state
             concatenated_automaton.matrix.append(new_transitions)
 
-        # Link final states of the first automaton to initial state of the second automaton
+        # Link final states of the first automaton to the initial state of the second automaton
         for i, is_final in enumerate(self.final_states):
             if is_final == 1:
                 initial_state_of_B = other_automaton.all_states[other_automaton.initial_states.index(1)]
@@ -563,8 +567,16 @@ Final_states: {self.final_states}
                     if trans_symbol in other_automaton.transitions:
                         concatenated_automaton.matrix[i][combined_transitions.index(trans_symbol) + 1] = prefix_B + initial_state_of_B
                         break
+
+        # Replace "A_nan," "B_nan," or "something_nan" with "nan" in the matrix
+        for i in range(len(concatenated_automaton.matrix)):
+            for j in range(len(concatenated_automaton.matrix[i])):
+                if "_nan" in concatenated_automaton.matrix[i][j]:
+                    concatenated_automaton.matrix[i][j] = "nan"
+
         os.remove("Sample/dummy.csv")
         return concatenated_automaton
+
     
     def to_regular_expression(self):
         # Initialize regular expressions for each state
@@ -813,8 +825,8 @@ Final_states: {self.final_states}
         return globalExpression
 
 if False:
-    print("Testing Sample/default.csv")
-    res = automate("Sample/default.csv").get_regular_expression()
+    print("Testing Sample/Test/random1.csv")
+    res = automate("Sample/Test/random1.csv").get_regular_expression()
     print("The result is :", res)
     print("A representation of res is", repr(res))
     print("And the wanted repr. is    _[ *^[ 0 *^[ 1 ] *[ 0 ] ] *[ 0 *^[ 1 ] ] ]")
@@ -842,56 +854,6 @@ if False:
 
 #a = automate("Sample/default.csv")
 #print(a.get_neighbour(0))
-
-# automate1.make_complete()
-# automate1.display_matrix()
-# automate1.display_states()
-# automate1.split_states()
-# #automate1.create_state("bidule")
-# automate1.display_states()
-
-# print(automate1.is_complete())
-# automate1.display_matrix()
-# print(automate1.is_deterministic())
-
-# automate1.create_state("sale boulot")
-# automate1.display_states()
-# #automate1.display_matrix()
-#automate1.add_transition("bidule")
-# automate1.display_matrix()
-
-
-#Test suppr
-# automate1.delete_state("q0")
-# automate1.display_states()
-# automate1.display_matrix()
-#print(automate1.recognize_wordAFD("ab"))
-
-# automate1.make_complete()
-# print(automate1.is_complete())
-# print(automate1.display_matrix())
-#if not automate1.is_deterministic():
-#    automate1.AND_to_AFD()
-#automate1.display_states()
-#automate1.edit_csv("testyy",automate1.matrix,automate1.final_states)
-# pprint(automate1.AND_to_AFD())
-# AFD=automate1.AND_to_AFD()
-# print(AFD[0])
-# automate1.edit_csv_deterministic("deterministic",AFD[0],AFD[1])
-
-
-#automate1.edit_csv("test")
-
-
-# automate1 = automate("default3.csv")
-# automate1.display_matrix()
-# automate1.display_states()
-# print(automate1.make_complete())
-# automate1.display_matrix()
-# automate1.display_states()
-# list=['jj','cc']
-# list_=",".join(list)
-# print(list,list_)
 
 """POUR IMAHD
 Comment edit un csv deterministe:
