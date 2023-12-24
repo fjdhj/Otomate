@@ -742,6 +742,7 @@ Final_states: {self.final_states}
 
         while not stack.isEmpty():
             currentState:int = stack.unstack()
+            #print("currentState :", currentState)
 
             if not isAlreadyCheck[currentState]:
                 isAlreadyCheck[currentState] = True
@@ -808,6 +809,7 @@ Final_states: {self.final_states}
         globalExpression.stateList = self.all_states
         globalExpression.eventList = self.transitions
 
+        expression.unparenthesis(globalExpression.content)
         return globalExpression
 
 if False:
@@ -824,9 +826,20 @@ if False:
     res = automate("Sample/Test/sample8_1.csv").get_regular_expression()
     print("The result is :", res)
     print("A representation of res is", repr(res))
-    print("And the wanted repr. is    _[ *^[ *[ 0 1 2 +[ 3 *[ 4 1 2 +[ 5 ] ] ] ] ] *[ *[ 0 +[ 3 4 ] ] *[ 2 ] ] ]")
-    if repr(res) != "_[ *^[ *[ 0 1 2 +[ 3 *[ 4 1 2 +[ 5 ] ] ] ] ] *[ *[ 0 +[ 3 4 ] ] *[ 2 ] ] ]":
+    print("And the wanted repr. is    _[ *^[ 0 1 2 +[ 3 *[ 4 1 2 +[ 5 ] ] ] ] *[ 0 +[ 3 4 ] ] *[ 2 ] ]")
+    if repr(res) != "_[ *^[ 0 1 2 +[ 3 *[ 4 1 2 +[ 5 ] ] ] ] *[ 0 +[ 3 4 ] ] *[ 2 ] ]":
         print("ALERT GENERAAAALLLLLLL")
+    print("\n")
+
+    print("Testing Sample/Test/evenNb0.csv")
+    res = automate("Sample/Test/evenNb0.csv").get_regular_expression()
+    print("The result is :", res)
+    print("A representation of res is", repr(res))
+    print("And the wanted repr. is    _[ *^[ 0 *^[ 1 ] *[ 0 ] +[ _[ 1 ] ] ] ]")
+    if repr(res) != "_[ *^[ 0 *^[ 1 ] *[ 0 ] +[ _[ 1 ] ] ] ]":
+        print("ALERT GENERAAAALLLLLLL")
+    print("\n")
+
 #a = automate("Sample/default.csv")
 #print(a.get_neighbour(0))
 

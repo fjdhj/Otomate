@@ -65,7 +65,7 @@ class expression:
                     currentState:int = self.state if self.state != None else numberOfState
 
                     #if we don't have a currentState, we need to check if it's not after
-                    while(currentState == numberOfState+1 and j< len(self.content) and (type(self.content[j]) != expression or self.content[j].isFactor)):
+                    while(currentState == numberOfState and j< len(self.content) and (type(self.content[j]) != expression or self.content[j].isFactor)):
                         if(type(self.content[j]) == expression and self.content[j].state != None):
                             currentState = self.content[j].state
 
@@ -138,9 +138,9 @@ class expression:
 
                                     
                                     if jSize < len(currentFacto[2]) and ( currentFacto[2][jSize] == currentTab[j] or \
-                                    (type(currentFacto[2][jSize]) == expression and type(currentTab[j]) == expression and currentFacto[2][jSize].content == currentTab[j].content)) :
+                                    (type(currentFacto[2][jSize]) == expression and type(currentTab[j]) == expression and currentFacto[2][jSize].content == currentTab[j].content and currentFacto[2][jSize].isStar == currentTab[j].isStar)) :
+                                        expression._expression__debugClassMessage("Sailor : UPGRADING SIZE SIR", currentFacto[2][jSize], currentTab[j])
                                         jSize+=1
-                                        expression._expression__debugClassMessage("Sailor : UPGRADING SIZE SIR")
 
                                     elif jSize != 0 or jSize == len(currentFacto[2]) or\
                                         (type(currentFacto[2][jSize]) == expression and (buffer := currentFacto[2][jSize].contain(currentTab, step))[0] != 0):
@@ -199,7 +199,7 @@ class expression:
                                         if(lenght != 0):
                                             bufferBis.content.extend(expression._expression__rangePop(currentTab, j, j+lenght))
 
-                                        #TODO We need to do the same for the common factor if he is at the right (case step == -1)
+                                        #We need to do the same for the common factor if he is at the right (case step == -1)
                                         if step == -1  and j+1 < len(currentTab):
                                             bufferThird = expression(True, False, None, expression._expression__rangePop(currentTab, j+1, j+1+expression._expression__getAssociatedExpression(currentTab, j+1, 1)))
                                             tempBuffer = expression._expression__rangePop(currentTab, j+1, len(currentTab)-1)
@@ -241,6 +241,12 @@ class expression:
                                         jSize=len(currentFacto[2])-1
 
                                         currentTab = currentFacto[0]
+
+                                        expression._expression__debugClassMessage("Sailor : INCREASING SPECIAL ENGINE POWER SIR")
+                                        jSize=len(currentFacto[2])-1
+
+                                        while j+step<len(currentFacto) and j+step > -1 and (type(currentFacto[j+step]) != expression or currentFacto[j+step].isFactor != False):
+                                            j+=step
 
                                     #Oh oh ... we need to speed up the research
                                     #We need to find the next addition !
@@ -581,6 +587,7 @@ class expression:
             else:
                 self.content.extend([copy.deepcopy(newExpression), currentBreak])
 
+        expression._expression__debugClassMessage("Content of sel after lemma :", self)
         return True
 
     def containState(self, state, maxDepth=1) -> int|False:
@@ -631,6 +638,7 @@ class expression:
             
             #Case it's stared
             elif lst[i].isStar == True:
+                expression.unparenthesis(lst[i].content)
                 i+=1
 
             #Case it's empty or contain -1 (empty word)
@@ -679,6 +687,9 @@ class expression:
             data = lst[0].content
             lst.pop()
             lst.extend(data)
+
+        expression._expression__debugClassMessage("Unparenthesis result :", lst)
+
 
     def __str__(self, eventList:list=None, stateList:list=None) -> str:
         if eventList == None:
