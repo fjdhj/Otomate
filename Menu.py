@@ -490,23 +490,24 @@ while True:
     ### EXTRAIRE EXPRESSION ################################################
             
     elif choix == "13":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automate:automate = slots[slot - 1]
-        if automate:
-            print("L'expression régulière de cette automate est :", automate.get_regular_expression())
-        else:
-            print("Aucun automate dans ce slot.")
+        slot = saisir_numero_slot()
+        if slot != -1:
+            automate:automate = slots[slot - 1]
+            if automate:
+                print("L'expression régulière de cette automate est :", automate.get_regular_expression())
+            else:
+                print("Aucun automate dans ce slot.")
             
     # ### DETERMINER LANGAGE ################################################
             
-    # elif choix == "14":
-    #     slot = saisir_numero_slot()
-    #     if slot != -1 :
-    #         automate = slots_automates[slot - 1]
-    #         if automate:
-    #             #langage_automate(automate)
-    #         else:
-    #             print("Aucun automate dans ce slot.")
+    elif choix == "14":
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            automate = slots[slot - 1]
+            if automate:
+                print("Le langage de cette automate est : L = {%s}" % (automate.get_regular_expression()))
+            else:
+                print("Aucun automate dans ce slot.")
             
             
     # ### LANGAGES EQUIVALENTS ##############################################
