@@ -169,47 +169,47 @@ class expression:
                                         #if step != -1:
                                          #   j+=1
                                         j-=step
+                                        if (len(currentTab) != j and step == 1) or (len(currentTab) == -1 and step == -1):
+                                            # Putting the associated expression in parenthesis only if where not at the end
+                                            lenght = expression._expression__getAssociatedExpression(currentTab, j, step)
+                                            expression._expression__debugClassMessage("NINI :", currentTab, lenght, j)
+                                                                                
 
-                                        #Putting the associated expression in parenthesis
-                                        lenght = expression._expression__getAssociatedExpression(currentTab, j, step)
-                                        expression._expression__debugClassMessage("NINI :", currentTab, lenght, j)
-                                                                            
+                                            if type(currentTab[j]) == expression:
+                                                currentTab[j] = expression(currentTab[j].isFactor, False, None, [currentTab[j]])
+                                                currentTab[j].content[0].isFactor = True
 
-                                        if type(currentTab[j]) == expression:
-                                            currentTab[j] = expression(currentTab[j].isFactor, False, None, [currentTab[j]])
-                                            currentTab[j].content[0].isFactor = True
-
-                                            if currentTab[j].isFactor == False:
-                                                bufferBis = expression(True, False, None, [])
-                                                if step == 1:
-                                                    #Ajout à droite
-                                                    currentTab[j].content.append(bufferBis)
+                                                if currentTab[j].isFactor == False:
+                                                    bufferBis = expression(True, False, None, [])
+                                                    if step == 1:
+                                                        #Ajout à droite
+                                                        currentTab[j].content.append(bufferBis)
+                                                    else:
+                                                        #Ajout à gauche
+                                                        currentTab[j].content = [bufferBis] + currentTab[j].content
                                                 else:
-                                                    #Ajout à gauche
-                                                    currentTab[j].content = [bufferBis] + currentTab[j].content
+                                                    bufferBis = currentTab[j]
                                             else:
+                                                currentTab[j] = expression(True, False, None, [currentTab[j]])
                                                 bufferBis = currentTab[j]
-                                        else:
-                                            currentTab[j] = expression(True, False, None, [currentTab[j]])
-                                            bufferBis = currentTab[j]
 
-                                        expression._expression__debugClassMessage("MERDE :", currentTab[j], j)
+                                            expression._expression__debugClassMessage("MERDE :", currentTab[j], j)
 
-                                        #Putting in parenthesis things who are factor
-                                        if(lenght != 0):
-                                            bufferBis.content.extend(expression._expression__rangePop(currentTab, j, j+lenght))
+                                            #Putting in parenthesis things who are factor
+                                            if(lenght != 0):
+                                                bufferBis.content.extend(expression._expression__rangePop(currentTab, j, j+lenght))
 
-                                        #We need to do the same for the common factor if he is at the right (case step == -1)
-                                        if step == -1  and j+1 < len(currentTab):
-                                            bufferThird = expression(True, False, None, expression._expression__rangePop(currentTab, j+1, j+1+expression._expression__getAssociatedExpression(currentTab, j+1, 1)))
-                                            tempBuffer = expression._expression__rangePop(currentTab, j+1, len(currentTab)-1)
-                                            currentTab.append(bufferThird)
-                                            currentTab.extend(tempBuffer)
+                                            #We need to do the same for the common factor if he is at the right (case step == -1)
+                                            if step == -1  and j+1 < len(currentTab):
+                                                bufferThird = expression(True, False, None, expression._expression__rangePop(currentTab, j+1, j+1+expression._expression__getAssociatedExpression(currentTab, j+1, 1)))
+                                                tempBuffer = expression._expression__rangePop(currentTab, j+1, len(currentTab)-1)
+                                                currentTab.append(bufferThird)
+                                                currentTab.extend(tempBuffer)
 
-                                        stack.pileUp(currentTab)
-                                        expression._expression__debugClassMessage("pile up", currentTab, "at index", j)
-                                        stack.pileUp(currentTab[j].content)
-                                        stack.pileUp( (bufferBis.content, 0, buffer, 1) )
+                                            stack.pileUp(currentTab)
+                                            expression._expression__debugClassMessage("pile up", currentTab, "at index", j)
+                                            stack.pileUp(currentTab[j].content)
+                                            stack.pileUp( (bufferBis.content, 0, buffer, 1) )
 
                                         factoOk = True
                                         #if step != -1:
@@ -382,7 +382,7 @@ class expression:
         strict = False
 
         expression._expression__debugClassMessage(i, end, step)
-        while (i < end and diff-result < len(obj) and step == 1) or (i > end and diff-result > -1 and step == -1):
+        while ((i < end or abs(diff-result) < len(obj)) and step == 1) or ((i > end or abs(diff-result) > -1) and step == -1):
             expression._expression__debugClassMessage(i, end, step, diff, result)
             expression._expression__debugClassMessage(self.content[i], "==", end=" ")
             expression._expression__debugClassMessage(obj[abs(diff-result)])
