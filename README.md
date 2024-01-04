@@ -28,16 +28,16 @@ The program need to contains the following features :
 - [ ] The interface need to be in the shell
 
 ## Optional feature
+- [X] Export the FSA in an image (.png, .jpg or other)
 - [ ] A GUI for editing the FSA
-- [ ] Export the FSA in an image (.png, .jpg or other)
 
-## FSA save file (.oto)
+## FSA save file (.csv)
 The program use the .oto extension to save your Finite-State automaton. The strucuture is the same as a CSV file with the follow header :
 ```
 Header : Names of the state, first event, second event, thrid event, [...], EI, EF
 EI: Etat Initial (0 : false, 1: true)
 EF: Etat Final (0 : false, 1: true)
-Note: The "Names of the state" column don't have a name in the header
+Note: The "Names of the state" column is "etat"
 ```
 
 **Example 1 :**\
