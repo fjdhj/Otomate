@@ -1,9 +1,21 @@
 from automate import automate
 from convertCsvPng import draw_and_save_automaton
 from convertJffCsv import jff_to_csv
-
+import datetime
 import os
 import webbrowser
+
+def saisir_numero_slot():
+    while True:
+        try:
+            slot = int(input("Entrez le numéro du slot (1-10) : "))
+            if 1 <= slot <= 10:
+                return slot  # Renvoyer le slot valide
+            else:
+                print("Veuillez entrer un nombre entre 1 et 10.")
+        except ValueError:
+            print("Veuillez entrer un nombre entier valide.")
+            return -1
 
 
 def modifier_automate(actual_auto:automate):
@@ -22,27 +34,27 @@ def modifier_automate(actual_auto:automate):
         choix_modification = input("Choisissez une action : ")
 
         if choix_modification == "1":
-            state_name = str(input("Entrez le nom du nouvel état"))
+            state_name = str(input("Entrez le nom du nouvel état : "))
             actual_auto.create_state(state_name)
         elif choix_modification == "2":
-            state_name = str(input("Entrez le nom de l'état à supprimer"))
+            state_name = str(input("Entrez le nom de l'état à supprimer : "))
             actual_auto.delete_state(state_name)
         elif choix_modification == "3":
-            transition_name = str(input("Entrez le nom de la nouvelle transition"))
+            transition_name = str(input("Entrez le nom de la nouvelle transition : "))
             actual_auto.create_transition(transition_name)
         elif choix_modification == "4":
-            transition_name = str(input("Entrez le nom de la transition à supprimer"))
+            transition_name = str(input("Entrez le nom de la transition à supprimer : "))
             actual_auto.delete_transition(transition_name)
         elif choix_modification == "5":
-            initial_state_name = str(input("Entrez le nom de l'état de départ"))
+            initial_state_name = str(input("Entrez le nom de l'état de départ : "))
             if not (initial_state_name in actual_auto.all_states):
                 actual_auto.create_state(initial_state_name)
                 
-            final_state_name = str(input("Entrez le nom de l'état d'arrivée"))
+            final_state_name = str(input("Entrez le nom de l'état d'arrivée : "))
             if not (initial_state_name in actual_auto.all_states):
                 actual_auto.create_state(final_state_name)
                 
-            transition_name = str(input("Entrez le nom de la transition"))
+            transition_name = str(input("Entrez le nom de la transition : "))
             if not (transition_name in actual_auto.transitions):
                 actual_auto.create_transition(transition_name)
                 
@@ -209,7 +221,12 @@ def display_manual():
     ############################################################################
     """
     print(manual)
-
+    
+# Define the print_timestamp function
+def print_timestamp():
+    current_time = datetime.datetime.now()
+    formatted_time = current_time.strftime("%Y-%m-%d %H_%M_%S")
+    return formatted_time
 
 ##########################################################################################
 ################################## Menu principal ########################################
@@ -217,10 +234,20 @@ def display_manual():
 
 
 # Instancie la liste des automates en traitement
-slots = [None] * 10
+slots:list = [None] * 10
 
 while True:
     
+    #Instancie les variables temporaires d'automate à None
+    automaton=None
+    automaton1=None
+    automaton2=None
+    
+    #Affiche le contenu des slots
+    #i=0
+    #for auto in slots:
+    #    print("Slot ",i," : ", auto.name)
+    #    i+=1
     
     # Trouve le prochain slot vide (NONE si complet)
     slot_vide = next((i for i, automate in enumerate(slots) if automate is None), None)
@@ -228,7 +255,7 @@ while True:
     
     ### GESTION DES SLOTS ################################################################
     
-    """
+
     while slot_vide == None:
         print ("Aucun slot de disponible. Veuillez en supprimer un ou l'exporter.")
         print("1. Supprimer un automate\n2. Exporter un automate\n")
@@ -236,10 +263,17 @@ while True:
         choix = input("Choisissez une action : \n1. Supprimer automate\n2. Exporter automate\n")
         
         if choix == "1":
-            #supprimer_automate()
+            slot = saisir_numero_slot()
+            if slot != -1 : 
+                slots[slot - 1] = None
+                print("Suppression effectuée.\n\n")
         elif choix == "2":
-            #exporter_automate()
-    """
+            slot = saisir_numero_slot()
+            if slot != -1 :
+                automaton :automate= slots[slot - 1]
+                file_name=str(input("Type the file name to export automaton:\n"))
+                automaton.edit_csv(file_name, automaton.matrix,automaton.final_states)
+                print("Traitement effectué.\n\n")
             
             
     ### MENU #############################################################################
@@ -275,247 +309,291 @@ while True:
     #FIXME NATHAN Si le paramètre entré ne correspond pas à un slot ça plante
     if choix == "1":
         if slot_vide is not None:
-            file_name=str(input("Type the file name to import automaton:\n"))
-            slots[slot_vide] = automate(file_name) 
-            print(slots)
-            print("Automate enregistré dans le slot : ",slot_vide,"\n\n")
+            file_name=str(input("Type the file name to import automaton: "))
+            if not file_name.endswith(".csv"):
+                file_name += ".csv"
+            if not os.path.exists(file_name):
+                print(f"Le fichier '{file_name}' n'existe pas.")
+            else:
+                slots[slot_vide] = automate(file_name) 
+                print(slots)
+                print("Automate enregistré dans le slot : ",slot_vide+1,"\n\n")
         else:
             print("Aucun slot disponible pour créer un nouvel automate.\n")  
     
     ### EXPORTATION ##############################################################
         
     elif choix == "2":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        #is_deterministic:bool=str(input("Votre tableau est il un tableau que vous avez déterminiser [y/n]"))
-        automaton :automate= slots[slot - 1]
-        file_name=str(input("Type the file name to export automaton:\n"))
-        automaton.edit_csv(file_name, automaton.matrix,automaton.final_states)
-        print("Traitement effectué.\n\n")
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            automaton :automate= slots[slot - 1]
+            file_name=str(input("Type the file name to export automaton: "))
+            if file_name.endswith(".csv"):
+                file_name=file_name.rstrip(".csv")
+            path = os.path.dirname(file_name) + "/"
+            basename = os.path.basename(file_name)
+            if not os.path.exists(path):
+                print(f"Le chemin '{file_name}' n'existe pas.")
+            else:
+                automaton.edit_csv(basename, automaton.matrix,automaton.final_states)
+                print("Traitement effectué.\n\n")
             
     # ### CREATION #################################################################
      
     elif choix == "3":
         if slot_vide is not None:
-            file_name=str(input("Type the file name to import automaton:\n"))
-            slots[slot_vide] = automate(file_name)
-            print(slots)
-            print("Traitement effectué.\n\n")
+            file_name=str(input("Type the file name to create automaton: "))
+            if not file_name.endswith(".csv"):
+                file_name+=".csv"
+            if not os.path.exists(os.path.dirname(file_name)):
+                print(f"Le chemin '{file_name}' n'existe pas.")
+            else:
+                slots[slot_vide] = automate(file_name)
+                print(slots)
+                print("Traitement effectué.\n\n")
         else:
             print("Aucun slot disponible pour créer un nouvel automate.\n")   
     
     # ### MODIFICATION ############################################################
             
     elif choix == "4":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automaton = slots[slot - 1]
-        if automaton:
-            modifier_automate(automaton)
-            print("Traitement effectué.\n\n")
-        else:
-            print("Aucun automate dans ce slot.\n")
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            automaton = slots[slot - 1]
+            if automaton:
+                modifier_automate(automaton)
+                print("Traitement effectué.\n\n")
+            else:
+                print("Aucun automate dans ce slot.\n")
             
             
     # ### SUPPRESSION #############################################################
             
     elif choix == "5":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        slots[slot - 1] = None
-        print("Surppression effectuée.\n\n")
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            slots[slot - 1] = None
+            print("Suppression effectuée.\n\n")
         
         
     # ### PASSER UN MOT ###########################################################
         
     elif choix == "6":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        qu = input("Ecrivez un mot à reconnaitre pour l'automate: \n")
-        automaton: automate = slots[slot - 1]
-        if automaton:
-            recognize=automaton.recognize_wordAFD(qu)
-            if recognize:
-                print("Le mot est reconnu")
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            qu = input("Ecrivez un mot à reconnaitre pour l'automate: \n")
+            automaton: automate = slots[slot - 1]
+            if automaton:
+                recognize=automaton.recognize_wordAFD(qu)
+                if recognize:
+                    print("Le mot est reconnu.\n")
+                else:
+                    print("Le mot n'est pas reconnu.\n")
             else:
-                print("Le mot n'est pas reconnu")
-        else:
-            print("Aucun automate dans le slot")
+                print("Aucun automate dans le slot.\n")
             
             
     # ### AUTOMATE COMPLET #######################################################
             
     elif choix == "7":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automaton = slots[slot - 1]
-        if automaton:
-            if(automaton.is_complete()):
-                print("L'automate est complet.")
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            automaton = slots[slot - 1]
+            if automaton:
+                if(automaton.is_complete()):
+                    print("L'automate est complet.")
+                else:
+                    if(input("L'automate n'est pas complet, voulez-vous le rendre complet ? [Y/N]\n") == "Y"):
+                        automaton.make_complete()
+                        print("Traitement effectué.\n\n")
             else:
-                if(input("L'automate n'est pas complet, voulez-vous le rendre complet ? [Y/N]\n") == "Y"):
-                    automaton.make_complete()
-                    print("Traitement effectué.\n\n")
-        else:
-            print("Aucun automate dans ce slot.\n")
+                print("Aucun automate dans ce slot.\n")
             
     
     # ### AUTOMATE DETERMINISTE #################################################
             
     elif choix == "8":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automaton = slots[slot - 1]
-        if automaton:
-            if(automaton.is_deterministic()):
-                print("L'automate est déterministe.")
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            automaton = slots[slot - 1]
+            if automaton:
+                if(automaton.is_deterministic()):
+                    print("L'automate est déterministe.")
+                else:
+                    if(input("L'automate n'est pas déterministe, voulez-vous le rendre déterministe ? [Y/N]\n") == "Y"):
+                        auto=automaton.AND_to_AFD()
+                        print("Traitement effectué.\n\n")
             else:
-                if(input("L'automate n'est pas déterministe, voulez-vous le rendre déterministe ? [Y/N]\n") == "Y"):
-                    auto=automaton.AND_to_AFD()
-                    print("Traitement effectué.\n\n")
-        else:
-            print("Aucun automate dans ce slot.\n")
+                print("Aucun automate dans ce slot.\n")
             
             
     # ### AUTOMATE MIROIR ######################################################
             
     elif choix == "9":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automaton = slots[slot - 1]
-        if automaton:
-            automaton.mirror()
-            print("Traitement effectué.\n\n")
-        else:
-            print("Aucun automate dans ce slot.\n")
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            automaton = slots[slot - 1]
+            if automaton:
+                automaton.mirror()
+                print("Traitement effectué.\n\n")
+            else:
+                print("Aucun automate dans ce slot.\n")
             
         
     # ### AUTOMATE COMPLEMENTAIRE #############################################
             
     elif choix == "10":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automaton = slots[slot - 1]
-        if automaton:
-            automaton.complement()
-            print("Traitement effectué.\n\n")
-        else:
-            print("Aucun automate dans ce slot.\n")
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            automaton = slots[slot - 1]
+            if automaton:
+                automaton.complement()
+                print("Traitement effectué.\n\n")
+            else:
+                print("Aucun automate dans ce slot.\n")
     
     
     # ### PRODUIT D'AUTOMATES #################################################
             
     elif choix == "11":
-        slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
-        automaton1 = slots[slot - 1]
-        slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
-        automaton2 = slots[slot - 1]
-        if automaton1 & automaton2:
-            automaton1.product(automaton2)
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            automaton1 = slots[slot - 1]
+            slot = saisir_numero_slot()
+            if slot != -1 :
+                automaton2 = slots[slot - 1]
+        if automaton1 and automaton2:
+            slots[slot_vide]=automaton1.product(automaton2)
+            print("Automate enregistré dans le slot : ",slot_vide+1,"\n\n")
             print("Traitement effectué.\n\n")
         else:
-            print("Aucun automate dans ce slot.\n")
+            if not (automaton1):
+                print("Il n'y a aucun automate dans le premier slot.\n")
+            elif not (automaton2):
+                print("Il n'y a aucun automate dans le premier slot.\n")
+            else:
+                print("Il y a eu un problème.")
             
             
     # ### CONCATENATION ######################################################
             
-    # elif choix == "12":
-    #     slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
-    #     automate1 = slots_automates[slot - 1]
-    #     slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
-    #     automate2 = slots_automates[slot - 1]
-    #     if automate1 & automate2:
-    #         #res = concatenation(automate1,automate2)
-    #         #if res != None:
-    #             #slot[slot_vide] = res
-    #     else:
-    #         print("Aucun automate dans ce slot.")
+    elif choix == "12":
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            automaton1 = slots[slot - 1]
+            slot = saisir_numero_slot()
+            if slot != -1 :
+                automaton2 = slots[slot - 1]
+        if automaton1 and automaton2 :
+            automate_conca = automaton1.concatenate(automaton2)
+            slots[slot_vide]=automate_conca
+            print("Automate enregistré dans le slot : ",slot_vide+1,"\n\n")
+            automate_conca.edit_csv("test", automate_conca.matrix, automate_conca.final_states)
+
+            print("Traitement effectué.\n\n")
+        else:
+            print("Au moins l'un des automates n'existe pas dans les slots choisis.")
+        
+    ### EXTRAIRE EXPRESSION ################################################
             
-            
-    # ### EXTRAIRE EXPRESSION ################################################
-            
-    # elif choix == "13":
-    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
-    #     automate = slots_automates[slot - 1]
-    #     if automate:
-    #         #extraire_expression(automate, mot)
-    #     else:
-    #         print("Aucun automate dans ce slot.")
-            
+    elif choix == "13":
+        slot = int(input("Entrez le numéro du slot (1-10) : "))
+        automate:automate = slots[slot - 1]
+        if automate:
+            print("L'expression régulière de cette automate est :", automate.get_regular_expression())
+        else:
+            print("Aucun automate dans ce slot.")
             
     # ### DETERMINER LANGAGE ################################################
             
     # elif choix == "14":
-    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
-    #     automate = slots_automates[slot - 1]
-    #     if automate:
-    #         #langage_automate(automate)
-    #     else:
-    #         print("Aucun automate dans ce slot.")
+    #     slot = saisir_numero_slot()
+    #     if slot != -1 :
+    #         automate = slots_automates[slot - 1]
+    #         if automate:
+    #             #langage_automate(automate)
+    #         else:
+    #             print("Aucun automate dans ce slot.")
             
             
     # ### LANGAGES EQUIVALENTS ##############################################
             
     # elif choix == "15":
-    #     slot = int(input("Entrez le numéro du slot (1-10) du premier automate : "))
-    #     automate1 = slots_automates[slot - 1]
-    #     slot = int(input("Entrez le numéro du slot (1-10) du second automate : "))
-    #     automate2 = slots_automates[slot - 1]
-    #     if automate1 & automate2:
+    #     slot = saisir_numero_slot()
+    #     if slot != -1 :
+    #         automate1 = slots_automates[slot - 1]
+    #         slot = saisir_numero_slot()
+    #         if slot != -1 :
+    #             automate2 = slots_automates[slot - 1]
+    #     if automate1 and automate2:
     #         #res = equivalence(automate1,automate2)
     #     else:
-    #         print("Aucun automate dans ce slot.")
+    #         print("Aucun automate dans un des slots.")
             
             
     # ### EMONDER AUTOMATE ##################################################
             
     # elif choix == "16":
-    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
-    #     automate = slots_automates[slot - 1]
-    #     if automate:
-    #         #res = emonder(automate)
-    #         #if res != None:
-    #             #slot[slot_vide] = res
-    #     else:
-    #         print("Aucun automate dans ce slot.")
+    #     slot = saisir_numero_slot()
+    #     if slot != -1 :
+    #         automate = slots_automates[slot - 1]
+    #         if automate:
+    #             #res = emonder(automate)
+    #             #if res != None:
+    #                 #slot[slot_vide] = res
+    #         else:
+    #             print("Aucun automate dans ce slot.")
             
             
     # ### RENDRE MINIMAL ###################################################
             
     # elif choix == "17":
-    #     slot = int(input("Entrez le numéro du slot (1-10) : "))
-    #     automate = slots_automates[slot - 1]
-    #     if automate:
-    #         #res = minimal(automate)
-    #         #if res != None:
-    #             #slot[slot_vide] = res
-    #     else:
-    #         print("Aucun automate dans ce slot.")
+    #     slot = saisir_numero_slot()
+    #     if slot != -1 :
+    #         automate = slots_automates[slot - 1]
+    #         if automate:
+    #             #res = minimal(automate)
+    #             #if res != None:
+    #                 #slot[slot_vide] = res
+    #         else:
+    #             print("Aucun automate dans ce slot.")
             
             
     ### VISUALISATION ######################################################
     
     elif choix == "18":
-        slot = int(input("Entrez le numéro du slot (1-10) : "))
-        automaton = slots[slot - 1]
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            automaton = slots[slot - 1]
+        else:
+            automaton = None
         if automaton:
-            automaton.edit_csv("buffer", automaton.matrix,automaton.final_states)
+            automaton.edit_csv("buffer", automaton.matrix, automaton.final_states)
             # Ensure the output directory exists
             os.makedirs('output-png', exist_ok=True)
 
-            # Paths for the CSV and the image file
+            # Define the CSV and image file paths
             csv_path = 'Sample/buffer.csv'  # Replace with your actual CSV file path
+            timestamp = print_timestamp()
+            image_filename = f'otomate_{timestamp}'
 
-            # Loop to find the next available file name
-            counter = 1
-            while os.path.exists(os.path.join('output-png', f'otomate{counter}')):
-                counter += 1
-            image_path = os.path.join('output-png', f'otomate{counter}')
-
+            # Set the image path with a timestamp
+            image_path = os.path.join('output-png', image_filename)
 
             # Process the CSV file and save the automaton image
             draw_and_save_automaton(csv_path, image_path)
             image_path_with_extension = image_path + '.png'
-            os.remove(image_path)
+
+            # Open the saved image in a web browser
             webbrowser.open('file://' + os.path.realpath(image_path_with_extension))
 
+            #Erase .dot file
+            os.remove('output-png/' + (image_filename))
 
-            pass
             print("Traitement effectué.\n\n")
         else:
             print("Aucun automate dans ce slot.\n")
+
         
     #### JFF to CSV ###########################################################
 
@@ -533,7 +611,7 @@ while True:
     # ### EXIT #############################################################
         
     elif choix == "21":
-        qu = input("Après avoir quitté, vos automates seront supprimés des slots.\nAvez-vous bien exporté tous les automates que vous vouliez ? (0/N) \n")
+        qu = input("Après avoir quitté, vos automates seront supprimés des slots.\nAvez-vous bien exporté tous les automates que vous vouliez ? (O/N) \n")
         if qu in ["O","OUI","Oui","o","oui","Yes","Y","y","yes","YES"]:
             print("Merci et à bientôt !")
             break

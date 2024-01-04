@@ -17,7 +17,7 @@ def init_graph(file)->list:
     dimension: tuple=automate.shape
     graph = automate.iloc[0 :dimension[0],0 : dimension[1]-2]
     graph_to_list=[graph.loc[i,:].values.tolist() for i in range(dimension[0])]  
-    graph_to_list_final = [["nan" if type(graph_to_list[i][j]) == float else graph_to_list[i][j] for j in range(len(graph_to_list[i]))] for i in range(len(graph_to_list)) ]      
+    graph_to_list_final = [["nan" if type(graph_to_list[i][j]) == float or graph_to_list[i][j] == np.nan else graph_to_list[i][j] for j in range(len(graph_to_list[i]))] for i in range(len(graph_to_list)) ]      
     return graph_to_list_final
 
 def init_statestypes(file)->list:
@@ -34,7 +34,6 @@ def init_statestypes(file)->list:
     dimension: tuple=automate.shape
     states = automate.iloc[0 :dimension[0],dimension[1]-2 : dimension[1]]
     states_to_list=[states.loc[:,i].values.tolist() for i in ['EI', 'EF']]
-    print(states_to_list)
     return states_to_list
 
 def transitions(file)->list:

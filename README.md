@@ -13,31 +13,31 @@ The program need to contains the following features :
 - [ ] Check if a word can be read by the FSA
 - [X] Check if an AEF is complete
 - [X] Transform an AEF into an complete AEF
-- [ ] Check if an AEF is deterministic
+- [X] Check if an AEF is deterministic
 - [ ] Transform an AEF into a deterministic one
-- [ ] Do the folow operation
+- [X] Do the folow operation
     - [X] Complement of an AEF
     - [X] Mirror of an AEF
-    - [ ] Product of two AEFs
-    - [ ] Concatenation of two AEFs 
-- [ ] Extract a regular expression from an AEF. For example, a\*b is a regular exepression.
-- [ ] Find AEF admited language. For example, {a*b} is a language
+    - [X] Product of two AEFs
+    - [X] Concatenation of two AEFs 
+- [X] Extract a regular expression from an AEF. For example, a\*b is a regular exepression.
+- [X] Find AEF admited language. For example, {a*b} is a language
 - [ ] Check if two AEF are equivalen (they recognized same language)
 - [X] Transform an AEF into an trim one
 - [ ] Transform an AEF into a minimal one. The new AEF will recognized the same language, with the minmal number of state. Which means that no state can be removed from the AEF and without change the know language
 - [ ] The interface need to be in the shell
 
 ## Optional feature
+- [X] Export the FSA in an image (.png)
 - [ ] A GUI for editing the FSA
-- [ ] Export the FSA in an image (.png, .jpg or other)
 
-## FSA save file (.oto)
+## FSA save file (.csv)
 The program use the .oto extension to save your Finite-State automaton. The strucuture is the same as a CSV file with the follow header :
 ```
 Header : Names of the state, first event, second event, thrid event, [...], EI, EF
 EI: Etat Initial (0 : false, 1: true)
 EF: Etat Final (0 : false, 1: true)
-Note: The "Names of the state" column don't have a name in the header
+Note: The "Names of the state" column is "etat"
 ```
 
 **Example 1 :**\

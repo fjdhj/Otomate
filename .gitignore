@@ -1,3 +1,7 @@
+# Otomate custom folder and file
+output-png/
+.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
