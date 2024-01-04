@@ -10,11 +10,11 @@ The program need to contains the following features :
   - [X] Importation/Exportation with a file
   - [X] Editing
   - [X] Removing
-- [ ] Check if a word can be read by the FSA
+- [X] Check if a word can be read by the FSA
 - [X] Check if an AEF is complete
 - [X] Transform an AEF into an complete AEF
 - [X] Check if an AEF is deterministic
-- [ ] Transform an AEF into a deterministic one
+- [X] Transform an AEF into a deterministic one
 - [X] Do the folow operation
     - [X] Complement of an AEF
     - [X] Mirror of an AEF

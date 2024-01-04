@@ -299,11 +299,6 @@ Final_states: {self.final_states}
         """
         matrix = [elem[1:] for elem in self.matrix]
         pprint(matrix)
-        # for i in range(len(matrix)):
-        #     for j in range(len(matrix[i])):
-        #         print(matrix[i][j])
-        #         if matrix[i][j]=="nan":
-        #             matrix[i][j]='poubelle'
         symbols=self.transitions
         new_states_to_check:list[dict]=[]
         i_for_check=0
@@ -312,8 +307,8 @@ Final_states: {self.final_states}
         # phase 1
         end=False
         len_states=len(new_states_to_check)
-        # We loop 10 times in order to be sure that we go through every states
         for i in range(len(self.all_states)**2-len(new_states_to_check)):
+            # we visit the first state
             state_to_check=list(new_states_to_check[-1].keys())[0]
             print("State to visit", state_to_check,"\n")
             for iter_state in range(len(new_states_to_check)):
