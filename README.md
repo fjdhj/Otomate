@@ -28,7 +28,7 @@ The program need to contains the following features :
 - [ ] The interface need to be in the shell
 
 ## Optional feature
-- [X] Export the FSA in an image (.png, .jpg or other)
+- [X] Export the FSA in an image (.png)
 - [ ] A GUI for editing the FSA
 
 ## FSA save file (.csv)
