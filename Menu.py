@@ -12,9 +12,9 @@ def saisir_numero_slot():
             if 1 <= slot <= 10:
                 return slot  # Renvoyer le slot valide
             else:
-                print("Veuillez entrer un nombre entre 1 et 10.")
+                print("Veuillez entrer un nombre entre 1 et 10.\n")
         except ValueError:
-            print("Veuillez entrer un nombre entier valide.")
+            print("Veuillez entrer un nombre entier valide.\n")
             return -1
 
 
@@ -64,7 +64,7 @@ def modifier_automate(actual_auto:automate):
             pass
         elif choix_modification == "7":
             i_initial_state=actual_auto.initial_states.index(1)
-            print(f"Voici l'état initial: {actual_auto.all_states[i_initial_state]}")
+            print(f"Voici l'état initial actuel: {actual_auto.all_states[i_initial_state]}")
             new_initial_state=str(input(f"Choisissez un automate à rendre en état initial parmi ceux là:\n{actual_auto.all_states}"))
             state_in_states:bool=new_initial_state in actual_auto.all_states
             while not state_in_states:
@@ -74,7 +74,14 @@ def modifier_automate(actual_auto:automate):
             i_initial_state=actual_auto.initial_states.index(1)
             print(f"Voici le nouvel état initial: {actual_auto.all_states[i_initial_state]}")
         elif choix_modification == "8":
-            i_final_states=[i for i in range(len(actual_auto)) if actual_auto[i]==1]
+            i_final_states=[i for i in range(len(actual_auto.final_states)) if actual_auto.final_states[i]==1]
+            print(f"Voici la liste des états finaux:")
+            for index in i_final_states:
+                print(actual_auto.all_states[index], end=" ")
+            print()
+            i_state_to_change=int(input(f"Choisissez parmi ceux-là: {[int(i)+1 for i in i_final_states]}:\n"))
+            print(i_state_to_change)
+            # FIXME : finir modifier etats finaux
         elif choix_modification == "9":
             break
         else:
@@ -235,12 +242,17 @@ while True:
     automaton=None
     automaton1=None
     automaton2=None
+    bouclesuivante=0
     
     #Affiche le contenu des slots
-    #i=0
-    #for auto in slots:
-    #    print("Slot ",i," : ", auto.name)
-    #    i+=1
+    i=0
+    for auto in slots:
+        if auto is not None:
+            print("Slot ",i+1," : ", auto.name)
+        else :
+            print("Slot ",i+1," : None")
+        i+=1
+    print ("\n")
     
     # Trouve le prochain slot vide (NONE si complet)
     slot_vide = next((i for i, automate in enumerate(slots) if automate is None), None)
@@ -253,13 +265,15 @@ while True:
         print ("Aucun slot de disponible. Veuillez en supprimer un ou l'exporter.")
         print("1. Supprimer un automate\n2. Exporter un automate\n")
         
-        choix = input("Choisissez une action : \n1. Supprimer automate\n2. Exporter automate\n")
+        choix = input("Choisissez une action : ")
+        print("\n")
         
         if choix == "1":
             slot = saisir_numero_slot()
             if slot != -1 : 
                 slots[slot - 1] = None
                 print("Suppression effectuée.\n\n")
+                bouclesuivante=1
         elif choix == "2":
             slot = saisir_numero_slot()
             if slot != -1 :
@@ -267,7 +281,10 @@ while True:
                 file_name=str(input("Type the file name to export automaton:\n"))
                 automaton.edit_csv(file_name, automaton.matrix,automaton.final_states)
                 print("Traitement effectué.\n\n")
-            
+        slot_vide = next((i for i, automate in enumerate(slots) if automate is None), None)
+    
+    if bouclesuivante==1:
+        continue
             
     ### MENU #############################################################################
     
@@ -306,7 +323,7 @@ while True:
             if not file_name.endswith(".csv"):
                 file_name += ".csv"
             if not os.path.exists(file_name):
-                print(f"Le fichier '{file_name}' n'existe pas.")
+                print(f"Le fichier '{file_name}' n'existe pas.\n")
             else:
                 slots[slot_vide] = automate(file_name) 
                 print(slots)
@@ -318,7 +335,7 @@ while True:
         
     elif choix == "2":
         slot = saisir_numero_slot()
-        if slot != -1 :
+        if slot != -1 and slots[slot-1] != None:
             automaton :automate= slots[slot - 1]
             file_name=str(input("Type the file name to export automaton: "))
             if file_name.endswith(".csv"):
@@ -326,10 +343,12 @@ while True:
             path = os.path.dirname(file_name) + "/"
             basename = os.path.basename(file_name)
             if not os.path.exists(path):
-                print(f"Le chemin '{file_name}' n'existe pas.")
+                print(f"Le chemin '{file_name}' n'existe pas.\n")
             else:
                 automaton.edit_csv(basename, automaton.matrix,automaton.final_states)
                 print("Traitement effectué.\n\n")
+        else:
+            print("Slot invalide. Veuillez réessayer.\n")
             
     # ### CREATION #################################################################
      
@@ -338,8 +357,9 @@ while True:
             file_name=str(input("Type the file name to create automaton: "))
             if not file_name.endswith(".csv"):
                 file_name+=".csv"
-            if not os.path.exists(os.path.dirname(file_name)):
-                print(f"Le chemin '{file_name}' n'existe pas.")
+            dir = os.path.dirname(file_name)
+            if not os.path.exists(dir) and dir!="":
+                print(f"Le chemin '{file_name}' n'existe pas.\n")
             else:
                 slots[slot_vide] = automate(file_name)
                 print(slots)
