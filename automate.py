@@ -1,6 +1,8 @@
 import stat
 from tkinter import NO
 import utilities
+from expression import expression
+from pile import pile
 from pprint import pprint
 import pandas as pd
 import os
@@ -13,6 +15,7 @@ class automate:
     # initialize the basic automate
     def __init__(self, file_name: str) -> None:
         if not (os.path.isfile(file_name)):
+            print("Création du fichier : ", file_name)
             with open(file_name, "w") as csv_file:
                 csv_file.writelines("etat;EI;EF")
         transition: list=utilities.transitions(file_name)
@@ -31,7 +34,7 @@ class automate:
     
     def create_state(self,name)->None:
         while(name in self.all_states):
-            name = str(input("Entrez le nom du nouvel état : "))
+            name = str(input("Entrez le nom du nouvel état"))
         self.matrix.append([])
         self.matrix[-1].append(name)
         self.initial_states.append(0)
@@ -88,7 +91,7 @@ Final_states: {self.final_states}
     def create_transition(self, transition):
         self.transitions.append(transition)
         for line in self.matrix:
-            line.append("nan")
+            line.append(["nan"])
 
         
     def add_transition(self,initial_state,transition="c",final_state="sale boulot"):
@@ -130,10 +133,33 @@ Final_states: {self.final_states}
         else:
             print("La transition à supprimer n'existe pas")
             
+    def get_neighbour(self, state:int) -> dict:
+        """
+        This function return the list of neighboors for state
+        
+        state : the state to check
+        
+        Return a dictionary of str:list(str) with the name of the transition link to neighbour
+        Example : {a:[q0], b:[q0 q1]}
+        """
+        neighbour:list = {}
+        for i in range(1, len(self.matrix[state])):
+            if not "nan" in self.matrix[state][i]:
+                if isinstance(self.matrix[state][i], str):
+                    neighbour[self.transitions[i-1]] = [self.matrix[state][i]]
+                else:
+                    neighbour[self.transitions[i-1]] = self.matrix[state][i]
+
+        #This is use to remove duplicate entry
+        return neighbour
+        
     #TODO Créer la suppression d'une liaison (pas supprimer l'intégralité de la transition)
             
     # FIXME add programm for transition
     def edit_csv(self, file_name: str,AFD: list, final_state:list):
+        if len(AFD)==0:
+            print("Rien à exporter.")
+            return None
         csv_file={}
         rows, cols= len(AFD), len(AFD[0])
         csv_file_temp=[["" for _ in range(rows)] for i in range(cols)]
@@ -154,7 +180,7 @@ Final_states: {self.final_states}
         df2=pd.read_csv(f"Sample/{file_name}.csv",sep=";")
         df2.replace('nan',np.nan, inplace=True)
         df2.to_csv(f"Sample/{file_name}.csv", index=False, sep=';')
-        
+    
     def possible_transition(self, current_state: str, matrix: list, symbols: list) -> list:
         """Récupère les transitions possibles pour passer d'un état à un autre en fonction du symbole fourni.
 
@@ -185,6 +211,9 @@ Final_states: {self.final_states}
         for c in word:
             current_state = self.all_states[i_current_state]
             print(f"\nWe analyze this symbol: {c}")
+            if i_current_state == i_final_state:
+                return True  # If the current state is already a final state, the word is recognized
+                
             Possible_Transition = self.possible_transition(current_state, matrix, c)
             print(f"Possible state : {Possible_Transition} for this state: {current_state}")
             if Possible_Transition:
@@ -198,14 +227,12 @@ Final_states: {self.final_states}
                     print(f"The index of the current state is {i_current_state}")
                     print(self.all_states.index(Possible_Transition.split(",")[to_final])-self.all_states.index(current_state))
                     i_current_state+=self.all_states.index(Possible_Transition.split(",")[to_final])
+                    print("ff<ff<",i_current_state)
                     current_state = self.all_states[i_current_state]
                     
                     print(f"The current state: {Possible_Transition.split(',')[-1]} \n")  # Update the current state
                 else:
-                    try:
-                        i_current_state+=self.all_states.index(Possible_Transition.split(",")[-1])
-                    except:
-                        pass
+                    i_current_state+=self.all_states.index(Possible_Transition.split(",")[-1])
                     
                     print(f"The index of the current state is {i_current_state}")
                     current_state = self.all_states[i_current_state]
@@ -275,11 +302,6 @@ Final_states: {self.final_states}
         """
         matrix = [elem[1:] for elem in self.matrix]
         pprint(matrix)
-        # for i in range(len(matrix)):
-        #     for j in range(len(matrix[i])):
-        #         print(matrix[i][j])
-        #         if matrix[i][j]=="nan":
-        #             matrix[i][j]='poubelle'
         symbols=self.transitions
         new_states_to_check:list[dict]=[]
         i_for_check=0
@@ -288,8 +310,8 @@ Final_states: {self.final_states}
         # phase 1
         end=False
         len_states=len(new_states_to_check)
-        # We loop 10 times in order to be sure that we go through every states
         for i in range(len(self.all_states)**2-len(new_states_to_check)):
+            # we visit the first state
             state_to_check=list(new_states_to_check[-1].keys())[0]
             print("State to visit", state_to_check,"\n")
             for iter_state in range(len(new_states_to_check)):
@@ -487,10 +509,18 @@ Final_states: {self.final_states}
         product_automaton.display_transition()
         return product_automaton
 
-
     def concatenate(self, other_automaton):
         combined_transitions = list(set(self.transitions + other_automaton.transitions))
-        concatenated_automaton = automate([], [[], []], combined_transitions)
+
+        # Initialize a new automate object with a dummy file name
+        concatenated_automaton = automate("Sample/dummy.csv")
+
+        # Manually set the properties of concatenated_automaton
+        concatenated_automaton.transitions = combined_transitions
+        concatenated_automaton.matrix = []
+        concatenated_automaton.all_states = []
+        concatenated_automaton.initial_states = []
+        concatenated_automaton.final_states = []
 
         prefix_A = "A_"
         prefix_B = "B_"
@@ -527,7 +557,7 @@ Final_states: {self.final_states}
                     new_transitions[combined_transitions.index(trans_symbol) + 1] = prefix_B + trans_state
             concatenated_automaton.matrix.append(new_transitions)
 
-        # Link final states of the first automaton to initial state of the second automaton
+        # Link final states of the first automaton to the initial state of the second automaton
         for i, is_final in enumerate(self.final_states):
             if is_final == 1:
                 initial_state_of_B = other_automaton.all_states[other_automaton.initial_states.index(1)]
@@ -536,7 +566,15 @@ Final_states: {self.final_states}
                         concatenated_automaton.matrix[i][combined_transitions.index(trans_symbol) + 1] = prefix_B + initial_state_of_B
                         break
 
+        # Replace "A_nan," "B_nan," or "something_nan" with "nan" in the matrix
+        for i in range(len(concatenated_automaton.matrix)):
+            for j in range(len(concatenated_automaton.matrix[i])):
+                if "_nan" in concatenated_automaton.matrix[i][j]:
+                    concatenated_automaton.matrix[i][j] = "nan"
+
+        os.remove("Sample/dummy.csv")
         return concatenated_automaton
+
     
     def to_regular_expression(self):
         # Initialize regular expressions for each state
@@ -682,7 +720,138 @@ Final_states: {self.final_states}
                                 self.add_transition("poubelle", bin_transition, "poubelle")
                     self.add_transition(state, transition, "poubelle")
         return modified
-        
+
+
+    def get_regular_expression(self) -> expression:
+        """
+        This function return a expression object representing the regular expression of the current automate
+        If the automate have no state, transition or more/less than 1 initial state, return None
+        """
+
+        # On veut faire une fonction qui retourne un objet expression représentant l'expression reconnu par notre otomate
+        # Pour se faire on va parcourir notre automate et contruire l'expression au fur et a mesure
+
+        #Return None if an error occure
+        if len(self.all_states) == 0 or len(self.transitions) == 0 or self.initial_states.count(1) != 1:
+            return None
+
+        #Creating a tab to store the regular expression of each state
+        stateExpression:list[expression] = [None for i in range(len(self.all_states))]
+
+        #This pile will be use to store which state we need to check
+        stack:pile = pile()
+
+        #This tab will be use to know if a state as already been check on time
+        #If nots because he is check that he have is expression already find
+        isAlreadyCheck:list[bool] = [False for i in range(len(self.all_states))]
+
+        initial_state = [i for i in range(len(self.initial_states)) if self.initial_states[i] == 1][0]
+
+        #Initialize the pile with initial state
+        stack.pileUp(initial_state)
+
+        while not stack.isEmpty():
+            currentState:int = stack.unstack()
+            #print("currentState :", currentState)
+
+            if not isAlreadyCheck[currentState]:
+                isAlreadyCheck[currentState] = True
+
+            #We need to find the expression only if we don't have it 
+            if stateExpression[currentState] == None:
+                #Getting all no check state
+                neighboursDic   = self.get_neighbour(currentState) # = {'a':['q0'], 'b':['q1', 'q0'], ...}
+                neighboursId = {}                                  # = {'q0':0, 'q1':1, ...}
+                neighboursLabel = []
+
+                #Storing neigbours id
+                for eList in neighboursDic.values():
+                    for e in eList:
+                        if not e in neighboursLabel:
+                            neighboursId[e] = self.all_states.index(e)
+                            neighboursLabel.append(e)
+
+                needToCheck = []
+                for id in neighboursId.values():
+                    if not isAlreadyCheck[id]:
+                        needToCheck.append(id)
+
+                
+                #Adding no visted neighbour
+                if len(needToCheck) != 0:
+                    stack.pileUp(currentState)
+                    stack.pileUpAll(needToCheck)
+
+                #We have all needed material to find the easiest current expression
+                else:
+                    currentExpression:expression = expression(None, False, None, [])
+
+                    for eventLabel in neighboursDic.keys():
+                        transitionId = self.transitions.index(eventLabel)
+
+                        for neighbour in [neighboursId[e] for e in neighboursDic[eventLabel]]:
+                            #Case transition go into current state or another unknow state without expression
+                            if stateExpression[neighbour] == None:
+                                currentExpression.concatenate(expression(False, None, neighbour, [transitionId]))
+                            
+                            #Case we know the expression of the neighbour
+                            else:
+                                breakDown:list[expression] = stateExpression[neighbour].breakExpressionDown()
+                                for e in breakDown:
+                                    e.addFactor(transitionId, expression.__LEFT__)
+                                    e.isFactor = False
+                                    currentExpression.append(e)
+
+                    # Checking if current expression is final, we add the empty word
+                    if self.final_states[currentState] == 1:
+                        currentExpression.append(expression(False, False, None, [-1]))
+
+                    #FIXME with Sample/default.csv state are remove /!\ (maybe not, maybe yes)
+                    expression.unparenthesis(currentExpression.content)
+                   
+                    # Trying Arden lemma
+                    currentExpression.factorize(len(self.all_states))
+                    currentExpression.ArdenLemma(currentState)
+                    
+                    stateExpression[currentState] = currentExpression
+
+        globalExpression = stateExpression[initial_state]
+        globalExpression.stateList = self.all_states
+        globalExpression.eventList = self.transitions
+
+        expression.unparenthesis(globalExpression.content)
+        return globalExpression
+
+if False:
+    print("Testing Sample/Test/random1.csv")
+    res = automate("Sample/Test/random1.csv").get_regular_expression()
+    print("The result is :", res)
+    print("A representation of res is", repr(res))
+    print("And the wanted repr. is    _[ *^[ 0 *^[ 1 ] *[ 0 ] ] *[ 0 *^[ 1 ] ] ]")
+    if repr(res) != "_[ *^[ 0 *^[ 1 ] *[ 0 ] ] *[ 0 *^[ 1 ] ] ]":
+        print("ALERT GENERAAAALLLLLLL")
+    print("\n")
+
+    print("Testing Sample/Test/sample8_1.csv")
+    res = automate("Sample/Test/sample8_1.csv").get_regular_expression()
+    print("The result is :", res)
+    print("A representation of res is", repr(res))
+    print("And the wanted repr. is    _[ *^[ 0 1 2 +[ 3 *[ 4 1 2 +[ 5 ] ] ] ] *[ 0 +[ 3 4 ] ] *[ 2 ] ]")
+    if repr(res) != "_[ *^[ 0 1 2 +[ 3 *[ 4 1 2 +[ 5 ] ] ] ] *[ 0 +[ 3 4 ] ] *[ 2 ] ]":
+        print("ALERT GENERAAAALLLLLLL")
+    print("\n")
+
+    print("Testing Sample/Test/evenNb0.csv")
+    res = automate("Sample/Test/evenNb0.csv").get_regular_expression()
+    print("The result is :", res)
+    print("A representation of res is", repr(res))
+    print("And the wanted repr. is    _[ *^[ 0 *^[ 1 ] *[ 0 ] +[ _[ 1 ] ] ] ]")
+    if repr(res) != "_[ *^[ 0 *^[ 1 ] *[ 0 ] +[ _[ 1 ] ] ] ]":
+        print("ALERT GENERAAAALLLLLLL")
+    print("\n")
+
+#a = automate("Sample/default.csv")
+#print(a.get_neighbour(0))
 
 """POUR IMAHD
 Comment edit un csv deterministe:
