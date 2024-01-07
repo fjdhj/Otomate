@@ -1,0 +1,19 @@
+// Automaton
+digraph {
+	init_q0_q0 [label="" height=0.1 shape=point width=0.1]
+	q0_q0 [label=q0_q0 shape=circle]
+	init_q0_q0 -> q0_q0 [color=green]
+	q0_q0 -> q1_q1 [label=a]
+	q0_q1 [label=q0_q1 shape=circle]
+	q0_q2 [label=q0_q2 shape=circle]
+	q1_q0 [label=q1_q0 shape=circle]
+	q1_q1 [label=q1_q1 shape=circle]
+	q1_q1 -> q2_q2 [label=c]
+	q1_q2 [label=q1_q2 shape=circle]
+	q2_q0 [label=q2_q0 shape=circle]
+	q2_q1 [label=q2_q1 shape=circle]
+	q2_q2 [label=q2_q2 shape=doublecircle]
+	rankdir=LR size="16,10"
+	node [shape=circle]
+	dpi=300
+}
