@@ -31,12 +31,12 @@ class TestAutomateRegularExpression(unittest.TestCase):
     ]
 
     automateFiles = [
-        ("Sample/Tests_finaux/sample8_2.csv", "_[ *^[ 0 *^[ 1 ] *[ 0 ] ] *[ 0 *^[ 1 ] ] ]"),
-        ("Sample/Tests_finaux/sample8_1.csv", "_[ *^[ 0 1 2 +[ 3 *[ 4 1 2 +[ 5 ] ] ] ] *[ 0 +[ 3 4 ] ] *[ 2 ] ]"),
-        ("Sample/Tests_finaux/evenNb0.csv", "_[ *^[ 0 *^[ 1 ] *[ 0 ] +[ 1 ] ] ]"),
-        ("Sample/Tests_finaux/oddNb0.csv", "_[ *^[ 0 *^[ 1 ] *[ 0 ] +[ 1 ] ] *[ 0 *^[ 1 ] ] ]"),
-        ("Sample/Tests_finaux/tourniquet.csv", "_[ *^[ *[ 0 *^[ 0 ] +[ -1 ] ] *[ 1 ] ] ]"),
-        ("Sample/Tests_finaux/tourniquetInverse.csv", "_[ *^[ *[ 0 *^[ 0 ] +[ -1 ] ] *[ 1 ] ] *[ 0 *^[ 0 ] ] ]")
+        ("Sample/Final_tests/sample8_2.csv", "_[ *^[ 0 *^[ 1 ] *[ 0 ] ] *[ 0 *^[ 1 ] ] ]"),
+        ("Sample/Final_tests/sample8_1.csv", "_[ *^[ 0 1 2 +[ 3 *[ 4 1 2 +[ 5 ] ] ] ] *[ 0 +[ 3 4 ] ] *[ 2 ] ]"),
+        ("Sample/Final_tests/evenNb0.csv", "_[ *^[ 0 *^[ 1 ] *[ 0 ] +[ 1 ] ] ]"),
+        ("Sample/Final_tests/oddNb0.csv", "_[ *^[ 0 *^[ 1 ] *[ 0 ] +[ 1 ] ] *[ 0 *^[ 1 ] ] ]"),
+        ("Sample/Final_tests/tourniquet.csv", "_[ *^[ *[ 0 *^[ 0 ] +[ -1 ] ] *[ 1 ] ] ]"),
+        ("Sample/Final_tests/tourniquetInverse.csv", "_[ *^[ *[ 0 *^[ 0 ] +[ -1 ] ] *[ 1 ] ] *[ 0 *^[ 0 ] ] ]")
     ]
 
     def setUp(self):
