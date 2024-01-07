@@ -160,6 +160,9 @@ Final_states: {self.final_states}
             
     # FIXME add programm for transition
     def edit_csv(self, file_name: str,AFD: list, final_state:list):
+        if len(AFD)==0:
+            print("Rien à exporter.")
+            return None
         csv_file={}
         rows, cols= len(AFD), len(AFD[0])
         csv_file_temp=[["" for _ in range(rows)] for i in range(cols)]
