@@ -211,10 +211,8 @@ class expression:
                                                 if step == 1:
                                                     bufferBis.content.extend(expression._expression__rangePop(currentTab, j, j+lenght))
                                                 else:
-                                                    print("aeaze ", repr(bufferBis))
                                                     temp = (expression._expression__rangePop(currentTab, j-lenght, j-1))
                                                     bufferBis.content = temp + bufferBis.content
-                                                    print("aeaze ", repr(bufferBis))
 
                                             #We need to do the same for the common factor if he is at the right (case step == -1)
                                             if step == -1  and j+1 < len(currentTab):
@@ -693,7 +691,7 @@ class expression:
                 i+= len(buffer)
 
             #Case it's a sum whitout previous modif
-            elif lst[i].isFactor == False:
+            elif lst[i].isFactor == False or lst[i].isFactor == True:
                 expression.unparenthesis(lst[i].content)
                 i+=1
             
@@ -845,94 +843,3 @@ class expression:
         This function allow the user to activate/desactivate debug message of this class
         """
         expression.debug = enable
-
-
-if True:
-    #Test à la wanagun
-    #e1 : (a + b)c * q0 + bc * q0
-    #     _[ *[a; +[b] ]; *q0[c] +q0[b ; c]]
-    print("e1 :")
-    e1 = expression(None, False, None, [ expression(True, False, None, [0, expression(False, False, None, [1])]), expression(True, False, 0, [2]), expression(False, False, 0, [1, 2]) ])
-    print("Testing expression e1 :", e1)
-    e1.factorize(1)
-    print("Result of factorization :", e1)
-    if repr(e1) != "_[ *[ 0 +[ 1 ] ] *q0[ 2 ] ]":
-        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
-    print("\n")
-
-    #e2 : abc * q0
-    # _q0[a; b; c]
-    print("e2 : ")
-    e2 = expression(None, False, 0, [0,1,2])
-    print("Testing expression e2 :", e2)
-    e2.factorize(1)
-    print("Result of factorization :", e2)
-    if repr(e2) != "_q0[ 0 1 2 ]":
-        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
-    print("\n")
-
-    #e3 : ab * q0 + c * q0
-    print("e3 : ")
-    e3 = expression(None, False, 0, [0,1, expression(False, False, 0, [2])])
-    print("Testing expression e3 :", e3)
-    e3.factorize(1)
-    print("Result of factorization e3 :", e3)
-    if repr(e3) != "_[ *q0[ 0 1 +[ 2 ] ] ]":
-        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
-    print("\n")
-
-    #e4 : ab * q0 + c * q1
-    print("e4 : ")
-    e4 = expression(None, False, 0, [0,1, expression(False, False, 1, [2])])
-    print("Testing expression e4 :", e4)
-    e4.factorize(2 )
-    print("Result of factorization e4 :", e4)
-    if repr(e4) != "_q0[ 0 1 +q1[ 2 ] ]":
-        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
-    print("\n")
-
-    #e5 : (a + b)^ * q0 + c * q0 -> ( (a + b)^ + c )q0 
-    #        -> _[ *q0^[ 0 +[ 1 ] ] +q0[ 2 ] ]
-    # result -> _[ *q0[ *^[ 0 +[ 1 ] ] +[ 2 ] ] ]
-    print("e5")
-    e5 = expression(None, False, None, [expression(True, True, 0, [0, expression(False, False, None, [1]) ]), expression(False, False, 0, [2]) ])
-    print("Testing expression e5 :", e5)
-    e5.factorize(1)
-    print("Result of factorization e5 :", e5)
-    if repr(e5) != "_[ *q0[ *^[ 0 +[ 1 ] ] +[ 2 ] ] ]":
-        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
-    print("\n")
-
-    #e6 : (a + b) * q0 + c * q0 -> ( (a + b + c )q0 
-    #        -> _[ *q0[ 0 +[ 1 ] ] +q0[ 2 ] ]
-    # result -> _[ *q0[ 0 +[ 1 ] +[ 2 ] ] ]
-    print("e6")
-    e6 = expression(None, False, None, [expression(True, False, 0, [0, expression(False, False, None, [1]) ]), expression(False, False, 0, [2]) ])
-    print("Testing expression e5 :", e6)
-    e6.factorize(1)
-    print("Result of factorization e5 :", e6)
-    if repr(e6) != "_[ *q0[ 0 +[ 1 ] +[ 2 ] ] ]":
-        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
-    print("\n")
-
-    #e7 : abc * q0 + ab * q0
-    # -> ab(c + ε) * q0
-    print("e7 : ")
-    e7 = expression(None, False, 0, [0,1,2, expression(False, False, 0, [0, 1])])
-    print("Testing expression e7 :", e7)
-    e7.factorize(1)
-    print("Result of factorization e7 :", e7)
-    if repr(e7) != "_[ 0 1 *q0[ 2 +[ -1 ] ] ]":
-        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
-    print("\n")
-
-    #e8 : abc * q0 + abd * q0
-    # -> ab(c + ε) * q0
-    print("e8 : ")
-    e8 = expression(None, False, 0, [0,1,2, expression(False, False, 0, [0, 1, 3])])
-    print("Testing expression e8 :", e8)
-    e8.factorize(1)
-    print("Result of factorization e8 :", e8)
-    if repr(e8) != "_[ 0 1 *q0[ 2 +[ 3 ] ] ]":
-        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
-    print("\n")
