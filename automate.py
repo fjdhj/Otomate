@@ -63,8 +63,11 @@ Final_states: {self.final_states}
     
     
     def is_complete(self) -> bool:
-        return ["nan"] in self.matrix[:][:]
-    
+        for line in self.matrix:
+            for row in line:
+                if row == "nan":
+                    return False
+        return True
     def is_deterministic(self)->bool:
         for line in self.matrix:
             for row in line:
@@ -162,7 +165,7 @@ Final_states: {self.final_states}
         csv_file_temp=[["" for _ in range(rows)] for i in range(cols)]
         for i in range(rows):
             for j in range(cols):
-                csv_file_temp[j][i]=AFD[i][j] if i<len(AFD) and j < len(AFD[i]) else None
+                csv_file_temp[j][i]="".join(AFD[i][j]) if i<len(AFD) and j < len(AFD[i]) else None
         pprint(csv_file_temp)
         csv_file.update({"etat":csv_file_temp[0]})
         for i in range(len(self.transitions)):
@@ -397,7 +400,7 @@ Final_states: {self.final_states}
         self.all_states=[]
         for i in range(len(new_st)):
             self.all_states.append(new_st[i][0])
-
+        self.split_states()
     
         
     def init_new_final_state(self, new_states_to_check, final_state, all_final_state):
