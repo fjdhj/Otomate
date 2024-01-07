@@ -43,6 +43,22 @@ class automate:
         for i in range(1,len(self.transitions)+1):
             self.matrix[-1].append("nan")
 
+    def make_initial(self, state):
+        index_state = self.all_states.index(state)
+        self.initial_states[index_state]=1
+
+    def make_final(self, state):
+        index_state = self.all_states.index(state)
+        self.final_states[index_state]=1
+
+    def demake_initial(self, state):
+        index_state = self.all_states.index(state)
+        self.initial_states[index_state]=0
+
+    def demake_final(self, state):
+        index_state = self.all_states.index(state)
+        self.final_states[index_state]=0
+
     # display the necessary information about the states 
     def display_states(self) -> None:
         output=f"""
@@ -97,7 +113,7 @@ Final_states: {self.final_states}
             line.append(["nan"])
 
         
-    def add_transition(self,initial_state,transition="c",final_state="sale boulot"):
+    def add_transition(self,initial_state,transition,final_state):
         if not (transition in self.transitions):
              raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
         index_state=self.all_states.index(initial_state)
@@ -106,6 +122,18 @@ Final_states: {self.final_states}
             self.matrix[index_state][index_transition+1] = final_state
         else:
             self.matrix[index_state][index_transition+1]="{0},{1}".format(str(self.matrix[index_state][index_transition+1]), final_state)
+
+    def remove_transition(self, initial_state, transition, final_state):
+        if not (transition in self.transitions):
+             raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
+        index_state=self.all_states.index(initial_state)
+        index_transition=self.transitions.index(transition)
+        if(self.matrix[index_state][index_transition+1] == final_state):
+            self.matrix[index_state][index_transition+1] = "nan"
+        elif(final_state+"," in self.matrix[index_state][index_transition+1]):
+            self.matrix[index_state][index_transition+1] = self.matrix[index_state][index_transition+1].replace(final_state+",", "")
+        elif(","+final_state in self.matrix[index_state][index_transition+1]):
+            self.matrix[index_state][index_transition+1] = self.matrix[index_state][index_transition+1].replace(","+final_state, "")
 
     def display_matrix(self):
         pprint(self.matrix)
@@ -707,7 +735,6 @@ Final_states: {self.final_states}
                     transitions = [t for t in transitions if t in self.all_states]
                     self.matrix[i][j] = ','.join(transitions) if transitions else 'nan'
         
-    #FIXME NATHAN MARCHE PAS
     def make_complete(self):
         modified = False
         for state in self.all_states:

@@ -1,0 +1,13 @@
+// Automaton
+digraph {
+	init_q0 [label="" height=0.1 shape=point width=0.1]
+	q0 [label=q0 shape=circle]
+	init_q0 -> q0 [color=green]
+	q0 -> q1 [label=a]
+	q1 [label=q1 shape=circle]
+	q1 -> q2 [label=c]
+	q2 [label=q2 shape=doublecircle]
+	rankdir=LR size="16,10"
+	node [shape=circle]
+	dpi=300
+}
