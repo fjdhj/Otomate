@@ -673,4 +673,4 @@ while True:
         else:
             print("\nRetour au menu principal.\n")
     else:
-        print("\nChoix invalide. Veuillez réessayer.\n")
+        print("\nChoix invalide. Veuillez réessayer.\n") 

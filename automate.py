@@ -222,40 +222,52 @@ Final_states: {self.final_states}
     # TODO: finish AFD and begin AND
     #FIXME Prendre en compte le fait qu'un caractère n'existe pas dans l'automate
     def recognize_wordAFD(self, word: str) -> bool:
+        """Recognize word 
+
+        Args:
+            word (str): example -> abaab
+
+        Returns:
+            bool: return a booleen if a word is recognized by using index
+        """
         matrix = [elem[1:] for elem in self.matrix]
         i_current_state = self.initial_states.index(1)
         current_state = self.all_states[i_current_state]
         i_final_state = self.final_states.index(1)
         print(f"The final state is {self.all_states[i_final_state]}")
-        for c in word:
-            current_state = self.all_states[i_current_state]
-            print(f"\nWe analyze this symbol: {c}")
-            if i_current_state == i_final_state:
-                return True  # If the current state is already a final state, the word is recognized
-                
-            Possible_Transition = self.possible_transition(current_state, matrix, c)
-            print(f"Possible state : {Possible_Transition} for this state: {current_state}")
-            if Possible_Transition:
-                print("The transition is possible\n")
-                if i_current_state >= len(matrix[0])-1:
-                    i_current_state=0
-                # if we can go directly to the final state without going to another state
-                if self.all_states[i_final_state] in Possible_Transition.split(","):
-                    to_final=Possible_Transition.split(",").index(self.all_states[i_final_state])
+        try:
+            for c in word:
+                current_state = self.all_states[i_current_state]
+                print(f"\nWe analyze this symbol: {c}")
+                if i_current_state == i_final_state:
+                    return True  # If the current state is already a final state, the word is recognized
                     
-                    print(f"The index of the current state is {i_current_state}")
-                    print(self.all_states.index(Possible_Transition.split(",")[to_final])-self.all_states.index(current_state))
-                    i_current_state+=self.all_states.index(Possible_Transition.split(",")[to_final])
-                    print("ff<ff<",i_current_state)
-                    current_state = self.all_states[i_current_state]
-                    
-                    print(f"The current state: {Possible_Transition.split(',')[-1]} \n")  # Update the current state
-                else:
-                    i_current_state+=self.all_states.index(Possible_Transition.split(",")[-1])
-                    
-                    print(f"The index of the current state is {i_current_state}")
-                    current_state = self.all_states[i_current_state]
-                    print(f"The current state: {Possible_Transition[-1]} \n")  # Update the current state
+                Possible_Transition = self.possible_transition(current_state, matrix, c)
+                print(f"Possible state : {Possible_Transition} for this state: {current_state}")
+                if Possible_Transition:
+                    print("The transition is possible\n")
+                    if i_current_state >= len(matrix[0])-1:
+                        i_current_state=0
+                    # if we can go directly to the final state without going to another state
+                    if self.all_states[i_final_state] in Possible_Transition.split(","):
+                        to_final=Possible_Transition.split(",").index(self.all_states[i_final_state])
+                        
+                        print(f"The index of the current state is {i_current_state}")
+                        print(self.all_states.index(Possible_Transition.split(",")[to_final])-self.all_states.index(current_state))
+                        i_current_state+=self.all_states.index(Possible_Transition.split(",")[to_final])
+                        print("ff<ff<",i_current_state)
+                        current_state = self.all_states[i_current_state]
+                        
+                        print(f"The current state: {Possible_Transition.split(',')[-1]} \n")  # Update the current state
+                    else:
+                        i_current_state+=self.all_states.index(Possible_Transition.split(",")[-1])
+                        
+                        print(f"The index of the current state is {i_current_state}")
+                        current_state = self.all_states[i_current_state]
+                        print(f"The current state: {Possible_Transition[-1]} \n")  # Update the current state
+        except:
+            print("Word not in list transition...")
+        
                     
         print("End of process...")   
         return i_current_state == i_final_state  # Check if the final state is reached after processing the word
