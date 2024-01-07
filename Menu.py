@@ -857,4 +857,4 @@ while True:
             
     #Affiche de message d'erreur en cas de choix invalide
     else:
-        print("\nChoix invalide. Veuillez réessayer.\n")
+        print("\nChoix invalide. Veuillez réessayer.\n") 
