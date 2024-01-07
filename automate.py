@@ -84,24 +84,12 @@ Final_states: {self.final_states}
                 if row == "nan":
                     return False
         return True
+    
     def is_deterministic(self)->bool:
         for line in self.matrix:
             for row in line:
                 if len(row) > 1:
                     return False
-        return True
-
-    def is__deterministic(self) -> bool:
-        """
-        Check if the automaton is deterministic based on the transition matrix.
-
-        Returns:
-            bool: True if the automaton is deterministic, False otherwise.
-        """
-        for line in self.matrix:
-            for row in line:
-                if ',' in row:
-                    return False  # Non-deterministic, as a comma indicates multiple transitions
         return True
 
     def display_transition(self):
