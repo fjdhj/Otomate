@@ -147,13 +147,18 @@ class expression:
                                         
                                         expression._expression__debugClassMessage("Sailor : COMMON FACTOR FIND", jSize != 0, jSize+1 == len(currentFacto[2]))
                                         #We just find an common factor, we get out the part who don't match
+                                        # buffer represent the not common factor
                                         if jSize == len(currentFacto[2]):
                                             buffer = []
+                                            expression._expression__debugClassMessage("Checking strict mode jSize == len(currentFacto[2])", currentTab, j)
+                                            strict = False if type(currentTab[j-step]) == int or currentTab[j-step].isFactor != False else True
                                         elif buffer[0] > 0:
                                             expression._expression__debugClassMessage("Sailor : Captain, somthing strange appen, what do we need to do ?")
                                             start, end = (0, len(currentFacto[2][jSize].content)-buffer[0]-1) if step == -1 else (buffer[0], len(currentFacto[2][jSize].content) - 1)
-                                            j+=(buffer[1]+1)*step
-                                            expression._expression__debugClassMessage(currentFacto[2][jSize].content, start, end)
+                                            j+=(buffer[1])*step
+                                            strict = buffer[2]
+
+                                            expression._expression__debugClassMessage(currentFacto[2][jSize].content, start, end, j)
                                             buffer = expression._expression__rangePop(currentFacto[2][jSize].content, start, end)
                                             expression._expression__debugClassMessage(buffer)
 
@@ -162,22 +167,27 @@ class expression:
 
                                         elif currentFacto[3] == 1:
                                             buffer = expression._expression__rangePop(currentFacto[2], jSize+1, len(currentFacto[2]) - 1)
+                                            expression._expression__debugClassMessage("Checking strict mode step==1", currentTab, j)
+                                            strict = False if type(currentTab[j-1]) == int or currentTab[j-1].isFactor != False else True
                                         else:
-                                            buffer = expression._expression__rangePop(currentFacto[2], 0, jSize)
+                                            buffer = expression._expression__rangePop(currentFacto[2], 0, len(currentFacto[2]) - 1 - jSize)
+                                            expression._expression__debugClassMessage("Checking strict mode step==1", currentTab, j)
+                                            strict = False if type(currentTab[j+1]) == int or currentTab[j+1].isFactor != False else True
 
 
                                         #if step != -1:
                                          #   j+=1
-                                        j-=step
-                                        if (len(currentTab) != j and step == 1) or (len(currentTab) == -1 and step == -1):
+                                        # We wan't j to be equals at the previous index who was part of the associated expression/ not common factor
+                                        # j-=step
+                                        if ((len(currentTab) != j and step == 1) or (len(currentTab) != -1 and step == -1)) and not strict:
                                             # Putting the associated expression in parenthesis only if where not at the end
                                             lenght = expression._expression__getAssociatedExpression(currentTab, j, step)
                                             expression._expression__debugClassMessage("NINI :", currentTab, lenght, j)
-                                                                                
 
                                             if type(currentTab[j]) == expression:
                                                 currentTab[j] = expression(currentTab[j].isFactor, False, None, [currentTab[j]])
                                                 currentTab[j].content[0].isFactor = True
+                                                expression._expression__debugClassMessage("Packing my stuff :", currentTab, lenght, j)
 
                                                 if currentTab[j].isFactor == False:
                                                     bufferBis = expression(True, False, None, [])
@@ -191,13 +201,20 @@ class expression:
                                                     bufferBis = currentTab[j]
                                             else:
                                                 currentTab[j] = expression(True, False, None, [currentTab[j]])
+                                                expression._expression__debugClassMessage("Packing my int :", currentTab, lenght, j)
                                                 bufferBis = currentTab[j]
 
                                             expression._expression__debugClassMessage("MERDE :", currentTab[j], j)
 
                                             #Putting in parenthesis things who are factor
                                             if(lenght != 0):
-                                                bufferBis.content.extend(expression._expression__rangePop(currentTab, j, j+lenght))
+                                                if step == 1:
+                                                    bufferBis.content.extend(expression._expression__rangePop(currentTab, j, j+lenght))
+                                                else:
+                                                    print("aeaze ", repr(bufferBis))
+                                                    temp = (expression._expression__rangePop(currentTab, j-lenght, j-1))
+                                                    bufferBis.content = temp + bufferBis.content
+                                                    print("aeaze ", repr(bufferBis))
 
                                             #We need to do the same for the common factor if he is at the right (case step == -1)
                                             if step == -1  and j+1 < len(currentTab):
@@ -207,14 +224,14 @@ class expression:
                                                 currentTab.extend(tempBuffer)
 
                                             stack.pileUp(currentTab)
-                                            expression._expression__debugClassMessage("pile up", currentTab, "at index", j)
-                                            stack.pileUp(currentTab[j].content)
+                                            expression._expression__debugClassMessage("pile up", currentTab, "at index", j- (lenght if step == -1 else 0))
+                                            stack.pileUp(currentTab[j- (lenght if step == -1 else 0)].content)
                                             stack.pileUp( (bufferBis.content, 0, buffer, 1) )
 
                                         factoOk = True
                                         #if step != -1:
                                          #   j-=1
-                                        j+=step
+                                        #j+=step
 
                                         if depth != -1:
                                             expression._expression__debugClassMessage("Sailor : GOING TO THE SPECIAL SURFACE SIR, current level :", currentFacto[0])
@@ -311,7 +328,7 @@ class expression:
 
         if(len(listState[-1]) != 0):
             expression._expression__debugClassMessage("YAHOU, we have non stated event :", listState[-1])
-            self.unparenthesis(currentFacto[0])
+            self.unparenthesis(listState[-1])
             self.content.extend(listState[-1])
         
         expression._expression__debugClassMessage("Merging data bipbip", listState)
@@ -381,9 +398,9 @@ class expression:
         result = 0
         strict = False
 
-        expression._expression__debugClassMessage(i, end, step)
-        while ((i < end or abs(diff-result) < len(obj)) and step == 1) or ((i > end or abs(diff-result) > -1) and step == -1):
-            expression._expression__debugClassMessage(i, end, step, diff, result)
+        expression._expression__debugClassMessage(i, end, step, diff, result, len(obj), obj)
+        while ((i < end and abs(diff-result) < len(obj)) and step == 1) or ((i > end and diff-result > -1) and step == -1):
+            expression._expression__debugClassMessage(i, end, step, diff, result, len(obj), obj)
             expression._expression__debugClassMessage(self.content[i], "==", end=" ")
             expression._expression__debugClassMessage(obj[abs(diff-result)])
             if self.content[i] == obj[abs(diff-result)]:
@@ -403,7 +420,7 @@ class expression:
                 #All obj need to be in self, so if it
                 # 's not, returning 0
                 if buff[0] == 0:
-                    return (0, i)
+                    return (0, i, strict)
                 
                 if buff[0] < len(obj[abs(diff-result)])-1:
                     expression._expression__debugClassMessage("Stric mod change the value")
@@ -421,7 +438,7 @@ class expression:
                 #All obj need to be in self, so if it
                 # 's not, returning 0
                 if buff[0] == 0:
-                    return 0
+                    return (0, i, strict)
                 
                 if buff[0] < len(obj[abs(diff-result)])-1:
                     expression._expression__debugClassMessage("Stric mod change the value")
@@ -437,8 +454,8 @@ class expression:
                     result = 0
 
                 i = i if step == 1 else len(self.content)-1-i
-                expression._expression__debugClassMessage("Contain debug : returning", result, ";", i)
-                return (result, i)
+                expression._expression__debugClassMessage("Contain debug : returning", result, ";", i, ";", strict)
+                return (result, i, strict)
 
         if i != end:
             i-=step
@@ -449,8 +466,8 @@ class expression:
 
         expression._expression__debugClassMessage(i)
         i = i if step == 1 else len(self.content)-1-i
-        expression._expression__debugClassMessage("Contain debug : returning global ", result, ";", i)
-        return (result, i)
+        expression._expression__debugClassMessage("Contain debug : returning global ", result, ";", i, ";", strict)
+        return (result, i, strict)
 
     def concatenate(self, expr:expression) -> int:
         """
@@ -830,7 +847,7 @@ class expression:
         expression.debug = enable
 
 
-if False:
+if True:
     #Test à la wanagun
     #e1 : (a + b)c * q0 + bc * q0
     #     _[ *[a; +[b] ]; *q0[c] +q0[b ; c]]
@@ -906,5 +923,16 @@ if False:
     e7.factorize(1)
     print("Result of factorization e7 :", e7)
     if repr(e7) != "_[ 0 1 *q0[ 2 +[ -1 ] ] ]":
+        print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
+    print("\n")
+
+    #e8 : abc * q0 + abd * q0
+    # -> ab(c + ε) * q0
+    print("e8 : ")
+    e8 = expression(None, False, 0, [0,1,2, expression(False, False, 0, [0, 1, 3])])
+    print("Testing expression e8 :", e8)
+    e8.factorize(1)
+    print("Result of factorization e8 :", e8)
+    if repr(e8) != "_[ 0 1 *q0[ 2 +[ 3 ] ] ]":
         print("ALERTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT GENERAAAAAAAAAAALLLL")
     print("\n")

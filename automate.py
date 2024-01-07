@@ -770,7 +770,7 @@ Final_states: {self.final_states}
 
         while not stack.isEmpty():
             currentState:int = stack.unstack()
-            #print("currentState :", currentState)
+            # print("currentState :", currentState)
 
             if not isAlreadyCheck[currentState]:
                 isAlreadyCheck[currentState] = True
@@ -828,7 +828,9 @@ Final_states: {self.final_states}
                     expression.unparenthesis(currentExpression.content)
                    
                     # Trying Arden lemma
+                    # print(repr(currentExpression))
                     currentExpression.factorize(len(self.all_states))
+                    # print(repr(currentExpression))
                     currentExpression.ArdenLemma(currentState)
                     
                     stateExpression[currentState] = currentExpression
@@ -840,7 +842,7 @@ Final_states: {self.final_states}
         expression.unparenthesis(globalExpression.content)
         return globalExpression
 
-if False:
+if True:
     print("Testing Sample/Test/random1.csv")
     res = automate("Sample/Test/random1.csv").get_regular_expression()
     print("The result is :", res)
@@ -865,6 +867,34 @@ if False:
     print("A representation of res is", repr(res))
     print("And the wanted repr. is    _[ *^[ 0 *^[ 1 ] *[ 0 ] +[ _[ 1 ] ] ] ]")
     if repr(res) != "_[ *^[ 0 *^[ 1 ] *[ 0 ] +[ _[ 1 ] ] ] ]":
+        print("ALERT GENERAAAALLLLLLL")
+    print("\n")
+
+    print("Testing Sample/Test/oddNb0.csv")
+    res = automate("Sample/Test/oddNb0.csv").get_regular_expression()
+    print("The result is :", res)
+    print("A representation of res is", repr(res))
+    print("And the wanted repr. is    _[ *^[ 0 *^[ 1 ] *[ 0 ] +[ 1 ] ] *[ 0 *^[ 1 ] ] ]")
+    if repr(res) != "_[ *^[ 0 *^[ 1 ] *[ 0 ] +[ 1 ] ] *[ 0 *^[ 1 ] ] ]":
+        print("ALERT GENERAAAALLLLLLL")
+    print("\n")
+
+    print("Testing Sample/Test/tourniquet.csv")
+    res = automate("Sample/Test/tourniquet.csv").get_regular_expression()
+    print("The result is :", res)
+    print("A representation of res is", repr(res))
+    print("And the wanted repr. is    _[ *^[ *[ 0 *^[ 0 ] +[ -1 ] ] *[ 1 ] ] ]")
+    if repr(res) != "_[ *^[ *[ 0 *^[ 0 ] +[ -1 ] ] *[ 1 ] ] ]":
+        print("ALERT GENERAAAALLLLLLL")
+    print("\n")
+
+    expression.setDebugEnable(True)
+    print("Testing Sample/Test/tourniquetInverse.csv")
+    res = automate("Sample/Test/tourniquetInverse.csv").get_regular_expression()
+    print("The result is :", res)
+    print("A representation of res is", repr(res))
+    print("And the wanted repr. is    _[ *^[ *[ 0 *^[ 0 ] +[ -1 ] ] *[ 1 ] ] ]")
+    if repr(res) != "_[ *^[ *[ 0 *^[ 0 ] +[ -1 ] ] *[ 1 ] ] ]":
         print("ALERT GENERAAAALLLLLLL")
     print("\n")
 
