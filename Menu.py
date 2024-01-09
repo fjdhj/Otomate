@@ -555,7 +555,7 @@ while True:
             automaton: automate = slots[slot - 1]
         
             #Si l'automate existe... et est déterministe
-            if automaton and automaton.is_deterministic() and automaton.is_complete():
+            if automaton and automaton.is_deterministic():
                 #...On récupère le mot à vérifier
                 print(automaton.is_deterministic())
                 qu = input("Ecrivez un mot à reconnaitre pour l'automate: \n")
@@ -566,13 +566,7 @@ while True:
                     print("Le mot est reconnu.\n")
                 else:
                     print("Le mot n'est pas reconnu.\n")
-            elif automaton and not automaton.is_deterministic() and not automaton.is_complete():
-                
-                 # On le rend complet
-                if(input("L'automate n'est pas complet, voulez-vous le rendre complet ? [Y/N]\n") == "Y"):
-                    automaton.make_complete()
-                    print("Traitement effectué.\n\n")
-                    
+            elif automaton and not automaton.is_deterministic():  
                 # On le déterminise et on reconnait le mot    
                 if(input("L'automate n'est pas déterministe, voulez-vous le rendre déterministe ? [Y/N]\n") == "Y"):
                    

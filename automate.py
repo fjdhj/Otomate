@@ -88,7 +88,7 @@ Final_states: {self.final_states}
     def is_deterministic(self)->bool:
         for line in self.matrix:
             for row in line:
-                if "," in row:
+                if len(str(row).split(","))>1:
                     return False
         return True
 
@@ -184,7 +184,7 @@ Final_states: {self.final_states}
         csv_file_temp=[["" for _ in range(rows)] for i in range(cols)]
         for i in range(rows):
             for j in range(cols):
-                csv_file_temp[j][i]="".join(AFD[i][j]) if i<len(AFD) and j < len(AFD[i]) else None
+                csv_file_temp[j][i]=AFD[i][j] if i<len(AFD) and j < len(AFD[i]) else None
         pprint(csv_file_temp)
         csv_file.update({"etat":csv_file_temp[0]})
         for i in range(len(self.transitions)):
@@ -341,7 +341,7 @@ Final_states: {self.final_states}
         # phase 1
         end=False
         len_states=len(new_states_to_check)
-        for i in range(len(self.all_states)**2-len_states):
+        for i in range(len(self.all_states)**2-len(new_states_to_check)):
             # we visit the first state
             state_to_check=list(new_states_to_check[-1].keys())[0]
             print("State to visit", state_to_check,"\n")
