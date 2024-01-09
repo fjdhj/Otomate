@@ -88,7 +88,7 @@ Final_states: {self.final_states}
     def is_deterministic(self)->bool:
         for line in self.matrix:
             for row in line:
-                if len(row.split()) > 1:
+                if "," in row:
                     return False
         return True
 
@@ -369,14 +369,15 @@ Final_states: {self.final_states}
                         for element in Possible_transitions:
                             unique_elements.update(str(element).split(','))
                         Possible_transitions=",".join(list(sorted(unique_elements)))
-                        
+                        print(Possible_transitions)
                         # We place the new states in the list new_state_to_check 
                         not_in_states=False
                         for j in range(len_states):
                             key_name=list(new_states_to_check[j].keys())[0]
                             if Possible_transitions==new_states_to_check[j][key_name]:
+                                print("okayyyyyy")
                                 break
-                            elif j==len_states-1:
+                            elif j==len(new_states_to_check)-1:
                                 not_in_states=True
                                 if not_in_states:
                                     new_states_to_check.append({f"S{j+1}":Possible_transitions})
@@ -432,7 +433,6 @@ Final_states: {self.final_states}
         self.all_states=[]
         for i in range(len(new_st)):
             self.all_states.append(new_st[i][0])
-        self.split_states()
     
         
     def init_new_final_state(self, new_states_to_check, final_state, all_final_state):
