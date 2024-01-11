@@ -686,7 +686,7 @@ Final_states: {self.final_states}
 
         # Update the automaton's transition matrix to the mirrored matrix
         self.matrix = mirrored_matrix
-        
+
     def product(self, other_automaton):
         """
         Calculates the product of this automaton with another.
@@ -1123,6 +1123,155 @@ Final_states: {self.final_states}
         expression.unparenthesis(globalExpression.content)
         return globalExpression
 
+    def minimize(self):
+        """
+        Minimizes the current automaton.
+        """
+        # Step 1: Remove inaccessible states
+        self.trim()
+
+        # Step 2: Partition states into groups of equivalent states
+        partitions = self.partition_states()
+
+        # Step 3: Merge equivalent states
+        self.merge_equivalent_states(partitions)
+
+    def partition_states(self):
+        """
+        Partitions states into groups of equivalent states.
+
+        Returns:
+        List of lists: Partitions of equivalent states.
+        """
+        non_final_states = [self.all_states[i] for i, is_final in enumerate(self.final_states) if not is_final]
+        final_states = [self.all_states[i] for i, is_final in enumerate(self.final_states) if is_final]
+        partitions = [non_final_states, final_states]
+
+        while True:
+            new_partitions = []
+            for partition in partitions:
+                self.refine_partition(partition, new_partitions, partitions)
+            if new_partitions == partitions:
+                break
+            partitions = new_partitions
+        return partitions
+
+    def refine_partition(self, partition, new_partitions, partitions):
+        """
+        Refine a given partition and update the list of new partitions.
+
+        Args:
+        partition (list of str): The current partition to refine.
+        new_partitions (list of list): The list to update with refined partitions.
+        partitions (list of list): The current state partitions.
+        """
+        sub_partitions = {}
+        for state in partition:
+            state_signature = self.get_state_signature(state, partitions)
+            if state_signature not in sub_partitions:
+                sub_partitions[state_signature] = []
+            sub_partitions[state_signature].append(state)
+
+        for sub_partition in sub_partitions.values():
+            new_partitions.append(sub_partition)
+
+    def get_state_signature(self, state, partitions):
+        """
+        Generates a signature for a state based on its transitions.
+
+        Args:
+        state (str): The state to generate a signature for.
+        partitions (list of list): The current state partitions.
+
+        Returns:
+        Tuple: A signature representing the transitions of the state.
+        """
+        signature = []
+        state_index = self.all_states.index(state)
+        for trans_symbol in self.transitions:
+            trans_index = self.transitions.index(trans_symbol)
+            destination_states = self.matrix[state_index][trans_index + 1].split(',')
+
+            # Handle the 'nan' case
+            if destination_states == ['nan']:
+                partition_ids = [None]
+            else:
+                partition_ids = [self.find_state_partition(dest_state, partitions) for dest_state in destination_states]
+
+            signature.append((trans_symbol, tuple(partition_ids)))
+        return tuple(signature)
+
+    def find_state_partition(self, state, partitions):
+        """
+        Finds the partition index for a given state.
+
+        Args:
+        state (str): The state to find the partition for.
+        partitions (list of list): The current state partitions.
+
+        Returns:
+        Int: The index of the partition the state belongs to.
+        """
+        for i, partition in enumerate(partitions):
+            if state in partition:
+                return i
+        return None
+
+    def merge_equivalent_states(self, partitions):
+        """
+        Merges equivalent states in each partition.
+
+        Args:
+        partitions (list of list): Partitions with equivalent states.
+        """
+        state_mapping = {state: state for state in self.all_states}  # Initialize mapping for all states
+        for partition in partitions:
+            if len(partition) > 1:
+                representative = partition[0]
+                for state in partition:
+                    state_mapping[state] = representative
+
+        self.update_states_and_transitions(state_mapping)
+
+
+    def update_states_and_transitions(self, state_mapping):
+        """
+        Updates the automaton's states and transitions based on the provided state mapping.
+
+        Args:
+        state_mapping (dict): Mapping from old state names to new state names.
+        """
+        # Update all_states, initial_states, and final_states
+        new_all_states = list(set(state_mapping.values()))
+        new_initial_states = [0] * len(new_all_states)
+        new_final_states = [0] * len(new_all_states)
+
+        # Determine the new initial and final states
+        for old_state, new_state in state_mapping.items():
+            old_state_index = self.all_states.index(old_state)
+            new_state_index = new_all_states.index(new_state)
+            # Combine initial and final states from all equivalent states
+            new_initial_states[new_state_index] |= self.initial_states[old_state_index]
+            new_final_states[new_state_index] |= self.final_states[old_state_index]
+
+        # Update transitions in the matrix
+        new_matrix = [[state] + ['nan'] * len(self.transitions) for state in new_all_states]
+        for old_state in self.all_states:
+            old_state_index = self.all_states.index(old_state)
+            new_state_index = new_all_states.index(state_mapping.get(old_state, old_state))
+            for trans_index, _ in enumerate(self.transitions):
+                dest_state = self.matrix[old_state_index][trans_index + 1]
+                new_dest_state = state_mapping.get(dest_state, dest_state)
+                new_matrix[new_state_index][trans_index + 1] = new_dest_state
+
+        # Assign the new values to the automaton's attributes
+        self.all_states = new_all_states
+        self.initial_states = new_initial_states
+        self.final_states = new_final_states
+        self.matrix = new_matrix
+
+
+ 
 #a = automate("Sample/default.csv")
 #print(a.get_neighbour(0))
 
