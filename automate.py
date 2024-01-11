@@ -13,6 +13,18 @@ import numpy as np
 
 class automate:
     def __init__(self, file_name: str) -> None:
+        """
+        Initializes an instance of the automate class.
+
+        This constructor initializes an automaton from a given file. The file should contain 
+        the necessary details about the states, transitions, and other properties of the automaton.
+
+        Args:
+            file_name (str): The name of the file from which to load the automaton data.
+
+        Returns:
+            None
+        """
         if not (os.path.isfile(file_name)):
             print("Création du fichier : ", file_name)
             with open(file_name, "w") as csv_file:
@@ -55,18 +67,62 @@ class automate:
             self.matrix[-1].append("nan")
 
     def make_initial(self, state):
+        """
+        Marks a specified state as an initial state in the automaton.
+
+        This method updates the status of a given state to be an initial state.
+
+        Args:
+            state (str): The state to be marked as initial. 
+
+        Returns:
+            None
+        """
         index_state = self.all_states.index(state)
         self.initial_states[index_state]=1
 
     def make_final(self, state):
+        """
+        Marks a specified state as a final state in the automaton.
+
+        This method updates the status of a given state to be a final state.
+
+        Args:
+            state (str): The state to be marked as final.
+
+        Returns:
+            None
+        """
         index_state = self.all_states.index(state)
         self.final_states[index_state]=1
 
     def demake_initial(self, state):
+        """
+        Unmarks a specified state as an initial state in the automaton.
+
+        This method reverses the status of a given state from being an initial state.
+
+        Args:
+            state (str): The state to be unmarked as initial.
+
+        Returns:
+            None
+        """
         index_state = self.all_states.index(state)
         self.initial_states[index_state]=0
 
     def demake_final(self, state):
+        """
+        Unmarks a specified state as a final state in the automaton.
+
+        This method reverses the status of a given state from being a final state.
+
+        Args:
+            state(str): The state to be unmarked as final.
+
+        Returns:
+            None
+        """
         index_state = self.all_states.index(state)
         self.final_states[index_state]=0
 
@@ -90,6 +146,15 @@ Final_states: {self.final_states}
     
     
     def is_complete(self) -> bool:
+        """
+        Checks if the automaton is complete.
+
+        A complete automaton is one where each state has a transition for every possible input symbol.
+        This method checks if there are any missing transitions ('nan') in the automaton.
+
+        Returns:
+            bool: True if the automaton is complete, False otherwise.
+        """
         for line in self.matrix:
             for row in line:
                 if row == "nan":
@@ -97,6 +162,15 @@ Final_states: {self.final_states}
         return True
     
     def is_deterministic(self)->bool:
+        """
+        Checks if the automaton is deterministic.
+
+        A deterministic automaton is one where each state has exactly one transition for each input symbol.
+        This method checks for the presence of multiple transitions for a single input in any state.
+
+        Returns:
+            bool: True if the automaton is deterministic, False otherwise.
+        """
         for line in self.matrix:
             for row in line:
                 if len(str(row).split(","))>1:
@@ -107,12 +181,41 @@ Final_states: {self.final_states}
         print(self.transitions)
 
     def create_transition(self, transition):
+        """
+        Adds a new transition symbol to the automaton.
+
+        This method introduces a new transition symbol to the automaton and updates the transition matrix
+        accordingly. Each state is updated to include this new transition with a default value of 'nan'.
+
+        Args:
+            transition (str): The transition symbol to be added.
+
+        Returns:
+            None
+        """
         self.transitions.append(transition)
         for line in self.matrix:
             line.append(["nan"])
 
         
     def add_transition(self,initial_state,transition,final_state):
+        """
+        Adds a transition to the automaton.
+
+        This method introduces a new transition between states in the automaton. If the transition symbol is 
+        not already in the automaton, it raises an error.
+
+        Args:
+            initial_state (str): The state from which the transition originates.
+            transition (str): The symbol representing the transition.
+            final_state (str): The state to which the transition leads.
+
+        Raises:
+            ValueError: If the transition symbol is not present in the automaton's transitions.
+
+        Returns:
+            None
+        """
         if not (transition in self.transitions):
              raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
         index_state=self.all_states.index(initial_state)
@@ -123,6 +226,23 @@ Final_states: {self.final_states}
             self.matrix[index_state][index_transition+1]="{0},{1}".format(str(self.matrix[index_state][index_transition+1]), final_state)
 
     def remove_transition(self, initial_state, transition, final_state):
+        """
+        Removes a transition from the automaton.
+
+        This method deletes an existing transition between states. If the transition symbol is not in the 
+        automaton, it raises an error.
+
+        Args:
+            initial_state (str): The state from which the transition originates.
+            transition (str): The symbol representing the transition.
+            final_state (str): The state to which the transition leads.
+
+        Raises:
+            ValueError: If the transition symbol is not present in the automaton's transitions.
+
+        Returns:
+            None
+        """
         if not (transition in self.transitions):
              raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
         index_state=self.all_states.index(initial_state)
@@ -135,9 +255,30 @@ Final_states: {self.final_states}
             self.matrix[index_state][index_transition+1] = self.matrix[index_state][index_transition+1].replace(","+final_state, "")
 
     def display_matrix(self):
+        """
+        Displays the transition matrix of the automaton.
+
+        This method prints the transition matrix, which shows the transitions between the states for each 
+        transition symbol.
+
+        Returns:
+            None
+        """
         pprint(self.matrix)
 
     def delete_state(self, state=""): # Verifier que l'automate est coupé en 2
+        """
+        Deletes a state from the automaton.
+
+        This method removes a specified state from the automaton, along with its associated transitions. 
+        If the state does not exist, a message is printed.
+
+        Args:
+            state (str): The state to be deleted. Default is an empty string.
+
+        Returns:
+            None
+        """
         if(state in self.all_states):
             index_state = self.all_states.index(state)
             self.all_states.remove(state) 
@@ -155,6 +296,19 @@ Final_states: {self.final_states}
             print("L'état à supprimer n'existe pas")
     
     def delete_transition(self, transition):
+        """
+        Deletes a specified transition from the automaton.
+
+        This method removes a transition symbol from the automaton's list of transitions. It also updates the 
+        transition matrix by removing the corresponding column. If the transition does not exist, a message 
+        is printed.
+
+        Args:
+            transition (str): The transition symbol to be removed.
+
+        Returns:
+            None
+        """
         if(transition in self.transitions):
             index_transition = self.transitions.index(transition)
             self.transitions.remove(transition)
@@ -446,11 +600,11 @@ Final_states: {self.final_states}
             self.all_states.append(new_st[i][0])
     
         
-    def init_new_final_state(self, new_states_to_check, final_state, all_final_state):
-        for i in range(len(new_states_to_check)):
-            key_name=list(new_states_to_check[i].keys())[0]
-            if final_state in new_states_to_check[i][key_name].split(","):
-                all_final_state[i]=1
+    # def init_new_final_state(self, new_states_to_check, final_state, all_final_state):
+    #     for i in range(len(new_states_to_check)):
+    #         key_name=list(new_states_to_check[i].keys())[0]
+    #         if final_state in new_states_to_check[i][key_name].split(","):
+    #             all_final_state[i]=1
 
     def join_list(self, result):
         for row in result:
@@ -760,6 +914,16 @@ Final_states: {self.final_states}
                     self.matrix[i][j] = ','.join(transitions) if transitions else 'nan'
         
     def make_complete(self):
+        """
+        Makes the automaton complete.
+
+        This method ensures that the automaton is complete by adding missing transitions. If any state lacks a 
+        transition for a given symbol, a transition to a 'poubelle' (trash) state is added. If the 'poubelle' 
+        state doesn't exist, it is created and made self-looping for all transitions.
+
+        Returns:
+            modified (bool): True if the automaton was modified, False otherwise.
+        """
         modified = False
         for state in self.all_states:
             index_state = self.all_states.index(state)
