@@ -337,9 +337,8 @@ Final_states: {self.final_states}
         #This is use to remove duplicate entry
         return neighbour
         
-    #TODO Créer la suppression d'une liaison (pas supprimer l'intégralité de la transition)
-            
-    # FIXME add programm for transition
+
+
     def edit_csv(self, file_name: str,AFD: list, final_state:list):
         if len(AFD)==0:
             print("Rien à exporter.")
@@ -384,8 +383,7 @@ Final_states: {self.final_states}
 
             
 
-    # TODO: finish AFD and begin AND
-    #FIXME Prendre en compte le fait qu'un caractère n'existe pas dans l'automate
+
     def recognize_wordAFD(self, word: str) -> bool:
         """Recognize word 
 
@@ -440,9 +438,7 @@ Final_states: {self.final_states}
 
 
 
-    # TODO: begin transform AND in AEF
-    
-    # TODO: 3) Program the algorithm to set transitions between the new states
+
     
     def combination_of_states(self,states: list)->list:
         """
@@ -465,7 +461,7 @@ Final_states: {self.final_states}
             new_states.update({new_name_for_new_states : all_combinations[i]})
         return new_states
 
-    # TODO: 2) Create function that allow us to determinate new initial_state and new_final state
+
     def define_new_state_and_final_states(self,transitions):   
         ...
         
