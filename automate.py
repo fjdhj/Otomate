@@ -26,15 +26,17 @@ class automate:
 
     def __init__(self, file_name: str) -> None:
         """
-        Initialize the automate object.
+        Initializes an instance of the automate class.
+
+        This constructor initializes an automaton from a given file. The file should contain 
+        the necessary details about the states, transitions, and other properties of the automaton.
 
         Args:
-        file_name (str): The path to the CSV file containing the automaton's definition.
-        
-        The constructor checks if the file exists; if not, it creates a new file with headers.
-        It then initializes the automaton's states, transitions, and other properties.
+            file_name (str): The name of the file from which to load the automaton data.
+
+        Returns:
+            None
         """
-        # Check if the file exists, if not, create a new file with basic headers
         if not (os.path.isfile(file_name)):
             print("Création du fichier : ", file_name)
             with open(file_name, "w") as csv_file:
@@ -60,6 +62,18 @@ class automate:
     
     
     def create_state(self,name)->None:
+        """
+        Creates and adds a new state to the automaton.
+
+        This method introduces a new state to the automaton.
+        It's a key function for building and modifying the state machine.
+
+        Args:
+            name (str): name of the new state
+
+        Returns:
+            None
+        """
         while(name in self.all_states):
             name = str(input("Entrez le nom du nouvel état"))
         self.matrix.append([])
@@ -71,18 +85,62 @@ class automate:
             self.matrix[-1].append("nan")
 
     def make_initial(self, state):
+        """
+        Marks a specified state as an initial state in the automaton.
+
+        This method updates the status of a given state to be an initial state.
+
+        Args:
+            state (str): The state to be marked as initial. 
+
+        Returns:
+            None
+        """
         index_state = self.all_states.index(state)
         self.initial_states[index_state]=1
 
     def make_final(self, state):
+        """
+        Marks a specified state as a final state in the automaton.
+
+        This method updates the status of a given state to be a final state.
+
+        Args:
+            state (str): The state to be marked as final.
+
+        Returns:
+            None
+        """
         index_state = self.all_states.index(state)
         self.final_states[index_state]=1
 
     def demake_initial(self, state):
+        """
+        Unmarks a specified state as an initial state in the automaton.
+
+        This method reverses the status of a given state from being an initial state.
+
+        Args:
+            state (str): The state to be unmarked as initial.
+
+        Returns:
+            None
+        """
         index_state = self.all_states.index(state)
         self.initial_states[index_state]=0
 
     def demake_final(self, state):
+        """
+        Unmarks a specified state as a final state in the automaton.
+
+        This method reverses the status of a given state from being a final state.
+
+        Args:
+            state(str): The state to be unmarked as final.
+
+        Returns:
+            None
+        """
         index_state = self.all_states.index(state)
         self.final_states[index_state]=0
 
@@ -106,6 +164,15 @@ Final_states: {self.final_states}
     
     
     def is_complete(self) -> bool:
+        """
+        Checks if the automaton is complete.
+
+        A complete automaton is one where each state has a transition for every possible input symbol.
+        This method checks if there are any missing transitions ('nan') in the automaton.
+
+        Returns:
+            bool: True if the automaton is complete, False otherwise.
+        """
         for line in self.matrix:
             for row in line:
                 if row == "nan":
@@ -113,9 +180,18 @@ Final_states: {self.final_states}
         return True
     
     def is_deterministic(self)->bool:
+        """
+        Checks if the automaton is deterministic.
+
+        A deterministic automaton is one where each state has exactly one transition for each input symbol.
+        This method checks for the presence of multiple transitions for a single input in any state.
+
+        Returns:
+            bool: True if the automaton is deterministic, False otherwise.
+        """
         for line in self.matrix:
             for row in line:
-                if len(row.split()) > 1:
+                if len(str(row).split(","))>1:
                     return False
         return True
 
@@ -123,12 +199,41 @@ Final_states: {self.final_states}
         print(self.transitions)
 
     def create_transition(self, transition):
+        """
+        Adds a new transition symbol to the automaton.
+
+        This method introduces a new transition symbol to the automaton and updates the transition matrix
+        accordingly. Each state is updated to include this new transition with a default value of 'nan'.
+
+        Args:
+            transition (str): The transition symbol to be added.
+
+        Returns:
+            None
+        """
         self.transitions.append(transition)
         for line in self.matrix:
             line.append(["nan"])
 
         
     def add_transition(self,initial_state,transition,final_state):
+        """
+        Adds a transition to the automaton.
+
+        This method introduces a new transition between states in the automaton. If the transition symbol is 
+        not already in the automaton, it raises an error.
+
+        Args:
+            initial_state (str): The state from which the transition originates.
+            transition (str): The symbol representing the transition.
+            final_state (str): The state to which the transition leads.
+
+        Raises:
+            ValueError: If the transition symbol is not present in the automaton's transitions.
+
+        Returns:
+            None
+        """
         if not (transition in self.transitions):
              raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
         index_state=self.all_states.index(initial_state)
@@ -139,6 +244,23 @@ Final_states: {self.final_states}
             self.matrix[index_state][index_transition+1]="{0},{1}".format(str(self.matrix[index_state][index_transition+1]), final_state)
 
     def remove_transition(self, initial_state, transition, final_state):
+        """
+        Removes a transition from the automaton.
+
+        This method deletes an existing transition between states. If the transition symbol is not in the 
+        automaton, it raises an error.
+
+        Args:
+            initial_state (str): The state from which the transition originates.
+            transition (str): The symbol representing the transition.
+            final_state (str): The state to which the transition leads.
+
+        Raises:
+            ValueError: If the transition symbol is not present in the automaton's transitions.
+
+        Returns:
+            None
+        """
         if not (transition in self.transitions):
              raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
         index_state=self.all_states.index(initial_state)
@@ -151,9 +273,30 @@ Final_states: {self.final_states}
             self.matrix[index_state][index_transition+1] = self.matrix[index_state][index_transition+1].replace(","+final_state, "")
 
     def display_matrix(self):
+        """
+        Displays the transition matrix of the automaton.
+
+        This method prints the transition matrix, which shows the transitions between the states for each 
+        transition symbol.
+
+        Returns:
+            None
+        """
         pprint(self.matrix)
 
     def delete_state(self, state=""): # Verifier que l'automate est coupé en 2
+        """
+        Deletes a state from the automaton.
+
+        This method removes a specified state from the automaton, along with its associated transitions. 
+        If the state does not exist, a message is printed.
+
+        Args:
+            state (str): The state to be deleted. Default is an empty string.
+
+        Returns:
+            None
+        """
         if(state in self.all_states):
             index_state = self.all_states.index(state)
             self.all_states.remove(state) 
@@ -171,6 +314,19 @@ Final_states: {self.final_states}
             print("L'état à supprimer n'existe pas")
     
     def delete_transition(self, transition):
+        """
+        Deletes a specified transition from the automaton.
+
+        This method removes a transition symbol from the automaton's list of transitions. It also updates the 
+        transition matrix by removing the corresponding column. If the transition does not exist, a message 
+        is printed.
+
+        Args:
+            transition (str): The transition symbol to be removed.
+
+        Returns:
+            None
+        """
         if(transition in self.transitions):
             index_transition = self.transitions.index(transition)
             self.transitions.remove(transition)
@@ -211,7 +367,7 @@ Final_states: {self.final_states}
         csv_file_temp=[["" for _ in range(rows)] for i in range(cols)]
         for i in range(rows):
             for j in range(cols):
-                csv_file_temp[j][i]="".join(AFD[i][j]) if i<len(AFD) and j < len(AFD[i]) else None
+                csv_file_temp[j][i]=AFD[i][j] if i<len(AFD) and j < len(AFD[i]) else None
         pprint(csv_file_temp)
         csv_file.update({"etat":csv_file_temp[0]})
         for i in range(len(self.transitions)):
@@ -316,7 +472,7 @@ Final_states: {self.final_states}
 
     def enumerate_new_states(self, states: list) -> dict:
         """
-        Enumarate all new states that are possible to create for new AFD
+        Enumerate all new states that are possible to create for new AFD
         """
         len_states=int(math.pow(2,len(states))) # Number of new states = 2**number of state AND
         new_states={}
@@ -368,7 +524,7 @@ Final_states: {self.final_states}
         # phase 1
         end=False
         len_states=len(new_states_to_check)
-        for i in range(len(self.all_states)**2-len_states):
+        for i in range(len(self.all_states)**2-len(new_states_to_check)):
             # we visit the first state
             state_to_check=list(new_states_to_check[-1].keys())[0]
             print("State to visit", state_to_check,"\n")
@@ -396,14 +552,15 @@ Final_states: {self.final_states}
                         for element in Possible_transitions:
                             unique_elements.update(str(element).split(','))
                         Possible_transitions=",".join(list(sorted(unique_elements)))
-                        
+                        print(Possible_transitions)
                         # We place the new states in the list new_state_to_check 
                         not_in_states=False
                         for j in range(len_states):
                             key_name=list(new_states_to_check[j].keys())[0]
                             if Possible_transitions==new_states_to_check[j][key_name]:
+                                print("okayyyyyy")
                                 break
-                            elif j==len_states-1:
+                            elif j==len(new_states_to_check)-1:
                                 not_in_states=True
                                 if not_in_states:
                                     new_states_to_check.append({f"S{j+1}":Possible_transitions})
@@ -459,14 +616,13 @@ Final_states: {self.final_states}
         self.all_states=[]
         for i in range(len(new_st)):
             self.all_states.append(new_st[i][0])
-        self.split_states()
     
         
-    def init_new_final_state(self, new_states_to_check, final_state, all_final_state):
-        for i in range(len(new_states_to_check)):
-            key_name=list(new_states_to_check[i].keys())[0]
-            if final_state in new_states_to_check[i][key_name].split(","):
-                all_final_state[i]=1
+    # def init_new_final_state(self, new_states_to_check, final_state, all_final_state):
+    #     for i in range(len(new_states_to_check)):
+    #         key_name=list(new_states_to_check[i].keys())[0]
+    #         if final_state in new_states_to_check[i][key_name].split(","):
+    #             all_final_state[i]=1
 
     def join_list(self, result):
         for row in result:
@@ -498,30 +654,6 @@ Final_states: {self.final_states}
         # Invert final states: Final (1) becomes non-final (0) and vice versa
         self.final_states = [1 if state == 0 else 0 for state in self.final_states]
 
-    def mirror(self):
-        # Initialize a mirrored matrix
-        mirrored_matrix = [[state] + ['nan' for _ in self.transitions]
-                           for state in self.all_states]
-
-        # Reverse the transitions
-        for state_index, state in enumerate(self.all_states):
-            for trans_index, transition in enumerate(self.transitions):
-                transition_targets = self.matrix[state_index][trans_index + 1]
-                if isinstance(transition_targets, float):
-                    # Convert the float to a string before splitting
-                    transition_targets = str(transition_targets)
-                if transition_targets != 'nan':
-                    for target_state in transition_targets.split(','):
-                        if target_state:
-                            # Add a reversed transition in the mirrored matrix
-                            target_index = self.all_states.index(target_state)
-                            mirrored_matrix[target_index][trans_index + 1] = state
-
-        # Swap the initial and final states
-        self.initial_states, self.final_states = self.final_states[:], self.initial_states[:]
-
-        # Update the current object with the mirrored matrix and states
-        self.matrix = mirrored_matrix
 
     def mirror(self):
         """
@@ -558,6 +690,68 @@ Final_states: {self.final_states}
 
         # Update the automaton's transition matrix to the mirrored matrix
         self.matrix = mirrored_matrix
+        
+    def product(self, other_automaton):
+        """
+        Calculates the product of this automaton with another.
+
+        This method combines two automatons into a single one, where the states and transitions of the resulting
+        automaton represent the combined behavior of the two input automatons.
+
+        Args:
+            other_automaton (automate): Another automaton to combine with this one.
+
+        Returns:
+            product_automaton (automate): The resulting automaton after taking the product.
+        """
+        product_automaton = automate(f"product{self.name}_{other_automaton.name}.csv")
+
+        combined_transitions = list(set(self.transitions + other_automaton.transitions))
+        for trans in combined_transitions:
+            print(trans)
+            product_automaton.create_transition(trans)
+
+        for state1 in self.all_states:
+            for state2 in other_automaton.all_states:
+                combined_state = f"{state1}_{state2}"
+                print(combined_state)
+                product_automaton.create_state(combined_state)
+
+                # Initial state logic: True if both states are initial
+                is_initial = (self.initial_states[self.all_states.index(state1)] == 1 and
+                            other_automaton.initial_states[other_automaton.all_states.index(state2)] == 1)
+                product_automaton.initial_states[-1] = 1 if is_initial else 0
+
+                # Final state logic: True if both states are final
+                is_final = (self.final_states[self.all_states.index(state1)] == 1 and
+                            other_automaton.final_states[other_automaton.all_states.index(state2)] == 1)
+                product_automaton.final_states[-1] = 1 if is_final else 0
+        
+        for i, combined_state in enumerate(product_automaton.all_states):
+            state1, state2 = combined_state.split('_')
+            idx1 = self.all_states.index(state1)
+            idx2 = other_automaton.all_states.index(state2)
+
+            for trans_symbol in combined_transitions:
+                trans_idx = combined_transitions.index(trans_symbol)
+                trans_state1 = str(self.matrix[idx1][self.transitions.index(trans_symbol) + 1]) if trans_symbol in self.transitions else 'nan'
+                trans_state2 = str(other_automaton.matrix[idx2][other_automaton.transitions.index(trans_symbol) + 1]) if trans_symbol in other_automaton.transitions else 'nan'
+
+                if trans_state1 != 'nan' and trans_state2 != 'nan':
+                    # Handling non-deterministic transitions
+                    combined_transitions_list = []
+                    for t1 in trans_state1.split(','):
+                        for t2 in trans_state2.split(','):
+                            combined_transitions_list.append(f"{t1}_{t2}")
+                    combined_transition = ','.join(combined_transitions_list)
+                else:
+                    combined_transition = 'nan'
+                
+                product_automaton.add_transition(combined_state, trans_symbol, combined_transition)
+        product_automaton.display_matrix()
+        product_automaton.display_states()
+        product_automaton.display_transition()
+        return product_automaton
 
     def concatenate(self, other_automaton):
         """
@@ -806,10 +1000,14 @@ Final_states: {self.final_states}
         
     def make_complete(self):
         """
-        Makes the automaton complete by adding transitions to a 'poubelle' (trash) state where necessary.
+        Makes the automaton complete.
+
+        This method ensures that the automaton is complete by adding missing transitions. If any state lacks a 
+        transition for a given symbol, a transition to a 'poubelle' (trash) state is added. If the 'poubelle' 
+        state doesn't exist, it is created and made self-looping for all transitions.
 
         Returns:
-        bool: True if the automaton was modified, False otherwise.
+            modified (bool): True if the automaton was modified, False otherwise.
         """
         modified = False
         for state in self.all_states:
