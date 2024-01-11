@@ -123,49 +123,43 @@ def modifier_automate(actual_auto:automate):
             actual_auto.remove_transition(initial_state_name, transition_name, final_state_name)
 
         elif choix_modification == "7":
-            # i_initial_state=actual_auto.initial_states.index(1)
-            # print(f"Voici l'état initial actuel: {actual_auto.all_states[i_initial_state]}")
-            # new_initial_state=str(input(f"Choisissez un automate à rendre en état initial parmi ceux là:\n{actual_auto.all_states}"))
-            # state_in_states:bool=new_initial_state in actual_auto.all_states
-            # while not state_in_states:
-            #     new_initial_state=str(input(f"Choisissez un automate à rendre en état initial parmi ceux là:\n{actual_auto.all_states}"))
-            # actual_auto.initial_states[i_initial_state]=0
-            # actual_auto.initial_states[actual_auto.all_states.index(new_initial_state)] = 1
-            # i_initial_state=actual_auto.initial_states.index(1)
-            # print(f"Voici le nouvel état initial: {actual_auto.all_states[i_initial_state]}")
+            # Display initial states and allow modification
             print("Ci-dessous la liste des états initiaux\n")
+            # Iterating through all states to find and display initial states
             for i in range(len(actual_auto.initial_states)):
                 if(actual_auto.initial_states[i] == 1):
                     print(actual_auto.all_states[i])
+            # User chooses a state to modify its initial status
             state = input("Choisissez un état\n")
             index_state = actual_auto.all_states.index(state)
+            # Check if the chosen state is currently an initial state
             if(actual_auto.initial_states[index_state] == 1):
+                # Ask user if they want to change the state from initial to non-initial
                 if(input("Cet état est actuellement initial, le rendre non-initial ? y/n\n") == "y"):
                    actual_auto.demake_initial(state)
             else:
+                # Ask user if they want to change the state from non-initial to initial
                 if(input("Cet état est actuellement non-initial, le rendre initial ? y/n\n") == "y"):
-                    actual_auto.make_initial(state)
+                    actual_auto.make_initial(state) # Make the state initial
         elif choix_modification == "8":
-            # i_final_states=[i for i in range(len(actual_auto.final_states)) if actual_auto.final_states[i]==1]
-            # print(f"Voici la liste des états finaux:")
-            # for index in i_final_states:
-            #     print(actual_auto.all_states[index], end=" ")
-            # print()
-            # i_state_to_change=int(input(f"Choisissez parmi ceux-là: {[int(i)+1 for i in i_final_states]}:\n"))
-            # print(i_state_to_change)
-            # FIXME : finir modifier etats finaux
+            # Display final states and allow the user to modify them
             print("Ci-dessous la liste des états finaux\n")
+            # Iterating through all states to find and display final states
             for i in range(len(actual_auto.final_states)):
                 if(actual_auto.final_states[i] == 1):
                     print(actual_auto.all_states[i])
+            # User chooses a state to modify its final status
             state = input("Choisissez un état\n")
             index_state = actual_auto.all_states.index(state)
+            # Check if the chosen state is currently a final state
             if(actual_auto.final_states[index_state] == 1):
+                # Ask user if they want to change the state from final to non-final
                 if(input("Cet état est actuellement final, le rendre non-final ? y/n\n") == "y"):
-                   actual_auto.demake_final(state)
+                   actual_auto.demake_final(state)  # Make the state non-final
             else:
+                # Ask user if they want to change the state from non-final to final
                 if(input("Cet état est actuellement non-final, le rendre final ? y/n\n") == "y"):
-                    actual_auto.make_final(state)
+                    actual_auto.make_final(state) # Make the state final
         elif choix_modification == "9":
             break
         else:
