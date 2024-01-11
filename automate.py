@@ -102,26 +102,22 @@ Final_states: {self.final_states}
     
     
     def is_complete(self) -> bool:
+<<<<<<< HEAD
         return ["nan"] in self.matrix[:][:]
 
+=======
+        for line in self.matrix:
+            for row in line:
+                if row == "nan":
+                    return False
+        return True
+    
+>>>>>>> release
     def is_deterministic(self)->bool:
         for line in self.matrix:
             for row in line:
-                if len(row) > 1:
+                if len(str(row).split(","))>1:
                     return False
-        return True
-
-    def is__deterministic(self) -> bool:
-        """
-        Check if the automaton is deterministic based on the transition matrix.
-
-        Returns:
-            bool: True if the automaton is deterministic, False otherwise.
-        """
-        for line in self.matrix:
-            for row in line:
-                if ',' in row:
-                    return False  # Non-deterministic, as a comma indicates multiple transitions
         return True
 
     def display_transition(self):
@@ -254,40 +250,52 @@ Final_states: {self.final_states}
     # TODO: finish AFD and begin AND
     #FIXME Prendre en compte le fait qu'un caractère n'existe pas dans l'automate
     def recognize_wordAFD(self, word: str) -> bool:
+        """Recognize word 
+
+        Args:
+            word (str): example -> abaab
+
+        Returns:
+            bool: return a booleen if a word is recognized by using index
+        """
         matrix = [elem[1:] for elem in self.matrix]
         i_current_state = self.initial_states.index(1)
         current_state = self.all_states[i_current_state]
         i_final_state = self.final_states.index(1)
         print(f"The final state is {self.all_states[i_final_state]}")
-        for c in word:
-            current_state = self.all_states[i_current_state]
-            print(f"\nWe analyze this symbol: {c}")
-            if i_current_state == i_final_state:
-                return True  # If the current state is already a final state, the word is recognized
-                
-            Possible_Transition = self.possible_transition(current_state, matrix, c)
-            print(f"Possible state : {Possible_Transition} for this state: {current_state}")
-            if Possible_Transition:
-                print("The transition is possible\n")
-                if i_current_state >= len(matrix[0])-1:
-                    i_current_state=0
-                # if we can go directly to the final state without going to another state
-                if self.all_states[i_final_state] in Possible_Transition.split(","):
-                    to_final=Possible_Transition.split(",").index(self.all_states[i_final_state])
+        try:
+            for c in word:
+                current_state = self.all_states[i_current_state]
+                print(f"\nWe analyze this symbol: {c}")
+                if i_current_state == i_final_state:
+                    return True  # If the current state is already a final state, the word is recognized
                     
-                    print(f"The index of the current state is {i_current_state}")
-                    print(self.all_states.index(Possible_Transition.split(",")[to_final])-self.all_states.index(current_state))
-                    i_current_state+=self.all_states.index(Possible_Transition.split(",")[to_final])
-                    print("ff<ff<",i_current_state)
-                    current_state = self.all_states[i_current_state]
-                    
-                    print(f"The current state: {Possible_Transition.split(',')[-1]} \n")  # Update the current state
-                else:
-                    i_current_state+=self.all_states.index(Possible_Transition.split(",")[-1])
-                    
-                    print(f"The index of the current state is {i_current_state}")
-                    current_state = self.all_states[i_current_state]
-                    print(f"The current state: {Possible_Transition[-1]} \n")  # Update the current state
+                Possible_Transition = self.possible_transition(current_state, matrix, c)
+                print(f"Possible state : {Possible_Transition} for this state: {current_state}")
+                if Possible_Transition:
+                    print("The transition is possible\n")
+                    if i_current_state >= len(matrix[0])-1:
+                        i_current_state=0
+                    # if we can go directly to the final state without going to another state
+                    if self.all_states[i_final_state] in Possible_Transition.split(","):
+                        to_final=Possible_Transition.split(",").index(self.all_states[i_final_state])
+                        
+                        print(f"The index of the current state is {i_current_state}")
+                        print(self.all_states.index(Possible_Transition.split(",")[to_final])-self.all_states.index(current_state))
+                        i_current_state+=self.all_states.index(Possible_Transition.split(",")[to_final])
+                        print("ff<ff<",i_current_state)
+                        current_state = self.all_states[i_current_state]
+                        
+                        print(f"The current state: {Possible_Transition.split(',')[-1]} \n")  # Update the current state
+                    else:
+                        i_current_state+=self.all_states.index(Possible_Transition.split(",")[-1])
+                        
+                        print(f"The index of the current state is {i_current_state}")
+                        current_state = self.all_states[i_current_state]
+                        print(f"The current state: {Possible_Transition[-1]} \n")  # Update the current state
+        except:
+            print("Word not in list transition...")
+        
                     
         print("End of process...")   
         return i_current_state == i_final_state  # Check if the final state is reached after processing the word
@@ -389,11 +397,13 @@ Final_states: {self.final_states}
                         for element in Possible_transitions:
                             unique_elements.update(str(element).split(','))
                         Possible_transitions=",".join(list(sorted(unique_elements)))
-                        
+                        print(Possible_transitions)
+                        # We place the new states in the list new_state_to_check 
                         not_in_states=False
-                        for j in range(len(new_states_to_check)):
+                        for j in range(len_states):
                             key_name=list(new_states_to_check[j].keys())[0]
                             if Possible_transitions==new_states_to_check[j][key_name]:
+                                print("okayyyyyy")
                                 break
                             elif j==len(new_states_to_check)-1:
                                 not_in_states=True
@@ -451,7 +461,6 @@ Final_states: {self.final_states}
         self.all_states=[]
         for i in range(len(new_st)):
             self.all_states.append(new_st[i][0])
-
     
         
     def init_new_final_state(self, new_states_to_check, final_state, all_final_state):
@@ -814,7 +823,7 @@ Final_states: {self.final_states}
 
         while not stack.isEmpty():
             currentState:int = stack.unstack()
-            #print("currentState :", currentState)
+            # print("currentState :", currentState)
 
             if not isAlreadyCheck[currentState]:
                 isAlreadyCheck[currentState] = True
@@ -872,7 +881,9 @@ Final_states: {self.final_states}
                     expression.unparenthesis(currentExpression.content)
                    
                     # Trying Arden lemma
+                    # print(repr(currentExpression))
                     currentExpression.factorize(len(self.all_states))
+                    # print(repr(currentExpression))
                     currentExpression.ArdenLemma(currentState)
                     
                     stateExpression[currentState] = currentExpression
@@ -883,34 +894,6 @@ Final_states: {self.final_states}
 
         expression.unparenthesis(globalExpression.content)
         return globalExpression
-
-if False:
-    print("Testing Sample/Test/random1.csv")
-    res = automate("Sample/Test/random1.csv").get_regular_expression()
-    print("The result is :", res)
-    print("A representation of res is", repr(res))
-    print("And the wanted repr. is    _[ *^[ 0 *^[ 1 ] *[ 0 ] ] *[ 0 *^[ 1 ] ] ]")
-    if repr(res) != "_[ *^[ 0 *^[ 1 ] *[ 0 ] ] *[ 0 *^[ 1 ] ] ]":
-        print("ALERT GENERAAAALLLLLLL")
-    print("\n")
-
-    print("Testing Sample/Test/sample8_1.csv")
-    res = automate("Sample/Test/sample8_1.csv").get_regular_expression()
-    print("The result is :", res)
-    print("A representation of res is", repr(res))
-    print("And the wanted repr. is    _[ *^[ 0 1 2 +[ 3 *[ 4 1 2 +[ 5 ] ] ] ] *[ 0 +[ 3 4 ] ] *[ 2 ] ]")
-    if repr(res) != "_[ *^[ 0 1 2 +[ 3 *[ 4 1 2 +[ 5 ] ] ] ] *[ 0 +[ 3 4 ] ] *[ 2 ] ]":
-        print("ALERT GENERAAAALLLLLLL")
-    print("\n")
-
-    print("Testing Sample/Test/evenNb0.csv")
-    res = automate("Sample/Test/evenNb0.csv").get_regular_expression()
-    print("The result is :", res)
-    print("A representation of res is", repr(res))
-    print("And the wanted repr. is    _[ *^[ 0 *^[ 1 ] *[ 0 ] +[ _[ 1 ] ] ] ]")
-    if repr(res) != "_[ *^[ 0 *^[ 1 ] *[ 0 ] +[ _[ 1 ] ] ] ]":
-        print("ALERT GENERAAAALLLLLLL")
-    print("\n")
 
 #a = automate("Sample/default.csv")
 #print(a.get_neighbour(0))
