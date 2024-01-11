@@ -12,23 +12,50 @@ import numpy as np
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 
 class automate:
-    # initialize the basic automate
+    """
+    A class representing a finite automaton, capable of various operations such as complementing the automaton.
+
+    Attributes:
+    matrix (list of list of str): Represents the transition table of the automaton.
+    initial_states (list): List of initial states in the automaton.
+    all_states (list): List of all states in the automaton.
+    final_states (list): List of final states in the automaton.
+    transitions (list): List of transitions in the automaton.
+    name (str): The name of the automaton, derived from the file name.
+    """
+
     def __init__(self, file_name: str) -> None:
+        """
+        Initialize the automate object.
+
+        Args:
+        file_name (str): The path to the CSV file containing the automaton's definition.
+        
+        The constructor checks if the file exists; if not, it creates a new file with headers.
+        It then initializes the automaton's states, transitions, and other properties.
+        """
+        # Check if the file exists, if not, create a new file with basic headers
         if not (os.path.isfile(file_name)):
             print("Création du fichier : ", file_name)
             with open(file_name, "w") as csv_file:
                 csv_file.writelines("etat;EI;EF")
-        transition: list=utilities.transitions(file_name)
-        #Initialize variables
-        sample_event: list[list[str]]=utilities.init_graph(file_name)
-        #Final_state and initial_state
-        sample_state: list[list[str]]=utilities.init_statestypes(file_name)
-        self.matrix: list[list[str]]=sample_event
-        self.initial_states: list=sample_state[0]
-        self.all_states: list=[state[0] for state in sample_event]
-        self.final_states: list=sample_state[1]
-        self.transitions: list=[transit for transit in transition]
-        self.name: str=os.path.splitext(file_name)[0].replace("/", "")
+
+        # Extract transition details from the file
+        transition: list = utilities.transitions(file_name)
+        
+        # Initialize the graph and state types from the file
+        sample_event: list[list[str]] = utilities.init_graph(file_name)
+        sample_state: list[list[str]] = utilities.init_statestypes(file_name)
+
+        # Initialize attributes of the automaton
+        self.matrix: list[list[str]] = sample_event
+        self.initial_states: list = sample_state[0]
+        self.all_states: list = [state[0] for state in sample_event]
+        self.final_states: list = sample_state[1]
+        self.transitions: list = [transit for transit in transition]
+        self.name: str = os.path.splitext(file_name)[0].replace("/", "")
+
+        # The following line is commented out and seems to be for future use or deprecated
         # self.label=[f"q{i}" for i in range(len(self.matrix)) if self.matrix != []]
     
     
@@ -463,7 +490,12 @@ Final_states: {self.final_states}
         return final_states
 
     def complement(self):
-        # Inverting final states: If a state is final (1), it becomes non-final (0) and vice versa.
+        """
+        Complement the automaton.
+
+        This method inverts the final states of the automaton. If a state is final, it becomes non-final and vice versa.
+        """
+        # Invert final states: Final (1) becomes non-final (0) and vice versa
         self.final_states = [1 if state == 0 else 0 for state in self.final_states]
 
     def mirror(self):
@@ -491,63 +523,59 @@ Final_states: {self.final_states}
         # Update the current object with the mirrored matrix and states
         self.matrix = mirrored_matrix
 
-    def product(self, other_automaton):
-        product_automaton = automate(f"product{self.name}_{other_automaton.name}.csv")
+    def mirror(self):
+        """
+        Mirrors the automaton by reversing its transitions and swapping initial and final states.
 
-        combined_transitions = list(set(self.transitions + other_automaton.transitions))
-        for trans in combined_transitions:
-            print(trans)
-            product_automaton.create_transition(trans)
+        This method updates the automaton's transition matrix and states to create a mirrored version of the original automaton.
+        """
+        # Initialize a mirrored matrix with 'nan' values for transitions
+        mirrored_matrix = [[state] + ['nan' for _ in self.transitions]
+                        for state in self.all_states]
 
-        for state1 in self.all_states:
-            for state2 in other_automaton.all_states:
-                combined_state = f"{state1}_{state2}"
-                print(combined_state)
-                product_automaton.create_state(combined_state)
-
-                # Initial state logic: True if both states are initial
-                is_initial = (self.initial_states[self.all_states.index(state1)] == 1 and
-                            other_automaton.initial_states[other_automaton.all_states.index(state2)] == 1)
-                product_automaton.initial_states[-1] = 1 if is_initial else 0
-
-                # Final state logic: True if both states are final
-                is_final = (self.final_states[self.all_states.index(state1)] == 1 and
-                            other_automaton.final_states[other_automaton.all_states.index(state2)] == 1)
-                product_automaton.final_states[-1] = 1 if is_final else 0
-        
-        for i, combined_state in enumerate(product_automaton.all_states):
-            state1, state2 = combined_state.split('_')
-            idx1 = self.all_states.index(state1)
-            idx2 = other_automaton.all_states.index(state2)
-
-            for trans_symbol in combined_transitions:
-                trans_idx = combined_transitions.index(trans_symbol)
-                trans_state1 = str(self.matrix[idx1][self.transitions.index(trans_symbol) + 1]) if trans_symbol in self.transitions else 'nan'
-                trans_state2 = str(other_automaton.matrix[idx2][other_automaton.transitions.index(trans_symbol) + 1]) if trans_symbol in other_automaton.transitions else 'nan'
-
-                if trans_state1 != 'nan' and trans_state2 != 'nan':
-                    # Handling non-deterministic transitions
-                    combined_transitions_list = []
-                    for t1 in trans_state1.split(','):
-                        for t2 in trans_state2.split(','):
-                            combined_transitions_list.append(f"{t1}_{t2}")
-                    combined_transition = ','.join(combined_transitions_list)
-                else:
-                    combined_transition = 'nan'
+        # Reverse the transitions in the automaton
+        for state_index, state in enumerate(self.all_states):
+            for trans_index, transition in enumerate(self.transitions):
+                # Retrieve the target states for the current transition
+                transition_targets = self.matrix[state_index][trans_index + 1]
                 
-                product_automaton.add_transition(combined_state, trans_symbol, combined_transition)
-        product_automaton.display_matrix()
-        product_automaton.display_states()
-        product_automaton.display_transition()
-        return product_automaton
+                # If the target states are stored as a float, convert them to a string
+                if isinstance(transition_targets, float):
+                    transition_targets = str(transition_targets)
+                
+                # Check if the transition is valid (not 'nan')
+                if transition_targets != 'nan':
+                    # Iterate over each target state in the transition
+                    for target_state in transition_targets.split(','):
+                        if target_state:
+                            # Find the index of the target state in the all_states list
+                            target_index = self.all_states.index(target_state)
+                            # Add the reversed transition to the mirrored matrix
+                            mirrored_matrix[target_index][trans_index + 1] = state
+
+        # Swap the initial and final states of the automaton
+        self.initial_states, self.final_states = self.final_states[:], self.initial_states[:]
+
+        # Update the automaton's transition matrix to the mirrored matrix
+        self.matrix = mirrored_matrix
 
     def concatenate(self, other_automaton):
+        """
+        Concatenates the current automaton with another automaton.
+
+        Args:
+        other_automaton (automate): Another automate object to concatenate with this one.
+
+        Returns:
+        automate: A new automate object representing the concatenation of the two automatons.
+        """
+        # Combine and deduplicate transitions from both automatons
         combined_transitions = list(set(self.transitions + other_automaton.transitions))
 
         # Initialize a new automate object with a dummy file name
         concatenated_automaton = automate("Sample/dummy.csv")
 
-        # Manually set the properties of concatenated_automaton
+        # Set up the properties of the concatenated automaton
         concatenated_automaton.transitions = combined_transitions
         concatenated_automaton.matrix = []
         concatenated_automaton.all_states = []
@@ -557,14 +585,16 @@ Final_states: {self.final_states}
         prefix_A = "A_"
         prefix_B = "B_"
 
-        # Concatenate states and transitions from the first automaton
+        # Process and add states and transitions from the first automaton
         for state in self.all_states:
             new_state = prefix_A + state
             concatenated_automaton.all_states.append(new_state)
             concatenated_automaton.initial_states.append(self.initial_states[self.all_states.index(state)])
-            concatenated_automaton.final_states.append(0)  # Final states are only from the second automaton
+            concatenated_automaton.final_states.append(0)  # Final states are considered from the second automaton
 
+            # Initialize transitions for the new state
             new_transitions = [new_state] + ['nan' for _ in combined_transitions]
+            # Add transitions from the first automaton
             for i, trans_symbol in enumerate(self.transitions):
                 trans_state = self.matrix[self.all_states.index(state)][i + 1]
                 if pd.isna(trans_state):
@@ -573,14 +603,16 @@ Final_states: {self.final_states}
                     new_transitions[combined_transitions.index(trans_symbol) + 1] = prefix_A + trans_state
             concatenated_automaton.matrix.append(new_transitions)
 
-        # Concatenate states and transitions from the second automaton
+        # Process and add states and transitions from the second automaton
         for state in other_automaton.all_states:
             new_state = prefix_B + state
             concatenated_automaton.all_states.append(new_state)
-            concatenated_automaton.initial_states.append(0)  # Initial state is only from the first automaton
+            concatenated_automaton.initial_states.append(0)  # Initial state is considered only from the first automaton
             concatenated_automaton.final_states.append(other_automaton.final_states[other_automaton.all_states.index(state)])
 
+            # Initialize transitions for the new state
             new_transitions = [new_state] + ['nan' for _ in combined_transitions]
+            # Add transitions from the second automaton
             for i, trans_symbol in enumerate(other_automaton.transitions):
                 trans_state = other_automaton.matrix[other_automaton.all_states.index(state)][i + 1]
                 if pd.isna(trans_state):
@@ -598,17 +630,24 @@ Final_states: {self.final_states}
                         concatenated_automaton.matrix[i][combined_transitions.index(trans_symbol) + 1] = prefix_B + initial_state_of_B
                         break
 
-        # Replace "A_nan," "B_nan," or "something_nan" with "nan" in the matrix
+        # Clean up the transition states in the matrix
         for i in range(len(concatenated_automaton.matrix)):
             for j in range(len(concatenated_automaton.matrix[i])):
                 if "_nan" in concatenated_automaton.matrix[i][j]:
                     concatenated_automaton.matrix[i][j] = "nan"
 
+        # Remove the dummy file created earlier
         os.remove("Sample/dummy.csv")
         return concatenated_automaton
 
     
     def to_regular_expression(self):
+        """
+        Converts the automaton to a regular expression.
+
+        Returns:
+        str: A regular expression representing the automaton.
+        """
         # Initialize regular expressions for each state
         state_expressions = {state: '' for state in self.all_states}
 
@@ -616,11 +655,20 @@ Final_states: {self.final_states}
         for state in self.all_states:
             self._resolve_state_expression(state, state_expressions)
 
-        # The regular expression for the entire automaton starts at the initial state
+        # Start the regular expression from the initial state
         initial_state = self.all_states[self.initial_states.index(1)]
         return state_expressions[initial_state]
 
     def _resolve_state_expression(self, state, state_expressions, visited=None):
+        """
+        A helper method to resolve the regular expression for a given state.
+
+        Args:
+        state (str): The current state for which to resolve the expression.
+        state_expressions (dict): A dictionary of state expressions.
+        visited (set, optional): A set of visited states to avoid cycles.
+        """
+        # Avoid cycles or redundant calculations
         if visited is None:
             visited = set()
 
@@ -628,8 +676,10 @@ Final_states: {self.final_states}
             return
         visited.add(state)
 
+        # Construct the expression for the current state
         expression_parts = []
         for trans_symbol, trans_state in zip(self.transitions, self.matrix[self.all_states.index(state)][1:]):
+            # Process each transition for the state
             if pd.isna(trans_state) or trans_state == 'nan':
                 continue
 
@@ -654,10 +704,18 @@ Final_states: {self.final_states}
             state_expressions[state] = '(' + state_expressions[state] + ')*'
 
     def list_accessible_states(self):
-        if 1 not in self.initial_states:
-            # Handle the scenario when there is no initial state
-            return []
+        """
+        Lists all accessible states in the automaton.
 
+        Returns:
+        list: A list of accessible states.
+        """
+
+        # Check if there's no initial state
+        if 1 not in self.initial_states:
+            return []
+        
+        # Find all accessible states
         accessible_states = set()
         queue = []
         initial_state = self.initial_states.index(1)  # Assuming there's only one initial state
@@ -676,6 +734,13 @@ Final_states: {self.final_states}
         return [self.all_states[state] for state in accessible_states]
 
     def list_coaccessible_states(self):
+        """
+        Lists all co-accessible states in the automaton.
+
+        Returns:
+        list: A list of co-accessible states.
+        """
+        # Initialize and find all co-accessible states
         co_accessible = set()
         queue = []
 
@@ -698,6 +763,9 @@ Final_states: {self.final_states}
         return [self.all_states[state] for state in co_accessible]
 
     def trim(self):
+        """
+        Trims the automaton by removing states that are neither accessible nor co-accessible.
+        """
         acc = set(self.list_accessible_states())
         coacc = set(self.list_coaccessible_states())
         states_to_remove = []
@@ -737,6 +805,12 @@ Final_states: {self.final_states}
                     self.matrix[i][j] = ','.join(transitions) if transitions else 'nan'
         
     def make_complete(self):
+        """
+        Makes the automaton complete by adding transitions to a 'poubelle' (trash) state where necessary.
+
+        Returns:
+        bool: True if the automaton was modified, False otherwise.
+        """
         modified = False
         for state in self.all_states:
             index_state = self.all_states.index(state)
@@ -858,10 +932,3 @@ Final_states: {self.final_states}
 #a = automate("Sample/default.csv")
 #print(a.get_neighbour(0))
 
-"""POUR IMAHD
-Comment edit un csv deterministe:
-1) Tu initialises une variable:
-auto=automate1.AND_to_AFD()
-auto.edit_csv("a", auto[0], auto[1])
-et après tu vas dans sample et le nom de fichier a.csv
-"""
