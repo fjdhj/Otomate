@@ -12,7 +12,6 @@ import numpy as np
 #fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 
 class automate:
-    # initialize the basic automate
     def __init__(self, file_name: str) -> None:
         if not (os.path.isfile(file_name)):
             print("Création du fichier : ", file_name)
@@ -33,6 +32,18 @@ class automate:
     
     
     def create_state(self,name)->None:
+        """
+        Creates and adds a new state to the automaton.
+
+        This method introduces a new state to the automaton.
+        It's a key function for building and modifying the state machine.
+
+        Args:
+            name (str): name of the new state
+
+        Returns:
+            None
+        """
         while(name in self.all_states):
             name = str(input("Entrez le nom du nouvel état"))
         self.matrix.append([])
@@ -289,7 +300,7 @@ Final_states: {self.final_states}
 
     def enumerate_new_states(self, states: list) -> dict:
         """
-        Enumarate all new states that are possible to create for new AFD
+        Enumerate all new states that are possible to create for new AFD
         """
         len_states=int(math.pow(2,len(states))) # Number of new states = 2**number of state AND
         new_states={}
@@ -492,6 +503,18 @@ Final_states: {self.final_states}
         self.matrix = mirrored_matrix
 
     def product(self, other_automaton):
+        """
+        Calculates the product of this automaton with another.
+
+        This method combines two automatons into a single one, where the states and transitions of the resulting
+        automaton represent the combined behavior of the two input automatons.
+
+        Args:
+            other_automaton (automate): Another automaton to combine with this one.
+
+        Returns:
+            product_automaton (automate): The resulting automaton after taking the product.
+        """
         product_automaton = automate(f"product{self.name}_{other_automaton.name}.csv")
 
         combined_transitions = list(set(self.transitions + other_automaton.transitions))
