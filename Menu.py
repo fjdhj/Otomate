@@ -762,16 +762,16 @@ while True:
             
     # ### EMONDER AUTOMATE ##################################################
             
-    # elif choix == "16":
-    #     slot = saisir_numero_slot()
-    #     if slot != -1 :
-    #         automate = slots_automates[slot - 1]
-    #         if automate:
-    #             #res = emonder(automate)
-    #             #if res != None:
-    #                 #slot[slot_vide] = res
-    #         else:
-    #             print("Aucun automate dans ce slot.")
+    elif choix == "16":
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            automate = slots[slot - 1]
+            if automate:
+                print("Vous avez choisi d'émonder l'automate\n")
+                automate=automate.trim()
+                print("Traitement effectué.\n\n")
+            else:
+                print("Aucun automate dans ce slot.")
             
             
     # ### RENDRE MINIMAL ###################################################
