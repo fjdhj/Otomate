@@ -153,7 +153,6 @@ def modifier_automate(actual_auto:automate):
             # print()
             # i_state_to_change=int(input(f"Choisissez parmi ceux-là: {[int(i)+1 for i in i_final_states]}:\n"))
             # print(i_state_to_change)
-            # FIXME : finir modifier etats finaux
             print("Ci-dessous la liste des états finaux\n")
             for i in range(len(actual_auto.final_states)):
                 if(actual_auto.final_states[i] == 1):
@@ -435,7 +434,6 @@ while True:
 
     ### IMPORTATION ##############################################################
     
-    #FIXME NATHAN Si le paramètre entré ne correspond pas à un slot ça plante
     if choix == "1":
         if slot_vide is not None:
             #On demande la chemin du fichier où enregistrer l'automate
