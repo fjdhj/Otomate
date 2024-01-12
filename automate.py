@@ -1027,8 +1027,8 @@ Final_states: {self.final_states}
         If the automate have no state, transition or more/less than 1 initial state, return None
         """
 
-        # On veut faire une fonction qui retourne un objet expression représentant l'expression reconnu par notre otomate
-        # Pour se faire on va parcourir notre automate et contruire l'expression au fur et a mesure
+        # We want to do a function that will return an expression object representing our expression allow by our automate
+        # In order to do this, we need to go across our automate and build the expression step by step
 
         #Return None if an error occure
         if len(self.all_states) == 0 or len(self.transitions) == 0 or self.initial_states.count(1) != 1:
@@ -1051,7 +1051,7 @@ Final_states: {self.final_states}
 
         while not stack.isEmpty():
             currentState:int = stack.unstack()
-            # print("currentState :", currentState)
+            # print("currentState id :", currentState, "name :", self.all_states[currentState])
 
             if not isAlreadyCheck[currentState]:
                 isAlreadyCheck[currentState] = True
@@ -1105,7 +1105,6 @@ Final_states: {self.final_states}
                     if self.final_states[currentState] == 1:
                         currentExpression.append(expression(False, False, None, [-1]))
 
-                    #FIXME with Sample/default.csv state are remove /!\ (maybe not, maybe yes)
                     expression.unparenthesis(currentExpression.content)
                    
                     # Trying Arden lemma
@@ -1115,6 +1114,7 @@ Final_states: {self.final_states}
                     currentExpression.ArdenLemma(currentState)
                     
                     stateExpression[currentState] = currentExpression
+                    # print("Result for current expression :", repr(currentExpression))
 
         globalExpression = stateExpression[initial_state]
         globalExpression.stateList = self.all_states

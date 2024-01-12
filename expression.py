@@ -175,10 +175,6 @@ class expression:
                                             strict = False if type(currentTab[j+1]) == int or currentTab[j+1].isFactor != False else True
 
 
-                                        #if step != -1:
-                                         #   j+=1
-                                        # We wan't j to be equals at the previous index who was part of the associated expression/ not common factor
-                                        # j-=step
                                         if ((len(currentTab) != j and step == 1) or (len(currentTab) != -1 and step == -1)) and not strict:
                                             # Putting the associated expression in parenthesis only if where not at the end
                                             lenght = expression._expression__getAssociatedExpression(currentTab, j, step)
@@ -208,12 +204,12 @@ class expression:
 
                                             #Putting in parenthesis things who are factor
                                             if(lenght != 0):
+                                                expression._expression__debugClassMessage("Putting things who are factor in parenthesis", currentTab, lenght, j)
                                                 if step == 1:
-                                                    bufferBis.content.extend(expression._expression__rangePop(currentTab, j, j+lenght))
+                                                    bufferBis.content.extend(expression._expression__rangePop(currentTab, j+1, j+lenght))
                                                 else:
                                                     temp = (expression._expression__rangePop(currentTab, j-lenght, j-1))
                                                     bufferBis.content = temp + bufferBis.content
-
                                             #We need to do the same for the common factor if he is at the right (case step == -1)
                                             if step == -1  and j+1 < len(currentTab):
                                                 bufferThird = expression(True, False, None, expression._expression__rangePop(currentTab, j+1, j+1+expression._expression__getAssociatedExpression(currentTab, j+1, 1)))
@@ -399,8 +395,9 @@ class expression:
         expression._expression__debugClassMessage(i, end, step, diff, result, len(obj), obj)
         while ((i < end and abs(diff-result) < len(obj)) and step == 1) or ((i > end and diff-result > -1) and step == -1):
             expression._expression__debugClassMessage(i, end, step, diff, result, len(obj), obj)
-            expression._expression__debugClassMessage(self.content[i], "==", end=" ")
-            expression._expression__debugClassMessage(obj[abs(diff-result)])
+            expression._expression__debugClassMessage(repr(self.content[i]), "==", end=" ")
+            expression._expression__debugClassMessage(repr(obj[abs(diff-result)]))
+
             if self.content[i] == obj[abs(diff-result)]:
                 expression._expression__debugClassMessage("Sultant of swing", i)
                 result += 1
@@ -431,7 +428,7 @@ class expression:
             #Sum
             elif type(self.content[i]) == expression and self.content[i].isFactor == False and self.content[i].isStar == False:
                 expression._expression__debugClassMessage("It should work")
-                buff = self.content[i].contain(obj[abs(diff-result)], step, i)
+                buff = self.content[i].contain(obj[abs(diff-result)], step)
 
                 #All obj need to be in self, so if it
                 # 's not, returning 0
@@ -791,6 +788,16 @@ class expression:
         result += "]" + end
 
         return result
+
+    def __eq__(self, other) -> booleen :
+        if not isinstance(other, expression):
+            return False
+        
+        return self.isFactor == other.isFactor and \
+                self.isStar == other.isStar and \
+                self.state == other.state and \
+                self.content == other.content  
+
 
     @staticmethod
     def __rangePop(list:list, start:int, end:int) -> list:
