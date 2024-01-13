@@ -444,6 +444,7 @@ while True:
             
             #Sinon on crée l'automate dans le prochain slot vide
             else:
+                print(file_name)
                 slots[slot_vide] = automate(file_name) 
                 print(slots)
                 print("Automate enregistré dans le slot : ",slot_vide+1,"\n\n")
@@ -727,9 +728,9 @@ while True:
     elif choix == "13":
         slot = saisir_numero_slot()
         if slot != -1:
-            automate:automate = slots[slot - 1]
-            if automate:
-                print("L'expression régulière de cette automate est :", automate.get_regular_expression())
+            automaton:automate = slots[slot - 1]
+            if automaton:
+                print("L'expression régulière de cette automate est :", automaton.get_regular_expression())
             else:
                 print("Aucun automate dans ce slot.")
             
@@ -738,36 +739,42 @@ while True:
     elif choix == "14":
         slot = saisir_numero_slot()
         if slot != -1 :
-            automate = slots[slot - 1]
-            if automate:
-                print("Le langage de cette automate est : L = {%s}" % (automate.get_regular_expression()))
+            automaton = slots[slot - 1]
+            if automaton:
+                print("Le langage de cette automate est : L = {%s}" % (automaton.get_regular_expression()))
             else:
                 print("Aucun automate dans ce slot.")
             
             
     # ### LANGAGES EQUIVALENTS ##############################################
             
-    # elif choix == "15":
-    #     slot = saisir_numero_slot()
-    #     if slot != -1 :
-    #         automate1 = slots_automates[slot - 1]
-    #         slot = saisir_numero_slot()
-    #         if slot != -1 :
-    #             automate2 = slots_automates[slot - 1]
-    #     if automate1 and automate2:
-    #         #res = equivalence(automate1,automate2)
-    #     else:
-    #         print("Aucun automate dans un des slots.")
+    elif choix == "15":
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            automaton1 = slots[slot - 1]
+            slot = saisir_numero_slot()
+            if slot != -1 :
+                automaton2 = slots[slot - 1]
+        if automaton1 and automaton2:
+            res = automaton1.isEquivalent(automaton2)
+
+            if res:
+                print("\nLe langage des deux automate sont equivalent\n")
+            else:
+                print("\nLe langage des deux automate sont different\n")
+
+        else:
+            print("Aucun automate dans un des slots.")
              
     # ### EMONDER AUTOMATE ##################################################
             
     elif choix == "16":
         slot = saisir_numero_slot()
         if slot != -1 :
-            automate = slots[slot - 1]
-            if automate:
+            automaton = slots[slot - 1]
+            if automaton:
                 print("Vous avez choisi d'émonder l'automate\n")
-                automate=automate.trim()
+                automaton=automaton.trim()
                 print("Traitement effectué.\n\n")
             else:
                 print("Aucun automate dans ce slot.")
@@ -778,10 +785,10 @@ while True:
     elif choix == "17":
         slot = saisir_numero_slot()
         if slot != -1 :
-            automate = slots[slot - 1]
-            if automate:
+            automaton = slots[slot - 1]
+            if automaton:
                 print("Vous avez choisi de rendre l'automate minimal\n")
-                automate=automate.minimize()
+                automaton=automaton.minimize()
                 print("Traitement effectué.\n\n")
             else:
                 print("Aucun automate dans ce slot.")
@@ -817,7 +824,7 @@ while True:
 
             #Erase .dot file
             os.remove('output-png/' + (image_filename))
-            os.remove('csv_path')
+            os.remove(csv_path)
 
 
             print("Traitement effectué.\n\n")
