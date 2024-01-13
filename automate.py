@@ -42,7 +42,6 @@ class automate:
         self.name: str=os.path.splitext(file_name)[0].replace("/", "")
         # self.label=[f"q{i}" for i in range(len(self.matrix)) if self.matrix != []]
     
-    
     def create_state(self,name)->None:
         """
         Creates and adds a new state to the automaton.
@@ -382,7 +381,7 @@ Final_states: {self.final_states}
         return transitions_for_symbol
 
 
-            
+
 
     # TODO: finish AFD and begin AND
     #FIXME Prendre en compte le fait qu'un caractère n'existe pas dans l'automate
