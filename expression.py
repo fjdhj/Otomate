@@ -37,9 +37,7 @@ class expression:
         if(parenthesed==False):
             newExpr = expression(True, False, None, self.content)
             self.content = [newExpr]
-            #return newExpr
-
-        #return self
+            
 
     def factorize(self: expression, numberOfState: int):
         """
@@ -370,6 +368,107 @@ class expression:
                     expression._expression__debugClassMessage(self.content)
                     self.content.append(buffer)
 
+    def develop(self) -> None:
+        """
+        Develop an expression object, usefull when you need to compare tow expression
+        In order to work, this function suppose that you have already unparenthesis the expression
+        Take in note that the algo do not work with state
+
+        Example of output :
+            - input  : self = (a + b)c
+            - output : self = ac + bc
+        """
+        if self == None:
+            return
+
+        expression._expression__debugClassMessage("\nStarting develop with", self, " with repr =", repr(self))
+        expression._expression__debugClassMessage("self.isStar =", self.isStar)
+
+        # First we break down the expression content
+        breakDownList = self.breakExpressionDown()
+        wasStar = self.isStar
+        self.content = []
+
+        expression._expression__debugClassMessage("Content of breakdown", breakDownList)
+
+        # We need to develop for each element in breakdown, but not between two element with to different index
+        # This is because breakExpressionDown seperate expression object with the + symbole
+
+        for breakDown in breakDownList:
+            expression._expression__debugClassMessage("Curent breakdown", breakDown.content)
+            developExpression = [[]]
+
+            # Looking if there are an product expression, thats because we can find this  only in product expression
+            for element in breakDown.content:
+                # If an int, putting it in a expression object
+                if isinstance(element, int):
+                    for devExpression in developExpression:
+                        devExpression.append(element)
+                
+                # The only case that we can run into is isProduct == True
+                else:
+                    # First we need to develop the content
+                    element.develop()
+                    expression._expression__debugClassMessage("Result of develop child", repr(element))
+
+                    # Then two case : element.isStar == True or False
+                    if element.isStar:
+                        # If it's True, we need to consider all the content and not distribut the inside
+                        for devExpression in developExpression:
+                            devExpression.append(element)
+                    
+                    else:
+                        # If it's False, we need to develop the content
+                        # But first, we need to get the associated content
+                        factorContent = element.breakExpressionDown()
+                        expression._expression__debugClassMessage("Result of breakdown child", factorContent)
+
+                        # We don't need expression but only their content, so we unpack it
+                        for i in range(len(factorContent)):
+                            factorContent[i] = factorContent[i].content
+                        
+                        newDevelopExpression = []
+                        for devExpression in developExpression:
+                            for factor in factorContent:
+                                expression._expression__debugClassMessage("Merging :", devExpression, "and", factor)
+                                if len(devExpression) == 0:
+                                    newDevelopExpression.append(factor)
+                                elif len(factor) == 0:
+                                    newDevelopExpression.append(devExpression)
+                                else:
+                                    if isinstance(devExpression[-1], expression):
+                                        # If the last element is not an int, it's means that we have have a star factor
+                                        # So we need to put our expression into an expression object
+                                        if devExpression[-1].isStar == True:
+                                            factor = [expression(True, False, None, factor)]
+                                        else:
+                                            devExpression[-1].content.append(factor)
+                                            factor = []
+                                    buffer = []
+                                    buffer.extend(devExpression)
+                                    buffer.extend(factor)
+                                    newDevelopExpression.append(buffer)
+                        
+                        developExpression = newDevelopExpression
+                       
+            expression._expression__debugClassMessage("Result of develop for this breakdown :", developExpression)
+
+            # When we have finish with the current breakDown, we can put each of the result at the end
+            # The concatenante will add it for in self.content at the end with a + sign if needed
+            for element in developExpression:
+                self.concatenate(expression(None, False, None, element))
+
+            self.isStar = wasStar                
+            expression.unparenthesis(self.content)
+
+            expression._expression__debugClassMessage("Result of concatenat for this breakdown :", self)
+
+        expression._expression__debugClassMessage("Develop is finish !\n")
+
+                    
+
+        #Then we need to add them to the empty content with the concatenante function
+
     def contain(self, obj:list[int|expression]|expression, step=1, start:int=None) -> (int, int):
         """
         Returns how many object element are in self
@@ -466,6 +565,12 @@ class expression:
 
     def concatenate(self, expr:expression) -> int:
         """
+        Add the end of the expression an element, for example:
+            - input  : self = a + b
+                       expr = c(d + e)
+            
+            - output : self = a + b + c(d + e)
+
         Return -1 if an error occure
         Return 0 otherwise
         """
@@ -601,6 +706,74 @@ class expression:
 
         expression._expression__debugClassMessage("Content of sel after lemma :", self)
         return True
+
+    def isSimilar(self, other:expression):
+        """
+        This function allow the user to check if a expression is similar to another, it's different from == (define in __eq__)
+        In fact only isFactor isStar and state from root of both expression (self and other) need to be equal
+        The content part can be in another order, for example a + b and b + a with == is different but with isSimilar is OK 
+        """
+        if other == None or not isinstance(other, expression):
+            raise TypeError("other is not expression type")
+
+        if self == None:
+            return
+
+        if self.isFactor != other.isFactor or \
+            self.isStar != other.isStar or \
+            self.state != other.state :
+            return  False
+
+        # First we developped expressions, then we seperate all of it with the + symbole (with break_downExpression function)
+        expr1 = copy.deepcopy(self)
+        expr2 = copy.deepcopy(self)
+
+        expr1.develop()
+        expr2.develop()
+
+        breakDown1 = expr1.breakExpressionDown()
+        breakDown2 = expr2.breakExpressionDown()
+
+        if len(breakDown1) != len(breakDown2):
+            return False
+
+        while len(breakDown1) > 0:
+            current1 = breakDown1.pop()
+
+            # Search for the other identical
+            find = False
+            i = 0
+            while not find and i < len(breakDown2):
+                current2 = breakDown2[i]
+                diff = False
+                if len(current1.content) == len(current2.content):
+                    j = 0
+                    while not diff and j < len(current1.content):
+                        if type(current1.content[j]) != type(current2.content[j]):
+                            diff = True
+                        
+                        elif isinstance(current1.content[j], int) and current1.content[j] != current2.content[j]:
+                            diff = True
+                        
+                        elif isinstance(current1.content[j], expression) and not current1.content[j].isSimilar(current2.content[j]):
+                            diff = True
+
+                        j+=1
+                    
+                    if not diff:
+                        find = True
+
+                i+=1
+            
+            #We didn't find a similar expression, return false
+            if not find:
+                return False
+            
+            breakDown2.pop(i-1)
+
+        return True
+
+        
 
     def containState(self, state, maxDepth=1) -> int|False:
         """
