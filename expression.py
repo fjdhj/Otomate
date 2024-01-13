@@ -716,12 +716,62 @@ class expression:
         if other == None or not isinstance(other, expression):
             raise TypeError("other is not expression type")
 
+        if self == None:
+            return
+
         if self.isFactor != other.isFactor or \
             self.isStar != other.isStar or \
             self.state != other.state :
             return  False
 
         # First we developped expressions, then we seperate all of it with the + symbole (with break_downExpression function)
+        expr1 = copy.deepcopy(self)
+        expr2 = copy.deepcopy(self)
+
+        expr1.develop()
+        expr2.develop()
+
+        breakDown1 = expr1.breakExpressionDown()
+        breakDown2 = expr2.breakExpressionDown()
+
+        if len(breakDown1) != len(breakDown2):
+            return False
+
+        while len(breakDown1) > 0:
+            current1 = breakDown1.pop()
+
+            # Search for the other identical
+            find = False
+            i = 0
+            while not find and i < len(breakDown2):
+                current2 = breakDown2[i]
+                diff = False
+                if len(current1.content) == len(current2.content):
+                    j = 0
+                    while not diff and j < len(current1.content):
+                        if type(current1.content[j]) != type(current2.content[j]):
+                            diff = True
+                        
+                        elif isinstance(current1.content[j], int) and current1.content[j] != current2.content[j]:
+                            diff = True
+                        
+                        elif isinstance(current1.content[j], expression) and not current1.content[j].isSimilar(current2.content[j]):
+                            diff = True
+
+                        j+=1
+                    
+                    if not diff:
+                        find = True
+
+                i+=1
+            
+            #We didn't find a similar expression, return false
+            if not find:
+                return False
+            
+            breakDown2.pop(i-1)
+
+        return True
 
         
 
