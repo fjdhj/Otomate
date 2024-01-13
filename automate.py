@@ -29,7 +29,7 @@ class automate:
         Initializes an instance of the automate class.
 
         This constructor initializes an automaton from a given file. The file should contain 
-        the necessary details about the states, transitions, and other properties of the automaton.
+        the necessary details about the states, transitions, and Initial state(s) and Final one(s) of the automaton.
 
         Args:
             file_name (str): The name of the file from which to load the automaton data.
@@ -57,7 +57,6 @@ class automate:
         self.transitions: list = [transit for transit in transition]
         self.name: str = os.path.splitext(file_name)[0].replace("/", "")
 
-        # The following line is commented out and seems to be for future use or deprecated
         # self.label=[f"q{i}" for i in range(len(self.matrix)) if self.matrix != []]
     
     
@@ -398,10 +397,6 @@ Final_states: {self.final_states}
         transitions_for_symbol = transitions_for_state[transition.index(symbols)]      
         return transitions_for_symbol
 
-
-            
-
-
     def recognize_wordAFD(self, word: str) -> bool:
         """Recognize word 
 
@@ -452,10 +447,6 @@ Final_states: {self.final_states}
                     
         print("End of process...")   
         return i_current_state == i_final_state  # Check if the final state is reached after processing the word
-
-
-
-
 
     
     def combination_of_states(self,states: list)->list:
