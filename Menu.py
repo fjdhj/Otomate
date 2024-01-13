@@ -758,8 +758,7 @@ while True:
     #         #res = equivalence(automate1,automate2)
     #     else:
     #         print("Aucun automate dans un des slots.")
-            
-            
+             
     # ### EMONDER AUTOMATE ##################################################
             
     elif choix == "16":

@@ -9,7 +9,6 @@ import os
 import math
 from itertools import combinations
 import numpy as np
-#fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 
 class automate:
     """
@@ -323,8 +322,6 @@ Final_states: {self.final_states}
         #This is use to remove duplicate entry
         return neighbour
         
-
-
     def edit_csv(self, file_name: str,AFD: list, final_state:list):
         if len(AFD)==0:
             print("Rien à exporter.")
@@ -365,4 +362,3 @@ Final_states: {self.final_states}
         transition=self.transitions
         transitions_for_symbol = transitions_for_state[transition.index(symbols)]      
         return transitions_for_symbol
-

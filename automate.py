@@ -9,7 +9,6 @@ import os
 import math
 from itertools import combinations
 import numpy as np
-#fonction nouvel etat/ modifier les transitions / supprimer un etat/ecrire dans un fichier csv les values
 
 class automate:
     """
@@ -55,10 +54,7 @@ class automate:
         self.all_states: list = [state[0] for state in sample_event]
         self.final_states: list = sample_state[1]
         self.transitions: list = [transit for transit in transition]
-        self.name: str = os.path.splitext(file_name)[0].replace("/", "")
-
-        # self.label=[f"q{i}" for i in range(len(self.matrix)) if self.matrix != []]
-    
+        self.name: str = os.path.splitext(file_name)[0].replace("/", "")    
     
     def create_state(self,name)->None:
         """
@@ -161,7 +157,6 @@ Final_states: {self.final_states}
             for j in range(len(self.matrix[i])):
                    self.matrix[i][j]=str(self.matrix[i][j]).split(',')
     
-    
     def is_complete(self) -> bool:
         """
         Checks if the automaton is complete.
@@ -214,7 +209,6 @@ Final_states: {self.final_states}
         for line in self.matrix:
             line.append(["nan"])
 
-        
     def add_transition(self,initial_state,transition,final_state):
         """
         Adds a transition to the automaton.
@@ -354,8 +348,6 @@ Final_states: {self.final_states}
         #This is use to remove duplicate entry
         return neighbour
         
-
-
     def edit_csv(self, file_name: str,AFD: list, final_state:list):
         if len(AFD)==0:
             print("Rien à exporter.")
@@ -448,7 +440,6 @@ Final_states: {self.final_states}
         print("End of process...")   
         return i_current_state == i_final_state  # Check if the final state is reached after processing the word
 
-    
     def combination_of_states(self,states: list)->list:
         """
         Return combinations of all states possible for new automaton
@@ -470,10 +461,6 @@ Final_states: {self.final_states}
             new_states.update({new_name_for_new_states : all_combinations[i]})
         return new_states
 
-
-    def define_new_state_and_final_states(self,transitions):   
-        ...
-        
     def create_state_for_AFD(self,symbols:str,i_for_check:int,new_states_to_check:list[dict],name_of_new_state:str,matrix:list)->list:
         states:list=str(new_states_to_check[i_for_check][name_of_new_state]).split(",")
         Possible_transitions:list=[]
@@ -604,13 +591,6 @@ Final_states: {self.final_states}
         for i in range(len(new_st)):
             self.all_states.append(new_st[i][0])
     
-        
-    # def init_new_final_state(self, new_states_to_check, final_state, all_final_state):
-    #     for i in range(len(new_states_to_check)):
-    #         key_name=list(new_states_to_check[i].keys())[0]
-    #         if final_state in new_states_to_check[i][key_name].split(","):
-    #             all_final_state[i]=1
-
     def join_list(self, result):
         for row in result:
             for i in range(len(row)):
@@ -640,7 +620,6 @@ Final_states: {self.final_states}
         """
         # Invert final states: Final (1) becomes non-final (0) and vice versa
         self.final_states = [1 if state == 0 else 0 for state in self.final_states]
-
 
     def mirror(self):
         """
@@ -820,8 +799,7 @@ Final_states: {self.final_states}
         # Remove the dummy file created earlier
         os.remove("Sample/dummy.csv")
         return concatenated_automaton
-
-    
+ 
     def to_regular_expression(self):
         """
         Converts the automaton to a regular expression.
@@ -1010,7 +988,6 @@ Final_states: {self.final_states}
                                 self.add_transition("poubelle", bin_transition, "poubelle")
                     self.add_transition(state, transition, "poubelle")
         return modified
-
 
     def get_regular_expression(self) -> expression:
         """
@@ -1224,7 +1201,6 @@ Final_states: {self.final_states}
 
         self.update_states_and_transitions(state_mapping)
 
-
     def update_states_and_transitions(self, state_mapping):
         """
         Updates the automaton's states and transitions based on the provided state mapping.
@@ -1260,9 +1236,3 @@ Final_states: {self.final_states}
         self.initial_states = new_initial_states
         self.final_states = new_final_states
         self.matrix = new_matrix
-
-
- 
-#a = automate("Sample/default.csv")
-#print(a.get_neighbour(0))
-
