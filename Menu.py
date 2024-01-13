@@ -803,14 +803,15 @@ while True:
         else:
             automaton = None
         if automaton:
-            automaton.edit_csv("buffer", automaton.matrix, automaton.final_states)
             # Ensure the output directory exists
             os.makedirs('output-png', exist_ok=True)
 
             # Define the CSV and image file paths
-            csv_path = 'Sample/buffer.csv'  # Replace with your actual CSV file path
+            csv_path = 'buffer.csv'  # Replace with your actual CSV file path
             timestamp = print_timestamp()
             image_filename = f'otomate_{timestamp}'
+
+            automaton.edit_csv(csv_path[:-4], automaton.matrix, automaton.final_states)
 
             # Set the image path with a timestamp
             image_path = os.path.join('output-png', image_filename)
