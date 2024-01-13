@@ -41,6 +41,13 @@ class TestAutomateRegularExpression(unittest.TestCase):
         
     ]
 
+    developExpressionTest = [
+        # (a + b)c h + c (d + e)
+        (expression(None, False, None, [ expression(True, False, None, [0, expression(False, False, None, [1])]), expression(True, False, None, [2, 7]), expression(False, False, None, [2,  expression(True, False, None, [3, expression(False, False, None, [4]) ])]) ]), "_[ 0 2 7 +[ 1 2 7 ] +[ 2 3 ] +[ 2 4 ] ]"),
+        # (a + b)* c h + c (d + e)
+        (expression(None, False, None, [ expression(True, True, None, [0, expression(False, False, None, [1])]), expression(True, False, None, [2, 7]), expression(False, False, None, [2,  expression(True, False, None, [3, expression(False, False, None, [4]) ])]) ]), "_[ *^[ 0 +[ 1 ] ] *[ 2 7 ] +[ 2 3 ] +[ 2 4 ] ]")
+    ]
+
     def setUp(self):
         print("\nSetting up for a new test...")
 
@@ -56,13 +63,20 @@ class TestAutomateRegularExpression(unittest.TestCase):
             self.assertEqual(repr(test[0]), test[2], "The result is "+repr(test[0])+"\n   but should be  "+test[2])
 
     def test_get_regular_expression(self):
-        print("Testing Expression Factoryze ...")
+        print("Testing getting regular expression ...")
         for test in self.automateFiles:
             print("Testing file", test[0])
             res = automate(test[0]).get_regular_expression()
             print("Result :", res)
             self.assertEqual(repr(res), test[1], "The result is "+repr(res)+"\n   but should be  "+test[1])
 
+    def test_develop(self):
+        print("Testing Expression develop ...")
+        for test in self.developExpressionTest:
+            print("Testing expression", test[0])
+            test[0].develop()
+            print("Result :", test[0])
+            self.assertEqual(repr(test[0]), test[1], "The result is "+repr(test[0])+"\n   but should be  "+test[1])
 
 # Run the tests
 if __name__ == '__main__':
