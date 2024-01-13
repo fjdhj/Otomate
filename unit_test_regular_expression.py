@@ -36,7 +36,9 @@ class TestAutomateRegularExpression(unittest.TestCase):
         ("Sample/Final_tests/evenNb0.csv", "_[ *^[ 0 *^[ 1 ] *[ 0 ] +[ 1 ] ] ]"),
         ("Sample/Final_tests/oddNb0.csv", "_[ *^[ 0 *^[ 1 ] *[ 0 ] +[ 1 ] ] *[ 0 *^[ 1 ] ] ]"),
         ("Sample/Final_tests/tourniquet.csv", "_[ *^[ *[ 0 *^[ 0 ] +[ -1 ] ] *[ 1 ] ] ]"),
-        ("Sample/Final_tests/tourniquetInverse.csv", "_[ *^[ *[ 0 *^[ 0 ] +[ -1 ] ] *[ 1 ] ] *[ 0 *^[ 0 ] ] ]")
+        ("Sample/Final_tests/tourniquetInverse.csv", "_[ *^[ *[ 0 *^[ 0 ] +[ -1 ] ] *[ 1 ] ] *[ 0 *^[ 0 ] ] ]"),
+        ("Sample/Final_tests/Expected_results/common5_minimal.csv", "_[ *[ 0 +[ 1 ] ] *[ 0 +[ 1 ] ] *[ 0 +[ 1 ] ] *^[ 0 +[ 1 ] ] ]")
+        
     ]
 
     def setUp(self):
@@ -51,7 +53,7 @@ class TestAutomateRegularExpression(unittest.TestCase):
             print("Testing expression", test[0])
             test[0].factorize(test[1])
             print("Result :", test[0])
-            self.assertEqual(repr(test[0]), test[2], "The result is "+repr(test[0])+"\n   but shold be  "+test[2])
+            self.assertEqual(repr(test[0]), test[2], "The result is "+repr(test[0])+"\n   but should be  "+test[2])
 
     def test_get_regular_expression(self):
         print("Testing Expression Factoryze ...")
@@ -59,7 +61,7 @@ class TestAutomateRegularExpression(unittest.TestCase):
             print("Testing file", test[0])
             res = automate(test[0]).get_regular_expression()
             print("Result :", res)
-            self.assertEqual(repr(res), test[1], "The result is "+repr(res)+"\n   but shold be  "+test[1])
+            self.assertEqual(repr(res), test[1], "The result is "+repr(res)+"\n   but should be  "+test[1])
 
 
 # Run the tests

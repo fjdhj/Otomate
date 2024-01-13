@@ -475,7 +475,7 @@ while True:
                 print(f"Le chemin '{file_name}' n'existe pas.\n")
             #Si tout est bon on édite le fichier
             else:
-                automaton.edit_csv(basename, automaton.matrix,automaton.final_states)
+                automaton.edit_csv(file_name, automaton.matrix,automaton.final_states)
                 print("Traitement effectué.\n\n")
                 
         else:
@@ -758,34 +758,33 @@ while True:
     #         #res = equivalence(automate1,automate2)
     #     else:
     #         print("Aucun automate dans un des slots.")
-            
-            
+             
     # ### EMONDER AUTOMATE ##################################################
             
-    # elif choix == "16":
-    #     slot = saisir_numero_slot()
-    #     if slot != -1 :
-    #         automate = slots_automates[slot - 1]
-    #         if automate:
-    #             #res = emonder(automate)
-    #             #if res != None:
-    #                 #slot[slot_vide] = res
-    #         else:
-    #             print("Aucun automate dans ce slot.")
+    elif choix == "16":
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            automate = slots[slot - 1]
+            if automate:
+                print("Vous avez choisi d'émonder l'automate\n")
+                automate=automate.trim()
+                print("Traitement effectué.\n\n")
+            else:
+                print("Aucun automate dans ce slot.")
             
             
     # ### RENDRE MINIMAL ###################################################
             
-    # elif choix == "17":
-    #     slot = saisir_numero_slot()
-    #     if slot != -1 :
-    #         automate = slots_automates[slot - 1]
-    #         if automate:
-    #             #res = minimal(automate)
-    #             #if res != None:
-    #                 #slot[slot_vide] = res
-    #         else:
-    #             print("Aucun automate dans ce slot.")
+    elif choix == "17":
+        slot = saisir_numero_slot()
+        if slot != -1 :
+            automate = slots[slot - 1]
+            if automate:
+                print("Vous avez choisi de rendre l'automate minimal\n")
+                automate=automate.minimize()
+                print("Traitement effectué.\n\n")
+            else:
+                print("Aucun automate dans ce slot.")
             
             
     ### VISUALISATION ######################################################
@@ -818,6 +817,8 @@ while True:
 
             #Erase .dot file
             os.remove('output-png/' + (image_filename))
+            os.remove('csv_path')
+
 
             print("Traitement effectué.\n\n")
         else:
