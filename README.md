@@ -22,14 +22,14 @@ The program need to contains the following features :
     - [X] Concatenation of two AEFs 
 - [X] Extract a regular expression from an AEF. For example, a\*b is a regular exepression.
 - [X] Find AEF admited language. For example, {a*b} is a language
-- [ ] Check if two AEF are equivalen (they recognized same language)
+- [X] Check if two AEF are equivalent (they recognized same language)
 - [X] Transform an AEF into an trim one
-- [ ] Transform an AEF into a minimal one. The new AEF will recognized the same language, with the minmal number of state. Which means that no state can be removed from the AEF and without change the know language
-- [ ] The interface need to be in the shell
+- [X] Transform an AEF into a minimal one. The new AEF will recognized the same language, with the minmal number of state. Which means that no state can be removed from the AEF and without change the know language
+- [X] The interface need to be in the shell
 
 ## Optional feature
 - [X] Export the FSA in an image (.png)
-- [ ] A GUI for editing the FSA
+- [X] A GUI for editing the FSA (JFLAP)
 
 ## FSA save file (.csv)
 The program use the .oto extension to save your Finite-State automaton. The strucuture is the same as a CSV file with the follow header :
