@@ -37,7 +37,7 @@ class automate:
             None
         """
         if not (os.path.isfile(file_name)):
-            print("Création du fichier : ", file_name)
+            print("Creation of the file : ", file_name)
             with open(file_name, "w") as csv_file:
                 csv_file.writelines("etat;EI;EF")
 
@@ -55,8 +55,6 @@ class automate:
         self.final_states: list = sample_state[1]
         self.transitions: list = [transit for transit in transition]
         self.name: str = os.path.splitext(file_name)[0].replace("/", "")
-
-        # self.label=[f"q{i}" for i in range(len(self.matrix)) if self.matrix != []]
     
     
     def create_state(self,name)->None:
@@ -73,7 +71,7 @@ class automate:
             None
         """
         while(name in self.all_states):
-            name = str(input("Entrez le nom du nouvel état"))
+            name = str(input("Enter the name of the new state"))
         self.matrix.append([])
         self.matrix[-1].append(name)
         self.initial_states.append(0)
@@ -202,7 +200,7 @@ Final_states: {self.final_states}
             None
         """
         if not (transition in self.transitions):
-             raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
+             raise ValueError("The transition entered is not in the column please enter another")
         index_state=self.all_states.index(initial_state)
         index_transition=self.transitions.index(transition)
         if(self.matrix[index_state][index_transition+1] == "nan"):
@@ -229,7 +227,7 @@ Final_states: {self.final_states}
             None
         """
         if not (transition in self.transitions):
-             raise ValueError("La transition entrée n'est pas dans la colonne veuillez saisir une autre")
+             raise ValueError("The transition entered is not in the column please enter another")
         index_state=self.all_states.index(initial_state)
         index_transition=self.transitions.index(transition)
         if(self.matrix[index_state][index_transition+1] == final_state):
@@ -278,7 +276,7 @@ Final_states: {self.final_states}
                             if(transition_states == []):
                                 transition_states.append("nan")
         else:
-            print("L'état à supprimer n'existe pas")
+            print("This state doesn't exist")
     
     def delete_transition(self, transition):
         """
@@ -300,7 +298,7 @@ Final_states: {self.final_states}
             for line in self.matrix: #Delete column in the matrix
                 del line[index_transition+1]
         else:
-            print("La transition à supprimer n'existe pas")
+            print("The transition doesn't exist")
             
     def get_neighbour(self, state:int) -> dict:
         """
@@ -322,43 +320,103 @@ Final_states: {self.final_states}
         #This is use to remove duplicate entry
         return neighbour
         
-    def edit_csv(self, file_name: str,AFD: list, final_state:list):
-        if len(AFD)==0:
-            print("Rien à exporter.")
-            return None
-        csv_file={}
-        rows, cols= len(AFD), len(AFD[0])
-        csv_file_temp=[["" for _ in range(rows)] for i in range(cols)]
-        for i in range(rows):
-            for j in range(cols):
-                csv_file_temp[j][i]=AFD[i][j] if i<len(AFD) and j < len(AFD[i]) else None
-        pprint(csv_file_temp)
-        csv_file.update({"etat":csv_file_temp[0]})
-        for i in range(len(self.transitions)):
-            csv_file.update({self.transitions[i]:[state for state in csv_file_temp[i+1]]})
-        
-        pprint(csv_file)
-        csv_file.update({"EI":self.initial_states})
-        csv_file.update({"EF":final_state})
-        df = pd.DataFrame(csv_file)
-        df.to_csv(f"{file_name}.csv", index=False, sep=';')
-        
-        df2=pd.read_csv(f"{file_name}.csv",sep=";")
-        df2.replace('nan',np.nan, inplace=True)
-        df2.to_csv(f"{file_name}.csv", index=False, sep=';')
-    
-    def possible_transition(self, current_state: str, matrix: list, symbols: list) -> list:
-        """Récupère les transitions possibles pour passer d'un état à un autre en fonction du symbole fourni.
+    def edit_csv(self, file_name: str, AFD: list, final_state: list):
+        """
+        Creates and exports a CSV file from the provided Automaton Finite Deterministic (AFD) structure.
 
         Args:
-            current_state (str): État actuel
-            matrix (list): Matrice des transitions
-            symbols (list): Liste des symboles pour les transitions ('a', 'b', 'c', ...)
+            file_name (str): The name of the file to be created.
+            AFD (list): A list representing the Automaton Finite Deterministic.
+                        It's expected to be a two-dimensional list where each sublist represents a state and its transitions.
+            final_state (list): A list of final states in the AFD.
 
         Returns:
-            list: Liste des transitions possibles pour passer de l'état actuel à un autre état
+            None: This function does not return anything. It creates and modifies a CSV file.
         """
+
+        # Check if the AFD list is empty. If it is, print a message and exit the function.
+        if len(AFD) == 0:
+            print("Nothing to export.")  # Translated from "Rien à exporter."
+            return None
+
+        # Initialize an empty dictionary to store the CSV data.
+        csv_file = {}
+
+        # Calculate the number of rows and columns in the AFD list.
+        rows, cols = len(AFD), len(AFD[0])
+
+        # Create a temporary 2D list (matrix) with dimensions swapped (cols x rows).
+        # This step is preparing for a transposition of the AFD matrix.
+        csv_file_temp = [["" for _ in range(rows)] for i in range(cols)]
+
+        # Transpose the AFD matrix into the temporary list.
+        # If an index is out of range, it assigns None.
+        for i in range(rows):
+            for j in range(cols):
+                csv_file_temp[j][i] = AFD[i][j] if i < len(AFD) and j < len(AFD[i]) else None
+
+        # Print the transposed AFD matrix for verification.
+        pprint(csv_file_temp)
+
+        # Add the states to the csv_file dictionary under the key 'etat'.
+        csv_file.update({"etat": csv_file_temp[0]})
+
+        # Loop over the transitions and update the csv_file dictionary with each transition.
+        for i in range(len(self.transitions)):
+            csv_file.update({self.transitions[i]: [state for state in csv_file_temp[i+1]]})
+
+        # Print the current state of the csv_file dictionary for verification.
+        pprint(csv_file)
+
+        # Update the csv_file dictionary with initial states and final states.
+        csv_file.update({"EI": self.initial_states})  # EI - Initial States
+        csv_file.update({"EF": final_state})          # EF - Final States
+
+        # Convert the csv_file dictionary into a pandas DataFrame.
+        df = pd.DataFrame(csv_file)
+
+        # Export the DataFrame to a CSV file with the specified file name and ';' as the separator.
+        df.to_csv(f"{file_name}.csv", index=False, sep=';')
+
+        # Read the CSV file back into a pandas DataFrame to replace 'nan' string with np.nan.
+        df2 = pd.read_csv(f"{file_name}.csv", sep=";")
+
+        # Replace 'nan' string with np.nan in the DataFrame.
+        df2.replace('nan', np.nan, inplace=True)
+
+        # Export the updated DataFrame back to the same CSV file.
+        df2.to_csv(f"{file_name}.csv", index=False, sep=';')
+
+    
+    def possible_transition(self, current_state: str, matrix: list, symbols: list) -> list:
+        """
+        Retrieve possible transitions to move from one state to another based on the provided symbol.
+
+        Args:
+            current_state (str): The current state in the transition system.
+            matrix (list): A transition matrix representing the transitions between states.
+                        Each element in this matrix corresponds to a specific state,
+                        and contains a list of transitions available from that state.
+            symbols (list): A list of symbols representing possible transitions ('a', 'b', 'c', ...).
+
+        Returns:
+            list: A list of possible transitions to move from the current state to another state
+                based on the provided symbols.
+        """
+
+        # Retrieve transitions available for the current state from the transition matrix.
+        # This is done by finding the index of the current state in the list of all states
+        # and then accessing the corresponding row in the transition matrix.
         transitions_for_state = matrix[self.all_states.index(current_state)]
-        transition=self.transitions
+
+        # Access the transitions object. This line seems to be redundant or part of a larger context,
+        # as 'transition' is neither an input to the function nor previously defined within it.
+        # This may need clarification or correction.
+        transition = self.transitions
+
+        # Find the transitions available for the given symbols.
+        # It finds the index of each symbol in the 'transitions' list and then
+        # accesses the corresponding element in 'transitions_for_state' to get the possible transitions.
         transitions_for_symbol = transitions_for_state[transition.index(symbols)]      
+
         return transitions_for_symbol
