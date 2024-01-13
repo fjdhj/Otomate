@@ -341,11 +341,11 @@ Final_states: {self.final_states}
         csv_file.update({"EI":self.initial_states})
         csv_file.update({"EF":final_state})
         df = pd.DataFrame(csv_file)
-        df.to_csv(f"Sample/{file_name}.csv", index=False, sep=';')
+        df.to_csv(f"{file_name}.csv", index=False, sep=';')
         
-        df2=pd.read_csv(f"Sample/{file_name}.csv",sep=";")
+        df2=pd.read_csv(f"{file_name}.csv",sep=";")
         df2.replace('nan',np.nan, inplace=True)
-        df2.to_csv(f"Sample/{file_name}.csv", index=False, sep=';')
+        df2.to_csv(f"{file_name}.csv", index=False, sep=';')
     
     def possible_transition(self, current_state: str, matrix: list, symbols: list) -> list:
         """Récupère les transitions possibles pour passer d'un état à un autre en fonction du symbole fourni.

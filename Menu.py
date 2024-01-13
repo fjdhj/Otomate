@@ -475,7 +475,7 @@ while True:
                 print(f"Le chemin '{file_name}' n'existe pas.\n")
             #Si tout est bon on édite le fichier
             else:
-                automaton.edit_csv(basename, automaton.matrix,automaton.final_states)
+                automaton.edit_csv(file_name, automaton.matrix,automaton.final_states)
                 print("Traitement effectué.\n\n")
                 
         else:
@@ -817,6 +817,8 @@ while True:
 
             #Erase .dot file
             os.remove('output-png/' + (image_filename))
+            os.remove('csv_path')
+
 
             print("Traitement effectué.\n\n")
         else:
