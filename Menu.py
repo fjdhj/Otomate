@@ -131,6 +131,8 @@ def modifier_automate(actual_auto:automate):
                     print(actual_auto.all_states[i])
             # User chooses a state to modify its initial status
             state = input("Choisissez un état\n")
+            while(not state in actual_auto.all_states):
+                state = input("Choisissez un état\n")
             index_state = actual_auto.all_states.index(state)
             # Check if the chosen state is currently an initial state
             if(actual_auto.initial_states[index_state] == 1):
@@ -759,9 +761,9 @@ while True:
             res = automaton1.isEquivalent(automaton2)
 
             if res:
-                print("\nLe langage des deux automate sont equivalent\n")
+                print("\nLe langage des deux automate est équivalent.\n")
             else:
-                print("\nLe langage des deux automate sont different\n")
+                print("\nLe langage des deux automate est différent.\n")
 
         else:
             print("Aucun automate dans un des slots.")
@@ -773,7 +775,7 @@ while True:
         if slot != -1 :
             automaton = slots[slot - 1]
             if automaton:
-                print("Vous avez choisi d'émonder l'automate\n")
+                print("Vous avez choisi d'émonder l'automate.\n")
                 automaton=automaton.trim()
                 print("Traitement effectué.\n\n")
             else:
@@ -787,7 +789,7 @@ while True:
         if slot != -1 :
             automaton = slots[slot - 1]
             if automaton:
-                print("Vous avez choisi de rendre l'automate minimal\n")
+                print("Vous avez choisi de rendre l'automate minimal.\n")
                 automaton=automaton.minimize()
                 print("Traitement effectué.\n\n")
             else:
