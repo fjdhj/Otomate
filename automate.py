@@ -490,8 +490,8 @@ Final_states: {self.final_states}
             for c in word:
                 current_state = self.all_states[i_current_state]
                 print(f"\nWe analyze this symbol: {c}")
-                if i_current_state == i_final_state:
-                    return True  # If the current state is already a final state, the word is recognized
+                # if i_current_state == i_final_state:
+                #     return True  # If the current state is already a final state, the word is recognized
                     
                 Possible_Transition = self.possible_transition(current_state, matrix, c)
                 print(f"Possible state : {Possible_Transition} for this state: {current_state}")
