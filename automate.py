@@ -1364,6 +1364,12 @@ Final_states: {self.final_states}
         return auto1.get_regular_expression().isSimilar(auto2.get_regular_expression())
     
     def verify_states(self):
+        """
+        Checks if the automaton have at least an initial and a final state
+
+        Returns:
+            bool: True if the automaton have at least an initial and a final state
+        """
         if(len(self.all_states) == 0):
             print("Your automaton is empty, please create a new state\n")
             name = str(input("Enter the name of the new state :"))
