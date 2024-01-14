@@ -11,6 +11,7 @@ import os
 import math
 from itertools import combinations
 import numpy as np
+import copy
 
 class automate:
     """
@@ -1333,10 +1334,29 @@ Final_states: {self.final_states}
         self.matrix = new_matrix
 
     def isEquivalent(self, other:automate) -> bool:
+        """
+        This function return true if self and other have the same language
+        If it's true, they are equivalent
+        """
         if not isinstance(other, automate):
             raise TypeError("the other is not automate")
         
         if self == None:
             return False
 
-        return self.get_regular_expression().isSimilar(other.get_regular_expression())
+        # Because we need to do some action on it, we made a copy of automats
+        auto1 = copy.deepcopy(self)
+        auto2 = copy.deepcopy(other)
+
+        # In order to do this, we need to trim it to remove unsed state
+        # Then we need to minimiz it to have the most similar expression
+        auto1.trim()
+        auto1.minimize()
+
+        auto2.trim()
+        auto2.minimize() 
+
+        # With these operation we are not sure that the expression is identical
+        # But isSimilar methods use develop methods to ensure the difference 
+        # can't give a bad result because the diffrence isn't huge
+        return auto1.get_regular_expression().isSimilar(auto2.get_regular_expression())
