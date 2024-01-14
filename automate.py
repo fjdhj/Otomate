@@ -59,7 +59,7 @@ class automate:
         self.transitions: list = [transit for transit in transition]
         self.name: str = os.path.splitext(file_name)[0].replace("/", "")    
     
-    def create_state(self,name)->None:
+    def create_state(self, name)->None:
         """
         Creates and adds a new state to the automaton.
 
@@ -84,7 +84,7 @@ class automate:
         Returns:
             None
         """
-        while(name in self.all_states):
+        while(name in self.all_states or name ==""):
             name = str(input("Enter the name of the new state"))
         self.matrix.append([])
         self.matrix[-1].append(name)
@@ -224,7 +224,7 @@ Final_states: {self.final_states}
         Returns:
             None
         """
-        while(transition in self.transitions):
+        while(transition in self.transitions or transition==""):
             transition = str(input("Enter the name of the new transiion"))
         self.transitions.append(transition)
         for line in self.matrix:
@@ -252,6 +252,7 @@ Final_states: {self.final_states}
             raise ValueError("The transition entered is not in the column please enter another")
         index_state=self.all_states.index(initial_state)
         index_transition=self.transitions.index(transition)
+        print(self.matrix[index_state][index_transition+1])
         if(final_state in self.matrix[index_state][index_transition+1].split(",")):
             print("The transition already exists")
         elif(self.matrix[index_state][index_transition+1] == "nan"):
@@ -300,7 +301,7 @@ Final_states: {self.final_states}
         """
         pprint(self.matrix)
 
-    def delete_state(self, state=""): # Verifier que l'automate est coupé en 2
+    def delete_state(self, state): # Verifier que l'automate est coupé en 2
         """
         Deletes a state from the automaton.
 
