@@ -251,7 +251,6 @@ Final_states: {self.final_states}
             raise ValueError("The transition entered is not in the column please enter another")
         index_state=self.all_states.index(initial_state)
         index_transition=self.transitions.index(transition)
-        print(self.matrix[index_state][index_transition+1])
         if(final_state in self.matrix[index_state][index_transition+1].split(",")):
             print("The transition already exists")
         elif(self.matrix[index_state][index_transition+1] == "nan"):
