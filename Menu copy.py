@@ -127,6 +127,8 @@ def modify_automaton(current_auto: automate):
                     print(current_auto.all_states[i])
             # User chooses a state to modify its initial status
             state = input("Choose a state\n")
+            while(not state in current_auto.all_states):
+                state = input("Choose a state\n")
             index_state = current_auto.all_states.index(state)
             if current_auto.initial_states[index_state] == 1:
                 if input("This state is currently initial, make it non-initial? y/n\n") == "y":
@@ -143,6 +145,8 @@ def modify_automaton(current_auto: automate):
                     print(current_auto.all_states[i])
             # User chooses a state to modify its final status
             state = input("Choose a state\n")
+            while(not state in current_auto.all_states):
+                state = input("Choose a state\n")
             index_state = current_auto.all_states.index(state)
             if current_auto.final_states[index_state] == 1:
                 if input("This state is currently final, make it non-final? y/n\n") == "y":

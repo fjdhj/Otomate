@@ -131,6 +131,8 @@ def modifier_automate(actual_auto:automate):
                     print(actual_auto.all_states[i])
             # User chooses a state to modify its initial status
             state = input("Choisissez un état\n")
+            while(not state in actual_auto.all_states):
+                state = input("Choisissez un état\n")
             index_state = actual_auto.all_states.index(state)
             # Check if the chosen state is currently an initial state
             if(actual_auto.initial_states[index_state] == 1):
