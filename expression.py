@@ -148,8 +148,8 @@ class expression:
                                         # buffer represent the not common factor
                                         if jSize == len(currentFacto[2]):
                                             buffer = []
-                                            expression._expression__debugClassMessage("Checking strict mode jSize == len(currentFacto[2])", currentTab, j)
                                             strict = False if type(currentTab[j-step]) == int or currentTab[j-step].isFactor != False else True
+                                            expression._expression__debugClassMessage("Checking strict mode jSize == len(currentFacto[2])", currentTab, j, strict)
                                         elif buffer[0] > 0:
                                             expression._expression__debugClassMessage("Sailor : Captain, somthing strange appen, what do we need to do ?")
                                             start, end = (0, len(currentFacto[2][jSize].content)-buffer[0]-1) if step == -1 else (buffer[0], len(currentFacto[2][jSize].content) - 1)
@@ -173,10 +173,12 @@ class expression:
                                             strict = False if type(currentTab[j+1]) == int or currentTab[j+1].isFactor != False else True
 
 
-                                        if ((len(currentTab) != j and step == 1) or (len(currentTab) != -1 and step == -1)) and not strict:
+                                        if ((len(currentTab) != j and step == 1) or (j != -1 and step == -1)) and not strict:
                                             # Putting the associated expression in parenthesis only if where not at the end
+                                            # BufferBis store store things who are factor of our common factor
+                                            # So lenght store the lenght of the associated expression, the number of item - 1 of things on bufferBis at the end 
                                             lenght = expression._expression__getAssociatedExpression(currentTab, j, step)
-                                            expression._expression__debugClassMessage("NINI :", currentTab, lenght, j)
+                                            expression._expression__debugClassMessage("MINI :", currentTab, lenght, j)
 
                                             if type(currentTab[j]) == expression:
                                                 currentTab[j] = expression(currentTab[j].isFactor, False, None, [currentTab[j]])
@@ -198,7 +200,8 @@ class expression:
                                                 expression._expression__debugClassMessage("Packing my int :", currentTab, lenght, j)
                                                 bufferBis = currentTab[j]
 
-                                            expression._expression__debugClassMessage("MERDE :", currentTab[j], j)
+
+                                            expression._expression__debugClassMessage("OOPS :", currentTab[j], j)
 
                                             #Putting in parenthesis things who are factor
                                             if(lenght != 0):
@@ -208,22 +211,70 @@ class expression:
                                                 else:
                                                     temp = (expression._expression__rangePop(currentTab, j-lenght, j-1))
                                                     bufferBis.content = temp + bufferBis.content
-                                            #We need to do the same for the common factor if he is at the right (case step == -1)
-                                            if step == -1  and j+1 < len(currentTab):
-                                                bufferThird = expression(True, False, None, expression._expression__rangePop(currentTab, j+1, j+1+expression._expression__getAssociatedExpression(currentTab, j+1, 1)))
-                                                tempBuffer = expression._expression__rangePop(currentTab, j+1, len(currentTab)-1)
-                                                currentTab.append(bufferThird)
-                                                currentTab.extend(tempBuffer)
+                                        elif strict:
+                                            j -= step
+                                            bufferBis = currentTab[j- (lenght if step == -1 else 0)]
 
-                                            stack.pileUp(currentTab)
+                                            if len(buffer) == 0:
+                                                bufferBis = None
+
+                                        elif len(buffer) != 0:
+                                            # We are at the end, we need to add a factor with (-1 + buffer) in content because buffer
+                                            # But if buffer is empty we have two time the same expression, so we don't need to add anything
+                                            # Indeed, with regulare expression ab + ab -> ab because + act like a or sign
+                                            if step == 1:
+                                                j = len(currentTab)-1
+                                                currentTab.append(expression(True, False, None, [-1]))
+                                            
+                                            else:
+                                                bufferBis = expression._expression__rangePop(currentTab, 0, len(currentTab)-1)
+                                                currentTab.append(expression(True, False, None, [-1]))
+                                                currentTab.extend(bufferBis)
+                                                j = 0
+
+                                            lenght = 0
+                                            # So bufferBis need store the associated expression (things who are not in common)
+                                            bufferBis = currentTab[j]
+                                            expression._expression__debugClassMessage("Captain : We are at the border, but we add an expression with epsilon ", currentTab)
+
+
+                                        #We need to do the same for the common factor if he is at the right (case step == -1)
+                                        if step == -1  and j+1 < len(currentTab):
+                                            bufferThird = expression(True, False, None, expression._expression__rangePop(currentTab, j+1, j+1+expression._expression__getAssociatedExpression(currentTab, j+1, 1)))
+                                            tempBuffer = expression._expression__rangePop(currentTab, j+1, len(currentTab)-1)
+                                            currentTab.append(bufferThird)
+                                            currentTab.extend(tempBuffer)
+
+                                        stack.pileUp(currentTab)
+                                        if bufferBis != None:
+                                            if len(bufferBis.content) == 1 and isinstance(bufferBis.content[0], expression) and bufferBis.content[0].isFactor == True:
+                                                bufferBis = bufferBis.content[0]
+                                            
                                             expression._expression__debugClassMessage("pile up", currentTab, "at index", j- (lenght if step == -1 else 0))
+                                            expression._expression__debugClassMessage("So, piling up", currentTab[j- (lenght if step == -1 else 0)])
                                             stack.pileUp(currentTab[j- (lenght if step == -1 else 0)].content)
                                             stack.pileUp( (bufferBis.content, 0, buffer, 1) )
 
+                                        """elif len(buffer) != 0:
+                                            # We are at the end, we need to add a factor with (-1 + buffer) in content because buffer
+                                            # But if buffer is empty we have two time the same expression, so we don't need to add anything
+                                            # Indeed, with regulare expression ab + ab -> ab because + act like a or sign
+                                            if step == 1:
+                                                j = len(currentTab)-1
+                                                currentTab.append(expression)
+                                            
+                                            else:
+                                                bufferBis = expression._expression__rangePop(currentTab, 0, len(currentTab)-1)
+                                                currentTab.extend([expression(True, False, None, [-1, expression(False, False, None, [])]), expression(True, False, None, currentTab)])
+                                                j = 0
+
+                                            expression._expression__debugClassMessage("Captain, adding an epsilon value, currentTab value :", currentTab)
+
+                                            #The content of buffer will be add automatic
+                                            stack.pileUp(currentTab)
+                                        """
+
                                         factoOk = True
-                                        #if step != -1:
-                                         #   j-=1
-                                        #j+=step
 
                                         if depth != -1:
                                             expression._expression__debugClassMessage("Sailor : GOING TO THE SPECIAL SURFACE SIR, current level :", currentFacto[0])
@@ -234,7 +285,8 @@ class expression:
                                             currentTab = currentFacto[0]
                                     
                                     #We need to go deeper
-                                    elif depth == -1 and type(currentTab[j]) == expression and (step == -1 or currentTab[j].isFactor != True):
+                                    # elif depth == -1 and type(currentTab[j]) == expression and (step == -1 or currentTab[j].isFactor != True):
+                                    elif depth == -1 and isinstance(currentTab[j], expression) and currentTab[j].isFactor != True:
                                         expression._expression__debugClassMessage("Sailor : GOING DEEPER SIR, current level :", currentTab[j].content)
                                         depth = j
                                         j = -1 if step == 1 else len(currentTab[depth].content)
@@ -305,7 +357,7 @@ class expression:
                 if i < len(self.content):
                     self.content[i].state = None
                     toAdd.append(self.content[i])
-                    expression._expression__debugClassMessage("FUCKKKKKKKKK", toAdd)
+                    expression._expression__debugClassMessage("WHYYYYYYYYYYYYYY", toAdd)
                     if len(toAdd) == 1 and toAdd[0].isFactor == False:
                         toAdd[0].isFactor = None
 
@@ -442,8 +494,9 @@ class expression:
                                         if devExpression[-1].isStar == True:
                                             factor = [expression(True, False, None, factor)]
                                         else:
-                                            devExpression[-1].content.append(factor)
+                                            devExpression[-1].content.extend(factor)
                                             factor = []
+
                                     buffer = []
                                     buffer.extend(devExpression)
                                     buffer.extend(factor)
@@ -452,6 +505,7 @@ class expression:
                         developExpression = newDevelopExpression
                        
             expression._expression__debugClassMessage("Result of develop for this breakdown :", developExpression)
+            expression._expression__debugClassMessage("Current content of self :", self)
 
             # When we have finish with the current breakDown, we can put each of the result at the end
             # The concatenante will add it for in self.content at the end with a + sign if needed
@@ -551,8 +605,8 @@ class expression:
                 expression._expression__debugClassMessage("Contain debug : returning", result, ";", i, ";", strict)
                 return (result, i, strict)
 
-        if i != end:
-            i-=step
+        #if i != end:
+         #   i-=step
         
         if strict and len(obj) != result:
                     expression._expression__debugClassMessage("Strict mode change result value")
@@ -833,6 +887,7 @@ class expression:
             #Case unused parenthesis without factor
             elif len(lst[i].content) == 1 and type(lst[i].content[0]) == expression and lst[i].content[0].isFactor != True:
                 expression._expression__debugClassMessage("arf", lst[i], lst[i].content[0])
+                expression.unparenthesis(lst[i].content[0].content)
                 lst[i].isStar = lst[i].content[0].isStar
                 lst[i].state = lst[i].content[0].state
                 lst[i].content = lst[i].content[0].content

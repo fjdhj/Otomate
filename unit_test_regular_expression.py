@@ -37,7 +37,8 @@ class TestAutomateRegularExpression(unittest.TestCase):
         ("Sample/Final_tests/oddNb0.csv", "_[ *^[ 0 *^[ 1 ] *[ 0 ] +[ 1 ] ] *[ 0 *^[ 1 ] ] ]"),
         ("Sample/Final_tests/tourniquet.csv", "_[ *^[ *[ 0 *^[ 0 ] +[ -1 ] ] *[ 1 ] ] ]"),
         ("Sample/Final_tests/tourniquetInverse.csv", "_[ *^[ *[ 0 *^[ 0 ] +[ -1 ] ] *[ 1 ] ] *[ 0 *^[ 0 ] ] ]"),
-        ("Sample/Final_tests/Expected_results/common5_minimal.csv", "_[ *[ 0 +[ 1 ] ] *[ 0 +[ 1 ] ] *[ 0 +[ 1 ] ] *^[ 0 +[ 1 ] ] ]")
+        ("Sample/Final_tests/Expected_results/common5_minimal.csv", "_[ *[ 0 +[ 1 ] ] *[ 0 +[ 1 ] ] *[ 0 +[ 1 ] ] *^[ 0 +[ 1 ] ] ]"),
+        ("Sample/Final_tests/Expected_results/common3_minimal.csv", "_[ *^[ *[ -1 +[ 1 ] ] *[ 0 ] ] *[ 1 ] ]")
         
     ]
 

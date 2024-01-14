@@ -1307,5 +1307,3 @@ Final_states: {self.final_states}
             return False
 
         return self.get_regular_expression().isSimilar(other.get_regular_expression())
-
-        
