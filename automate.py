@@ -59,7 +59,7 @@ class automate:
         self.transitions: list = [transit for transit in transition]
         self.name: str = os.path.splitext(file_name)[0].replace("/", "")    
     
-    def create_state(self,name)->None:
+    def create_state(self)->None:
         """
         Creates and adds a new state to the automaton.
 
