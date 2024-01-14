@@ -44,7 +44,7 @@ def modify_automaton(current_auto: automate):
     Returns: None
     """
     
-    while True:
+    while current_auto.verify_states():
         # Display the modification menu
         print("\nAutomaton Modification Menu:")
         print("1. Add a state")
@@ -443,9 +443,11 @@ while True:
             
             # Otherwise, create the automaton in the next empty slot
             else:
-                slots[empty_slot] = automate(file_name) 
-                print(slots)
-                print("Automaton saved in slot: ", empty_slot + 1, "\n\n")
+                automaton = automate(file_name) 
+                if(automaton.verify_states()):
+                    slots[empty_slot] = automaton
+                    print(slots)
+                    print("Automaton saved in slot: ", empty_slot + 1, "\n\n")
                 
         else:
             print("No available slots to create a new automaton.\n")  

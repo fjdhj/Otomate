@@ -90,9 +90,10 @@ class automate:
         self.matrix[-1].append(name)
         if(len(self.all_states) == 0):
             self.initial_states.append(1)
+            self.final_states.append(1)
         else:
             self.initial_states.append(0)
-        self.final_states.append(0)
+            self.final_states.append(0)
         self.all_states.append(name)
         for i in range(1,len(self.transitions)+1):
             self.matrix[-1].append("nan")
@@ -1361,3 +1362,31 @@ Final_states: {self.final_states}
         # But isSimilar methods use develop methods to ensure the difference 
         # can't give a bad result because the diffrence isn't huge
         return auto1.get_regular_expression().isSimilar(auto2.get_regular_expression())
+    
+    def verify_states(self):
+        if(len(self.all_states) == 0):
+            print("Your automaton is empty, please create a new state\n")
+            name = str(input("Enter the name of the new state :"))
+            self.create_state(name)
+        else:
+            if (not 1 in self.initial_states):
+                print("Your automaton doesn't have an initial state, please designate one :")
+                print("Below is the list of your states\n")
+                for i in range(len(self.initial_states)):
+                    print(self.all_states[i])
+                # User chooses a state to modify its initial status
+                state = input("Choose a state\n")
+                while(not state in self.all_states):
+                    state = input("The state doesn't exists, choose a state :\n")
+                self.make_initial(state)
+            if (not 1 in self.final_states):
+                print("Your automaton doesn't have an initial state, please designate one :")
+                print("Below is the list of your states\n")
+                for i in range(len(self.initial_states)):
+                    print(self.all_states[i])
+                # User chooses a state to modify its initial status
+                state = input("Choose a state\n")
+                while(not state in self.all_states):
+                    state = input("The state doesn't exists, choose a state :\n")
+                self.make_final(state)
+        return True
