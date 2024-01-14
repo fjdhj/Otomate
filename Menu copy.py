@@ -120,40 +120,49 @@ def modify_automaton(current_auto: automate):
             current_auto.remove_transition(initial_state_name, transition_name, final_state_name)
 
         elif modification_choice == "7":
-            # Display initial states and allow modification
-            print("Below is the list of initial states\n")
-            for i in range(len(current_auto.initial_states)):
-                if current_auto.initial_states[i] == 1:
-                    print(current_auto.all_states[i])
-            # User chooses a state to modify its initial status
-            state = input("Choose a state\n")
-            while(not state in current_auto.all_states):
-                state = input("Choose a state\n")
-            index_state = current_auto.all_states.index(state)
-            if current_auto.initial_states[index_state] == 1:
-                if input("This state is currently initial, make it non-initial? y/n\n") == "y":
-                   current_auto.demake_initial(state)
+            if(len(current_auto.all_states) == 0):
+                print("The automaton is empty, back to the menu\n")
             else:
-                if input("This state is currently non-initial, make it initial? y/n\n") == "y":
-                    current_auto.make_initial(state)
+                # Display initial states and allow modification
+                print("Below is the list of initial states\n")
+                for i in range(len(current_auto.initial_states)):
+                    if current_auto.initial_states[i] == 1:
+                        print(current_auto.all_states[i])
+                # User chooses a state to modify its initial status
+                state = input("Choose a state\n")
+                while((not state in current_auto.all_states) and state != "cancel"):
+                    state = input("The state doesn't exists, choose a state or enter 'cancel'\n")
+                if(state != "cancel"):
+                    index_state = current_auto.all_states.index(state)
+                    if current_auto.initial_states[index_state] == 1:
+                        if input("This state is currently initial, make it non-initial? y/n\n") == "y":
+                            current_auto.demake_initial(state)
+                    else:
+                        if input("This state is currently non-initial, make it initial? y/n\n") == "y":
+                            current_auto.make_initial(state)
+                else:
+                    print("Back to the menu \n")
 
         elif modification_choice == "8":
-            # Display final states and allow the user to modify them
-            print("Below is the list of final states\n")
-            for i in range(len(current_auto.final_states)):
-                if current_auto.final_states[i] == 1:
-                    print(current_auto.all_states[i])
-            # User chooses a state to modify its final status
-            state = input("Choose a state\n")
-            while(not state in current_auto.all_states):
-                state = input("Choose a state\n")
-            index_state = current_auto.all_states.index(state)
-            if current_auto.final_states[index_state] == 1:
-                if input("This state is currently final, make it non-final? y/n\n") == "y":
-                   current_auto.demake_final(state)
+            if(len(current_auto.all_states) == 0):
+                print("The automaton is empty, back to the menu\n")
             else:
-                if input("This state is currently non-final, make it final? y/n\n") == "y":
-                    current_auto.make_final(state)
+                # Display final states and allow the user to modify them
+                print("Below is the list of final states\n")
+                for i in range(len(current_auto.final_states)):
+                    if current_auto.final_states[i] == 1:
+                        print(current_auto.all_states[i])
+                # User chooses a state to modify its final status
+                state = input("Choose a state\n")
+                while(not state in current_auto.all_states):
+                    state = input("Choose a state\n")
+                index_state = current_auto.all_states.index(state)
+                if current_auto.final_states[index_state] == 1:
+                    if input("This state is currently final, make it non-final? y/n\n") == "y":
+                        current_auto.demake_final(state)
+                else:
+                    if input("This state is currently non-final, make it final? y/n\n") == "y":
+                        current_auto.make_final(state)
 
         elif modification_choice == "9":
             break

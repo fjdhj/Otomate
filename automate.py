@@ -71,11 +71,26 @@ class automate:
         Returns:
             None
         """
+        """
+        Creates and adds a new state to the automaton.
+
+        This method introduces a new state to the automaton.
+        It's a key function for building and modifying the state machine.
+
+        Args:
+            name (str): name of the new state
+
+        Returns:
+            None
+        """
         while(name in self.all_states):
             name = str(input("Enter the name of the new state"))
         self.matrix.append([])
         self.matrix[-1].append(name)
-        self.initial_states.append(0)
+        if(len(self.all_states) == 0):
+            self.initial_states.append(1)
+        else:
+            self.initial_states.append(0)
         self.final_states.append(0)
         self.all_states.append(name)
         for i in range(1,len(self.transitions)+1):
@@ -175,6 +190,7 @@ Final_states: {self.final_states}
                     return False
         return True
     
+
     def is_deterministic(self)->bool:
         """
         Checks if the automaton is deterministic.
@@ -207,9 +223,11 @@ Final_states: {self.final_states}
         Returns:
             None
         """
+        while(transition in self.transitions):
+            transition = str(input("Enter the name of the new transiion"))
         self.transitions.append(transition)
         for line in self.matrix:
-            line.append(["nan"])
+            line.append("nan")
 
     def add_transition(self,initial_state,transition,final_state):
         """
@@ -230,10 +248,13 @@ Final_states: {self.final_states}
             None
         """
         if not (transition in self.transitions):
-             raise ValueError("The transition entered is not in the column please enter another")
+            raise ValueError("The transition entered is not in the column please enter another")
         index_state=self.all_states.index(initial_state)
         index_transition=self.transitions.index(transition)
-        if(self.matrix[index_state][index_transition+1] == "nan"):
+        print(self.matrix[index_state][index_transition+1])
+        if(final_state in self.matrix[index_state][index_transition+1].split(",")):
+            print("The transition already exists")
+        elif(self.matrix[index_state][index_transition+1] == "nan"):
             self.matrix[index_state][index_transition+1] = final_state
         else:
             self.matrix[index_state][index_transition+1]="{0},{1}".format(str(self.matrix[index_state][index_transition+1]), final_state)
@@ -513,6 +534,7 @@ Final_states: {self.final_states}
     def enumerate_new_states(self, states: list) -> dict:
         """
         Enumerate all new states that are possible to create for new AFD
+        Enumerate all new states that are possible to create for new AFD
         """
         len_states=int(math.pow(2,len(states))) # Number of new states = 2**number of state AND
         new_states={}
@@ -720,6 +742,18 @@ Final_states: {self.final_states}
         self.matrix = mirrored_matrix
 
     def product(self, other_automaton):
+        """
+        Calculates the product of this automaton with another.
+
+        This method combines two automatons into a single one, where the states and transitions of the resulting
+        automaton represent the combined behavior of the two input automatons.
+
+        Args:
+            other_automaton (automate): Another automaton to combine with this one.
+
+        Returns:
+            product_automaton (automate): The resulting automaton after taking the product.
+        """
         """
         Calculates the product of this automaton with another.
 
