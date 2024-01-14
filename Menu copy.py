@@ -272,11 +272,11 @@ def display_manual():
         - Output: Result of equivalence check.
         - Example: Input slots "1" and "2" to check equivalence between Automata in Slots 1 and 2.
 
-    16. Prune Automaton:
-        - Prune an automaton to remove unnecessary states.
+    16. Trim Automaton:
+        - Trim an automaton to remove unnecessary states.
         - Input: Slot number.
-        - Output: Pruned automaton in the same slot.
-        - Example: Input slot "11" to prune Automaton in Slot 11.
+        - Output: Trimmed automaton in the same slot.
+        - Example: Input slot "11" to trim Automaton in Slot 11.
 
     17. Minimize Automaton:
         - Minimize an automaton.
@@ -417,7 +417,7 @@ while True:
     print("13. Extract regular expressions")
     print("14. Find language")
     print("15. Equivalence between 2 automata")
-    print("16. Prune automaton")
+    print("16. Trim automaton")
     print("17. Minimize automaton")
     print("18. Visualize an automaton")
     print("19. Convert .JFF to .CSV")
