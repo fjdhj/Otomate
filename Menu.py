@@ -761,9 +761,9 @@ while True:
             res = automaton1.isEquivalent(automaton2)
 
             if res:
-                print("\nLe langage des deux automate sont equivalent\n")
+                print("\nLe langage des deux automate est équivalent.\n")
             else:
-                print("\nLe langage des deux automate sont different\n")
+                print("\nLe langage des deux automate est différent.\n")
 
         else:
             print("Aucun automate dans un des slots.")
@@ -775,7 +775,7 @@ while True:
         if slot != -1 :
             automaton = slots[slot - 1]
             if automaton:
-                print("Vous avez choisi d'émonder l'automate\n")
+                print("Vous avez choisi d'émonder l'automate.\n")
                 automaton=automaton.trim()
                 print("Traitement effectué.\n\n")
             else:
@@ -789,7 +789,7 @@ while True:
         if slot != -1 :
             automaton = slots[slot - 1]
             if automaton:
-                print("Vous avez choisi de rendre l'automate minimal\n")
+                print("Vous avez choisi de rendre l'automate minimal.\n")
                 automaton=automaton.minimize()
                 print("Traitement effectué.\n\n")
             else:

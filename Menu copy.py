@@ -722,9 +722,23 @@ while True:
 
     ### EQUIVALENCE BETWEEN TWO AUTOMATA ##########################################
 
-    # elif choice == "15":
-        # The original code for this section is commented out and not provided.
-        # You would need to implement or uncomment this section in your code.
+    elif choice == "15":
+        slot = enter_slot_number()
+        if slot != -1 :
+            automaton1 = slots[slot - 1]
+            slot = enter_slot_number()
+            if slot != -1 :
+                automaton2 = slots[slot - 1]
+        if automaton1 and automaton2:
+            res = automaton1.isEquivalent(automaton2)
+
+            if res:
+                print("\nThe language of the two automatons is equivalent.\n")
+            else:
+                print("\nThe language of the two automata is not equivalent.\n")
+
+        else:
+            print("No automaton in one of the slots.")
 
     ### TRIM AUTOMATON ###########################################################
 
@@ -761,14 +775,15 @@ while True:
         else:
             automaton = None
         if automaton:
-            automaton.edit_csv("buffer", automaton.matrix, automaton.final_states)
             # Ensure the output directory exists
             os.makedirs('output-png', exist_ok=True)
 
             # Define the CSV and image file paths
-            csv_path = 'Sample/buffer.csv'  
+            csv_path = 'buffer.csv'  # Replace with your actual CSV file path
             timestamp = print_timestamp()
             image_filename = f'otomate_{timestamp}'
+
+            automaton.edit_csv(csv_path[:-4], automaton.matrix, automaton.final_states)
 
             # Set the image path with a timestamp
             image_path = os.path.join('output-png', image_filename)
@@ -782,11 +797,13 @@ while True:
 
             #Erase .dot file
             os.remove('output-png/' + (image_filename))
+            os.remove(csv_path)
 
 
             print("Processing completed.\n\n")
         else:
             print("No automaton in this slot.\n")
+
 
     ### JFF TO CSV #################################################################
 
