@@ -1365,10 +1365,10 @@ Final_states: {self.final_states}
     
     def verify_states(self):
         """
-        Checks if the automaton have at least an initial and a final state
+        Checks if the automaton have at least a final state and only one initial state
 
         Returns:
-            bool: True if the automaton have at least an initial and a final state
+            bool: True if the automaton have at least a final state and only one initial state
         """
         if(len(self.all_states) == 0):
             print("Your automaton is empty, please create a new state\n")
@@ -1385,6 +1385,19 @@ Final_states: {self.final_states}
                 while(not state in self.all_states):
                     state = input("The state doesn't exists, choose a state :\n")
                 self.make_initial(state)
+            elif(self.initial_states.count(1) > 1):
+                while(self.initial_states.count(1) > 1):
+                    print("There is more than one initial state, choose the true one\n")
+                    print("Below is the list of initial states\n")
+                    for i in range(len(self.initial_states)):
+                        if self.initial_states[i] == 1:
+                            print(self.all_states[i])
+                    state = input("Choose a state\n")
+                    while(not state in self.all_states):
+                        state = input("The state doesn't exists, choose a state :\n")
+                    for tempstate in self.all_states:
+                        if tempstate != state:
+                            self.demake_initial(state)
             if (not 1 in self.final_states):
                 print("Your automaton doesn't have an initial state, please designate one :")
                 print("Below is the list of your states\n")
