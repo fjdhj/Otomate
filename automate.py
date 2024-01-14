@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import stat
 from tkinter import NO
 import utilities
@@ -1296,3 +1298,14 @@ Final_states: {self.final_states}
         self.initial_states = new_initial_states
         self.final_states = new_final_states
         self.matrix = new_matrix
+
+    def isEquivalent(self, other:automate) -> bool:
+        if not isinstance(other, automate):
+            raise TypeError("the other is not automate")
+        
+        if self == None:
+            return False
+
+        return self.get_regular_expression().isSimilar(other.get_regular_expression())
+
+        

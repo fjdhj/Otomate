@@ -1,6 +1,7 @@
 # Otomate custom folder and file
 output-png/
 .vscode
+buffer.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
