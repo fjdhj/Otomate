@@ -87,7 +87,10 @@ class automate:
             name = str(input("Enter the name of the new state"))
         self.matrix.append([])
         self.matrix[-1].append(name)
-        self.initial_states.append(0)
+        if(len(self.all_states) == 0):
+            self.initial_states.append(1)
+        else:
+            self.initial_states.append(0)
         self.final_states.append(0)
         self.all_states.append(name)
         for i in range(1,len(self.transitions)+1):
@@ -187,7 +190,7 @@ Final_states: {self.final_states}
                     return False
         return True
     
->>>>>>> release
+
     def is_deterministic(self)->bool:
         """
         Checks if the automaton is deterministic.
@@ -220,9 +223,11 @@ Final_states: {self.final_states}
         Returns:
             None
         """
+        while(transition in self.transitions):
+            transition = str(input("Enter the name of the new transiion"))
         self.transitions.append(transition)
         for line in self.matrix:
-            line.append(["nan"])
+            line.append("nan")
 
     def add_transition(self,initial_state,transition,final_state):
         """
@@ -243,10 +248,13 @@ Final_states: {self.final_states}
             None
         """
         if not (transition in self.transitions):
-             raise ValueError("The transition entered is not in the column please enter another")
+            raise ValueError("The transition entered is not in the column please enter another")
         index_state=self.all_states.index(initial_state)
         index_transition=self.transitions.index(transition)
-        if(self.matrix[index_state][index_transition+1] == "nan"):
+        print(self.matrix[index_state][index_transition+1])
+        if(final_state in self.matrix[index_state][index_transition+1].split(",")):
+            print("The transition already exists")
+        elif(self.matrix[index_state][index_transition+1] == "nan"):
             self.matrix[index_state][index_transition+1] = final_state
         else:
             self.matrix[index_state][index_transition+1]="{0},{1}".format(str(self.matrix[index_state][index_transition+1]), final_state)
