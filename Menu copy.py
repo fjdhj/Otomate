@@ -819,18 +819,21 @@ while True:
     ### JFF TO CSV #################################################################
 
     elif choice == "19":
-        # Request files to convert
         print("You want to convert a .jff file to a .csv file\n")
+        
+        # User inputs for file names
         jff_filename = input("Enter the name of the .jff file: ")
         csv_filename = input("Enter the name of the .csv file: ")
 
-        # If the path does not exist, display an error message
-        if not os.path.exists(jff_filename) and not os.path.exists(csv_filename):
-            print(f"One of the files does not exist.\n")
-
-        # Otherwise, apply the function
+        # Check if the .jff file exists
+        if not os.path.exists(jff_filename):
+            print(f"The file {jff_filename} does not exist.\n")
         else:
+            # Create the csv file
+            open(csv_filename, 'x')
+            # Call the jff_to_csv function
             jff_to_csv(jff_filename, csv_filename)
+            print("Conversion completed.\n")
 
     ### MANUAL #####################################################################
 
