@@ -697,7 +697,11 @@ Final_states: {self.final_states}
                 final_states.extend(no_doublon_states[_])
             final_states=",".join(sorted(list(set(final_states))))
         return final_states
-
+    def init_new_final_state(self, new_states_to_check, final_state, all_final_state):
+        for i in range(len(new_states_to_check)):
+            key_name=list(new_states_to_check[i].keys())[0]
+            if final_state in new_states_to_check[i][key_name].split(","):
+                all_final_state[i]=1
     def complement(self):
         """
         Complement the automaton.
