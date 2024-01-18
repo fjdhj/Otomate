@@ -68,7 +68,7 @@ class TestAutomateDeterminist(unittest.TestCase):
         print("\n")
 
         # Check if the automaton is deterministic
-        if automaton.is__deterministic():
+        if automaton.is_deterministic():
             print("Automation is deterministic.")
             self.assertTrue(True)  # The test passes if it's deterministic
         else:
