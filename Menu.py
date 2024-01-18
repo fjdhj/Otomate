@@ -716,10 +716,13 @@ while True:
         slot = enter_slot_number()
         if slot != -1:
             automaton: automate = slots[slot - 1]
-            if automaton:
-                print("The regular expression of this automaton is :", automaton.get_regular_expression())
-            else:
-                print("No automaton in this slot.")
+            try:
+                if automaton:
+                    print("The regular expression of this automaton is :", automaton.get_regular_expression())
+                else:
+                    print("No automaton in this slot.")
+            except:
+                print("Can't get the regular expression of this automate, this is an internal in the expression class")
 
     ### DETERMINE LANGUAGE ########################################################
 
@@ -727,10 +730,13 @@ while True:
         slot = enter_slot_number()
         if slot != -1:
             automaton = slots[slot - 1]
-            if automaton:
-                print("The language of this automaton is: L = {%s}" % (automaton.get_regular_expression()))
-            else:
-                print("No automaton in this slot.")
+            try:
+                if automaton:
+                    print("The language of this automaton is: L = {%s}" % (automaton.get_regular_expression()))
+                else:
+                    print("No automaton in this slot.")
+            except:
+                print("Can't get the language of this automate, this is an internal in the expression class")
 
     ### EQUIVALENCE BETWEEN TWO AUTOMATA ##########################################
 
@@ -742,13 +748,15 @@ while True:
             if slot != -1 :
                 automaton2 = slots[slot - 1]
         if automaton1 and automaton2:
-            res = automaton1.isEquivalent(automaton2)
+            try:
+                res = automaton1.isEquivalent(automaton2)
 
-            if res:
-                print("\nThe language of the two automatons is equivalent.\n")
-            else:
-                print("\nThe language of the two automata is not equivalent.\n")
-
+                if res:
+                    print("\nThe language of the two automatons is equivalent.\n")
+                else:
+                    print("\nThe language of the two automata is not equivalent.\n")
+            except:
+                print("Can't check the equivalence of these automate, this is an internal in the expression class")
         else:
             print("No automaton in one of the slots.")
 
