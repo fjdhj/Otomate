@@ -615,7 +615,7 @@ Final_states: {self.final_states}
                         print(Possible_transitions)
                         # We place the new states in the list new_state_to_check 
                         not_in_states=False
-                        for j in range(len_states):
+                        for j in range(len(new_states_to_check)):
                             key_name=list(new_states_to_check[j].keys())[0]
                             if Possible_transitions==new_states_to_check[j][key_name]:
                                 print("okayyyyyy")
